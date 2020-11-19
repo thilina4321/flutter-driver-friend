@@ -1,5 +1,5 @@
 import 'package:driver_friend/screen/default_quiz_screen.dart';
-import 'package:driver_friend/widget/drawer.dart';
+import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
 
 class FAQ extends StatelessWidget {
