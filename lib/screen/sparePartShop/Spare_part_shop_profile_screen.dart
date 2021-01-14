@@ -2,18 +2,18 @@ import 'package:driver_friend/provider/user_provider.dart';
 
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
+import 'package:driver_friend/widget/spare_part_shop_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SparePartShopProfileScreen extends StatelessWidget {
   static String routeName = '/spare_part_shop-profile';
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
+      drawer: SparePartShopDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,21 +110,14 @@ class SparePartShopProfileScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'About',
+                        'Change Details',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(
                         width: 50,
-                      ),
-                      Text(
-                        'More',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                       Spacer(),
                       IconButton(

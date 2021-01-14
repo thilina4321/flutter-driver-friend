@@ -1,3 +1,4 @@
+import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class SparePartShopFormScreen extends StatelessWidget {
@@ -83,7 +84,10 @@ class SparePartShopFormScreen extends StatelessWidget {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: RaisedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed(
+                          SparePartShopProfileScreen.routeName);
+                    },
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

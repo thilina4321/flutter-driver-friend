@@ -1,6 +1,7 @@
-import 'package:driver_friend/screen/FAQ.dart';
+import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
+import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
 import 'package:flutter/material.dart';
 
 class MechanicDrawer extends StatelessWidget {
@@ -51,22 +52,20 @@ class MechanicDrawer extends StatelessWidget {
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
             DrawerIcons(
-                routeName: SparePartShopsScreen.routeName,
+                routeName: SparepartShopListScreen.routeName,
                 icon: Icons.shopping_cart_outlined,
-                label: 'Spare Part Shop'),
+                label: 'Spare Part Shops'),
             DrawerIcons(
               icon: Icons.question_answer_outlined,
               label: 'FAQ',
               routeName: FAQ.routeName,
             ),
-            Container(
-              height: 100,
-              width: double.infinity,
-              alignment: Alignment.center,
-              child: Image.asset('assets/images/mec.jpg'),
-            ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
-            DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),
+            DrawerIcons(
+              icon: Icons.settings,
+              label: 'Settings & Accounts',
+              routeName: MechanicSettignScreen.routeName,
+            ),
           ],
         ),
       ),
@@ -87,11 +86,14 @@ class DrawerIcons extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FlatButton.icon(
-            label: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            label: Expanded(
+              child: Text(
+                label,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             icon: Icon(

@@ -1,3 +1,4 @@
+import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:flutter/material.dart';
 
 class ServiceCenterFormScreen extends StatelessWidget {
@@ -79,7 +80,10 @@ class ServiceCenterFormScreen extends StatelessWidget {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: RaisedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pushReplacementNamed(
+                          ServiceCenterProfileScreen.routeName);
+                    },
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

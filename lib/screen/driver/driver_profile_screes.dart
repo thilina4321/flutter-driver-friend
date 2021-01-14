@@ -1,5 +1,5 @@
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:driver_friend/screen/FAQ.dart';
+import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';

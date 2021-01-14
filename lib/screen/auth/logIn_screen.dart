@@ -1,5 +1,4 @@
-import 'package:driver_friend/screen/home_screen.dart';
-import 'package:driver_friend/screen/signup_screen.dart';
+import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:flutter/material.dart';
 
 class LogInScreen extends StatelessWidget {
@@ -104,8 +103,8 @@ class LogInScreen extends StatelessWidget {
                         width: double.infinity,
                         child: RaisedButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(HomeScreen.routeName);
+                            Navigator.of(context).pushReplacementNamed(
+                                DriverProfileScreen.routeName);
                           },
                           color: Colors.purple,
                           child: Padding(

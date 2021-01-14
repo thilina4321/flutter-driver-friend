@@ -1,4 +1,4 @@
-import 'package:driver_friend/screen/FAQ.dart';
+import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';

@@ -1,4 +1,5 @@
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_setting.dart';
 import 'package:flutter/material.dart';
 
 class SparePartShopDrawer extends StatelessWidget {
@@ -50,12 +51,12 @@ class SparePartShopDrawer extends StatelessWidget {
                 label: 'My Profile'),
             DrawerIcons(
                 icon: Icons.center_focus_weak, label: 'Manage Services'),
-            Container(
-              height: 100,
-              child: Image.asset('assets/images/spare.jpg'),
-            ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
-            DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),
+            DrawerIcons(
+              icon: Icons.settings,
+              label: 'Settings & Accounts',
+              routeName: SparePartShopSettignScreen.routeName,
+            ),
           ],
         ),
       ),

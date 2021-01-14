@@ -1,10 +1,8 @@
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:driver_friend/screen/FAQ.dart';
+import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
-import 'package:driver_friend/screen/mechanics_screen.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/driver/driver_form_screen.dart';
+import 'package:driver_friend/widget/mechanic_drawer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,11 +10,11 @@ class MechanicProfileScreen extends StatelessWidget {
   static String routeName = '/mechanic-profile';
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
+      drawer: MechanicDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -60,26 +58,12 @@ class MechanicProfileScreen extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
-                            Icon(
-                              Icons.star,
-                              color: Colors.green,
-                            ),
+                            ...List.generate(5, (index) {
+                              return Icon(
+                                Icons.star,
+                                color: Colors.green,
+                              );
+                            }).toList(),
                             Text(
                               '5.0',
                               style: TextStyle(
@@ -128,21 +112,14 @@ class MechanicProfileScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'About',
+                        'Change Details',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(
                         width: 50,
-                      ),
-                      Text(
-                        'More',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                       Spacer(),
                       IconButton(
@@ -164,37 +141,49 @@ class MechanicProfileScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.person,
-                        size: 50,
-                        color: Colors.purple,
-                      ),
-                      Text(
-                        'Contact Us',
-                        style: TextStyle(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(MechanicContactScreen.routeName);
+                    },
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.contact_page,
+                          size: 50,
                           color: Colors.purple,
                         ),
-                      ),
-                    ],
+                        Text(
+                          'Contact Us',
+                          style: TextStyle(
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 50,
-                        color: Colors.purple,
-                      ),
-                      Text(
-                        'Location',
-                        style: TextStyle(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed(MechanicProfileScreen.routeName);
+                    },
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.location_on,
+                          size: 50,
                           color: Colors.purple,
                         ),
-                      ),
-                    ],
+                        Text(
+                          'Location',
+                          style: TextStyle(
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -203,10 +192,11 @@ class MechanicProfileScreen extends StatelessWidget {
               height: 25,
             ),
             Text(
-              'Description about technishiant engine and garage',
+              'Description about technical engine and garage',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
+                fontWeight: FontWeight.bold,
               ),
             ),
             SizedBox(

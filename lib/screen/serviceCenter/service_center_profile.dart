@@ -1,10 +1,7 @@
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:driver_friend/screen/FAQ.dart';
-import 'package:driver_friend/screen/mechanics_screen.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/driver/driver_form_screen.dart';
+import 'package:driver_friend/widget/service_center_drawer.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,11 +9,11 @@ class ServiceCenterProfileScreen extends StatelessWidget {
   static String routeName = '/service_center-profile';
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
+      drawer: ServiceCenterDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -83,13 +80,6 @@ class ServiceCenterProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            Text(
-              'Only Hybrid Vehicles',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-              ),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -132,21 +122,14 @@ class ServiceCenterProfileScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'About',
+                        'Change Details',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       SizedBox(
                         width: 50,
-                      ),
-                      Text(
-                        'More',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                       Spacer(),
                       IconButton(

@@ -1,6 +1,6 @@
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:driver_friend/screen/logIn_screen.dart';
+import 'package:driver_friend/screen/auth/logIn_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
