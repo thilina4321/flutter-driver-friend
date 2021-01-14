@@ -1,4 +1,4 @@
-import 'package:driver_friend/screen/user/driver_profile_screes.dart';
+import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class SparePartShopDrawer extends StatelessWidget {
@@ -13,14 +13,14 @@ class SparePartShopDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/three.jpg'),
+                backgroundImage: AssetImage('assets/images/spa_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Dmst Shop',
+              'Dmst Spare part Shop',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -30,7 +30,7 @@ class SparePartShopDrawer extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'Service Center',
+              'Spare part shop',
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey,
@@ -45,9 +45,15 @@ class SparePartShopDrawer extends StatelessWidget {
               height: 2,
             ),
             DrawerIcons(
-                routeName: DriverProfileScreen.routeName,
+                routeName: SparePartShopProfileScreen.routeName,
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
+            DrawerIcons(
+                icon: Icons.center_focus_weak, label: 'Manage Services'),
+            Container(
+              height: 100,
+              child: Image.asset('assets/images/spare.jpg'),
+            ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
             DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),
           ],

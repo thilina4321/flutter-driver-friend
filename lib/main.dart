@@ -1,14 +1,21 @@
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/FAQ.dart';
 import 'package:driver_friend/screen/default_quiz_screen.dart';
+import 'package:driver_friend/screen/driver/driver_form_screen.dart';
+import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
+import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:driver_friend/screen/home_screen.dart';
 import 'package:driver_friend/screen/logIn_screen.dart';
-import 'package:driver_friend/screen/mechanics_screen.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
+import 'package:driver_friend/screen/mechanic/Mechanic.dart';
+import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
+import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/screen/signup_screen.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/user/driver_form_screen.dart';
-import 'package:driver_friend/screen/user/driver_profile_screes.dart';
+import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -42,16 +49,28 @@ class MyApp extends StatelessWidget {
               )),
         ),
         routes: {
-          '/': (ctx) => LogInScreen(),
-          SignUpScreen.routeName: (ctx) => SignUpScreen(),
+          '/': (ctx) => SignUpScreen(),
+          LogInScreen.routeName: (ctx) => LogInScreen(),
           FAQ.routeName: (ctx) => FAQ(),
+          MechanicListScreen.routeName: (ctx) => MechanicListScreen(),
+          SparepartShopListScreen.routeName: (ctx) => SparepartShopListScreen(),
+          ServiceCenterList.routeName: (ctx) => ServiceCenterList(),
           DefaultQuestionScreen.routeName: (ctx) => DefaultQuestionScreen(),
           HomeScreen.routeName: (ctx) => HomeScreen(),
           DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),
+          DriverSettignScreen.routeName: (ctx) => DriverSettignScreen(),
           DriverFormScreen.routeName: (ctx) => DriverFormScreen(),
-          MechanicsScreen.routeName: (ctx) => MechanicsScreen(),
-          ServiceCentersScreen.routeName: (ctx) => ServiceCentersScreen(),
-          SparePartShopsScreen.routeName: (ctx) => SparePartShopsScreen(),
+          MechanicProfileScreen.routeName: (ctx) => MechanicProfileScreen(),
+          MechanicFormScreen.routeName: (ctx) => MechanicFormScreen(),
+          ServiceCenterProfileScreen.routeName: (ctx) =>
+              ServiceCenterProfileScreen(),
+
+          ServiceCenterFormScreen.routeName: (ctx) => ServiceCenterFormScreen(),
+          SparePartShopProfileScreen.routeName: (ctx) =>
+              SparePartShopProfileScreen(),
+
+          SparePartShopFormScreen.routeName: (ctx) => SparePartShopFormScreen(),
+          // SparePartShopsScreen.routeName: (ctx) => SparePartShopsScreen(),
         },
       ),
     );

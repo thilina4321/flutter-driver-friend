@@ -24,11 +24,9 @@ class LogInScreen extends StatelessWidget {
                     Expanded(
                       child: Container(
                         margin: const EdgeInsets.only(top: 20),
-                        // width: 200,
                         child: RaisedButton(
                           onPressed: () {
-                            Navigator.of(context)
-                                .pushReplacementNamed(SignUpScreen.routeName);
+                            Navigator.of(context).pushReplacementNamed('/');
                           },
                           color: Colors.black,
                           child: Padding(

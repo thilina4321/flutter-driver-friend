@@ -20,11 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     mainUser = Provider.of<UserProvider>(context, listen: false).appUser;
+    print(mainUser);
     if (mainUser == UserType.driver) {
-      appDrawer = CustomDrawer();
+      appDrawer = DriverDrawer();
     } else if (mainUser == UserType.mechanic) {
-      print('mechnic');
-
       appDrawer = MechanicDrawer();
     } else if (mainUser == UserType.serviceCenter) {
       appDrawer = ServiceCenterDrawer();

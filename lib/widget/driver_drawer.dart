@@ -1,11 +1,12 @@
 import 'package:driver_friend/screen/FAQ.dart';
-import 'package:driver_friend/screen/mechanics_screen.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/user/driver_profile_screes.dart';
+import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
+import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
+import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
 import 'package:flutter/material.dart';
 
-class CustomDrawer extends StatelessWidget {
+class DriverDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -17,14 +18,14 @@ class CustomDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/sai.jpg'),
+                backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Sai Pallavi',
+              'Janitha Perera',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -53,24 +54,28 @@ class CustomDrawer extends StatelessWidget {
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
             DrawerIcons(
-                icon: Icons.person_pin_circle_outlined,
-                routeName: MechanicsScreen.routeName,
-                label: 'Mechanic'),
+                icon: Icons.supervised_user_circle,
+                routeName: MechanicListScreen.routeName,
+                label: 'Mechanics'),
             DrawerIcons(
-                routeName: SparePartShopsScreen.routeName,
+                routeName: SparepartShopListScreen.routeName,
                 icon: Icons.shopping_cart_outlined,
-                label: 'Spare Part Shop'),
+                label: 'Spare Part Shops'),
             DrawerIcons(
                 icon: Icons.car_repair,
-                routeName: ServiceCentersScreen.routeName,
-                label: 'Service Center'),
+                routeName: ServiceCenterList.routeName,
+                label: 'Service Centers'),
             DrawerIcons(
               icon: Icons.question_answer_outlined,
               label: 'FAQ',
               routeName: FAQ.routeName,
             ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
-            DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),
+            DrawerIcons(
+              icon: Icons.settings,
+              label: 'Settings & Accounts',
+              routeName: DriverSettignScreen.routeName,
+            ),
           ],
         ),
       ),
@@ -89,13 +94,17 @@ class DrawerIcons extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         FlatButton.icon(
-            label: Text(
-              label,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+            label: Expanded(
+              child: Text(
+                label,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             icon: Icon(

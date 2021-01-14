@@ -7,7 +7,7 @@ class FAQ extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(),
+      drawer: DriverDrawer(),
       appBar: AppBar(
         title: Text('FAQ'),
         backgroundColor: Colors.purple,
@@ -79,7 +79,7 @@ class FAQ extends StatelessWidget {
                     child: Row(
                       children: [
                         Icon(
-                          Icons.message_outlined,
+                          Icons.thumb_up_sharp,
                           color: Colors.purple,
                           size: 30,
                         ),
@@ -88,6 +88,53 @@ class FAQ extends StatelessWidget {
                         ),
                         Text(
                           'Find Answer',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundColor: Colors.white,
+                    backgroundImage: AssetImage('assets/images/faq_1.png'),
+                  ),
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: AssetImage('assets/images/faq_2.jpg'),
+                  ),
+                ],
+              ),
+              Card(
+                elevation: 5,
+                child: FlatButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(DefaultQuestionScreen.routeName);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.message_outlined,
+                          color: Colors.purple,
+                          size: 30,
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Text(
+                          'FAQ Section',
                           style: TextStyle(
                             fontSize: 20,
                           ),

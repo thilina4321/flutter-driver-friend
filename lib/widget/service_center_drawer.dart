@@ -1,4 +1,4 @@
-import 'package:driver_friend/screen/user/driver_profile_screes.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:flutter/material.dart';
 
 class ServiceCenterDrawer extends StatelessWidget {
@@ -13,14 +13,14 @@ class ServiceCenterDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/hour.jpg'),
+                backgroundImage: AssetImage('assets/images/ser_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Anuradha Shop',
+              'DMST Service Center',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -30,7 +30,7 @@ class ServiceCenterDrawer extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'Spare part shop',
+              'Service center',
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.grey,
@@ -45,9 +45,11 @@ class ServiceCenterDrawer extends StatelessWidget {
               height: 2,
             ),
             DrawerIcons(
-                routeName: DriverProfileScreen.routeName,
+                routeName: ServiceCenterProfileScreen.routeName,
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
+            DrawerIcons(icon: Icons.perm_data_setting, label: 'Manage Parts'),
+            Container(height: 100, child: Image.asset('assets/images/ser.jpg')),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
             DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),
           ],

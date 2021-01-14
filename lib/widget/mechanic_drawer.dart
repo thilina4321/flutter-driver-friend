@@ -1,7 +1,6 @@
 import 'package:driver_friend/screen/FAQ.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
+import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/user/driver_profile_screes.dart';
 import 'package:flutter/material.dart';
 
 class MechanicDrawer extends StatelessWidget {
@@ -16,14 +15,14 @@ class MechanicDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/vector.jpg'),
+                backgroundImage: AssetImage('assets/images/mec_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Prageesha',
+              'Prageesha Perera',
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -48,7 +47,7 @@ class MechanicDrawer extends StatelessWidget {
               height: 2,
             ),
             DrawerIcons(
-                routeName: DriverProfileScreen.routeName,
+                routeName: MechanicProfileScreen.routeName,
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
             DrawerIcons(
@@ -59,6 +58,12 @@ class MechanicDrawer extends StatelessWidget {
               icon: Icons.question_answer_outlined,
               label: 'FAQ',
               routeName: FAQ.routeName,
+            ),
+            Container(
+              height: 100,
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Image.asset('assets/images/mec.jpg'),
             ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
             DrawerIcons(icon: Icons.settings, label: 'Settings & Accounts'),

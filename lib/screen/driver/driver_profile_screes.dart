@@ -1,9 +1,10 @@
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/FAQ.dart';
-import 'package:driver_friend/screen/mechanics_screen.dart';
-import 'package:driver_friend/screen/service_center_screen.dart';
-import 'package:driver_friend/screen/spare_part_shops_screen.dart';
-import 'package:driver_friend/screen/user/driver_form_screen.dart';
+import 'package:driver_friend/screen/driver/driver_form_screen.dart';
+import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,17 +17,61 @@ class DriverProfileScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
+      drawer: DriverDrawer(),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              height: 200,
-              width: double.infinity,
-              child: Image.asset(
-                'assets/images/sai.jpg',
-                fit: BoxFit.cover,
-              ),
+            Stack(
+              children: [
+                Container(
+                  height: 200,
+                  width: double.infinity,
+                  child: Image.asset(
+                    'assets/images/car.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 70,
+                  left: MediaQuery.of(context).size.width / 4,
+                  child: CircleAvatar(
+                    radius: 70,
+                    backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
+                  ),
+                ),
+                Positioned(
+                  top: 100,
+                  left: 180,
+                  child: FlatButton(
+                      onPressed: () {},
+                      child: Icon(
+                        Icons.photo_camera,
+                        size: 23,
+                        color: Colors.white,
+                      )),
+                ),
+                Positioned(
+                  top: 20,
+                  left: 180,
+                  child: Container(
+                    color: Colors.black45,
+                    child: FlatButton.icon(
+                        label: Text(
+                          'Edit cover photo',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.photo_camera,
+                          size: 30,
+                          color: Colors.white,
+                        ),
+                        onPressed: () {}),
+                  ),
+                )
+              ],
             ),
             SizedBox(
               height: 20,
@@ -34,8 +79,8 @@ class DriverProfileScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                '${user.name}',
-                textAlign: TextAlign.start,
+                'Janitha Perera',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
@@ -45,7 +90,8 @@ class DriverProfileScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                '${user.name} is a vehicle owner of the driver friend mobile application',
+                'Janitha Perera is a vehicle owner of the driver friend mobile application',
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
                 ),
@@ -62,10 +108,15 @@ class DriverProfileScreen extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        'Edit Profile',
+                        'Change Details',
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
+                      ),
+                      Spacer(),
+                      SizedBox(
+                        width: 50,
                       ),
                       Spacer(),
                       IconButton(
@@ -91,6 +142,7 @@ class DriverProfileScreen extends StatelessWidget {
                     'Your DashBoard',
                     style: TextStyle(
                       fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(
@@ -105,7 +157,7 @@ class DriverProfileScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(0),
                             onPressed: () {
                               Navigator.of(context)
-                                  .pushNamed(MechanicsScreen.routeName);
+                                  .pushNamed(MechanicListScreen.routeName);
                             },
                             child: Card(
                               elevation: 3,
@@ -121,7 +173,7 @@ class DriverProfileScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(0),
                             onPressed: () {
                               Navigator.of(context)
-                                  .pushNamed(ServiceCentersScreen.routeName);
+                                  .pushNamed(ServiceCenterList.routeName);
                             },
                             child: Card(
                               elevation: 3,
@@ -137,7 +189,7 @@ class DriverProfileScreen extends StatelessWidget {
                             padding: const EdgeInsets.all(0),
                             onPressed: () {
                               Navigator.of(context)
-                                  .pushNamed(SparePartShopsScreen.routeName);
+                                  .pushNamed(SparepartShopListScreen.routeName);
                             },
                             child: Card(
                               elevation: 3,
@@ -155,6 +207,7 @@ class DriverProfileScreen extends StatelessWidget {
                     'Get Help From Experts',
                     style: TextStyle(
                       fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(

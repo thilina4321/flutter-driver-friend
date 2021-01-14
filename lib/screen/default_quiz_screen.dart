@@ -28,11 +28,11 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
             pinned: true,
             flexibleSpace: FlexibleSpaceBar(
               background: Image.asset(
-                'assets/images/sai.jpg',
+                'assets/images/faq.jpg',
                 fit: BoxFit.cover,
               ),
               title: Text(
-                'Frequently Ask Question...',
+                'Frequently Ask Questions',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -61,6 +61,7 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
                               height: MediaQuery.of(context).size.height * 0.9,
                               width: double.infinity,
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(15.0),
@@ -81,7 +82,17 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
                                         )
                                       ],
                                     ),
-                                  )
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.all(5),
+                                    child: Text(
+                                      'This page is under construction...',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             );
@@ -91,7 +102,7 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
                       children: [
                         Container(
                           child: Image.asset(
-                            'assets/images/sai.jpg',
+                            'assets/images/faq_q.jpg',
                             fit: BoxFit.cover,
                           ),
                           margin: const EdgeInsets.all(20),
