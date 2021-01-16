@@ -4,11 +4,13 @@ import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/faq/add_question.dart';
+import 'package:driver_friend/screen/faq/answer_screen.dart';
 import 'package:driver_friend/screen/faq/default_quiz_screen.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:driver_friend/screen/auth/logIn_screen.dart';
+import 'package:driver_friend/screen/faq/not_answer_quiz.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
@@ -72,6 +74,8 @@ class MyApp extends StatelessWidget {
           FAQ.routeName: (ctx) => FAQ(),
           AddNewQuestionPageScreen.routeName: (ctx) =>
               AddNewQuestionPageScreen(),
+          AnswerScreen.routeName: (ctx) => AnswerScreen(),
+          NotAnswerdYetQuizScreen.routeName: (ctx) => NotAnswerdYetQuizScreen(),
 
           //driver section
           DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),

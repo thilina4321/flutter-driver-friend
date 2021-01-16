@@ -2,6 +2,7 @@ import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/add_question.dart';
 import 'package:driver_friend/screen/faq/default_quiz_screen.dart';
+import 'package:driver_friend/screen/faq/not_answer_quiz.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:driver_friend/widget/mechanic_drawer.dart';
 import 'package:flutter/material.dart';
@@ -61,23 +62,9 @@ class FAQ extends StatelessWidget {
               SizedBox(
                 height: 20,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundColor: Colors.white,
-                    backgroundImage: AssetImage('assets/images/faq_1.png'),
-                  ),
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundImage: AssetImage('assets/images/faq_2.jpg'),
-                  ),
-                ],
-              ),
               CustomFaqCard(
                 icon: Icons.not_listed_location,
-                route: DefaultQuestionScreen.routeName,
+                route: NotAnswerdYetQuizScreen.routeName,
                 title: 'Not Answered yet',
               ),
             ],
@@ -115,10 +102,12 @@ class CustomFaqCard extends StatelessWidget {
               SizedBox(
                 width: 30,
               ),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
               ),
             ],
