@@ -1,9 +1,65 @@
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
+import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class DriverFormScreen extends StatelessWidget {
+import 'package:location/location.dart';
+
+class DriverFormScreen extends StatefulWidget {
   static String routeName = '/driver-form';
+
+  @override
+  _DriverFormScreenState createState() => _DriverFormScreenState();
+}
+
+class _DriverFormScreenState extends State<DriverFormScreen> {
   final _form = GlobalKey<FormState>();
+
+  File _profileImage;
+  File _vehicleImage;
+
+  final picker = ImagePicker();
+  var _mapImagePreview;
+
+  Future<void> getLocation() async {
+    try {
+      final locData = await Location().getLocation();
+      print(locData);
+      final img = LocationHelper.generateGoogleImage(
+          lat: locData.latitude, long: locData.longitude);
+      setState(() {
+        _mapImagePreview = img;
+      });
+    } catch (e) {
+      print('error');
+    }
+  }
+
+  Future getProfileImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _profileImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future vehicleImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _vehicleImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,21 +106,23 @@ class DriverFormScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: FlatButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.photo_camera,
-                            color: Colors.purple,
-                          ),
-                          label: Text('Profile Picture')),
+                        onPressed: getProfileImage,
+                        icon: Icon(
+                          Icons.photo_camera,
+                          color: Colors.purple,
+                        ),
+                        label: Text('Profile Picture'),
+                      ),
                     ),
                     Expanded(
                       child: FlatButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.photo_camera,
-                            color: Colors.purple,
-                          ),
-                          label: Text('Vehicle Picture')),
+                        onPressed: vehicleImage,
+                        icon: Icon(
+                          Icons.photo_camera,
+                          color: Colors.purple,
+                        ),
+                        label: Text('Vehicle Picture'),
+                      ),
                     ),
                   ],
                 ),
@@ -72,9 +130,18 @@ class DriverFormScreen extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Container(
+                        width: double.infinity,
                         height: 100,
                         alignment: Alignment.center,
-                        child: Text('Profile Image'),
+                        child: _profileImage == null
+                            ? Text('Profile Image')
+                            : Container(
+                                width: double.infinity,
+                                child: Image.file(
+                                  _profileImage,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                         decoration: BoxDecoration(
                           border: Border.all(width: 1),
                         ),
@@ -85,15 +152,49 @@ class DriverFormScreen extends StatelessWidget {
                     ),
                     Expanded(
                       child: Container(
-                        alignment: Alignment.center,
-                        child: Text('Vehicle Image'),
+                        width: double.infinity,
                         height: 100,
+                        alignment: Alignment.center,
+                        child: _vehicleImage == null
+                            ? Text('Vehicle Image')
+                            : Container(
+                                width: double.infinity,
+                                child: Image.file(
+                                  _vehicleImage,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                         decoration: BoxDecoration(
                           border: Border.all(width: 1),
                         ),
                       ),
                     ),
                   ],
+                ),
+                FlatButton.icon(
+                  onPressed: getLocation,
+                  icon: Icon(
+                    Icons.map,
+                    color: Colors.purple,
+                  ),
+                  label: Text('Your location'),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  alignment: Alignment.center,
+                  child: _mapImagePreview == null
+                      ? Text('Location not select yet')
+                      : Container(
+                          width: double.infinity,
+                          child: Image.network(
+                            _mapImagePreview,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1),
+                  ),
                 ),
                 Container(
                   width: double.infinity,

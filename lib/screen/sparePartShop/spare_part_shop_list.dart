@@ -1,27 +1,29 @@
-import 'package:driver_friend/provider/mechanic_provider.dart';
-import 'package:driver_friend/screen/mechanic/Mechanic.dart';
+import 'package:driver_friend/model/spare_shop.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
-class MechanicListScreen extends StatelessWidget {
-  static String routeName = 'mechanic-list';
+class SparepartShopListScreen extends StatelessWidget {
+  static String routeName = 'spare-list';
 
   @override
   Widget build(BuildContext context) {
-    final mechanics =
-        Provider.of<MechanicProvider>(context, listen: false).mechanics;
+    final List<SparePartShop> spareShops =
+        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nearest Mechanics'),
+        title: Text('Nearest Spare part shops'),
       ),
       body: ListView.builder(
-          itemCount: mechanics.length,
+          itemCount: spareShops.length,
           itemBuilder: (ctx, index) {
             return GestureDetector(
               onTap: () {
-                Navigator.of(context).pushNamed(MechanicProfileScreen.routeName,
-                    arguments: mechanics[index]);
+                Navigator.of(context).pushNamed(
+                    SparePartShopProfileScreen.routeName,
+                    arguments: spareShops[index]);
               },
               child: Card(
                 elevation: 3,
@@ -30,14 +32,15 @@ class MechanicListScreen extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       radius: 30,
-                      backgroundImage: AssetImage('assets/images/mec_pro.jpg'),
+                      backgroundImage:
+                          AssetImage('assets/images/ser_cover.PNG'),
                     ),
-                    title: Text(mechanics[index].name),
+                    title: Text(spareShops[index].name),
                     trailing: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         RatingBarIndicator(
-                          rating: mechanics[index].rating / 5,
+                          rating: spareShops[index].rating / 6,
                           itemBuilder: (context, index) => Icon(
                             Icons.star,
                             color: Colors.green,
@@ -46,7 +49,7 @@ class MechanicListScreen extends StatelessWidget {
                           itemSize: 20.0,
                           direction: Axis.horizontal,
                         ),
-                        Text(mechanics[index].rating.toString())
+                        Text(spareShops[index].rating.toString())
                       ],
                     ),
                   ),

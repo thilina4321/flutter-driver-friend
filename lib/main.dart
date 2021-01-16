@@ -1,10 +1,15 @@
+import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
+import 'package:driver_friend/screen/faq/add_question.dart';
 import 'package:driver_friend/screen/faq/default_quiz_screen.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:driver_friend/screen/auth/logIn_screen.dart';
+import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
@@ -13,12 +18,17 @@ import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
+import 'package:driver_friend/screen/serviceCenter/service_contact.dart';
 import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:driver_friend/screen/auth/signup_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_contact.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_setting.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
+import 'package:driver_friend/widget/rating.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +40,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => UserProvider()),
+        ChangeNotifierProvider(create: (ctx) => MechanicProvider()),
+        ChangeNotifierProvider(create: (ctx) => ServiceCenterProvider()),
+        ChangeNotifierProvider(create: (ctx) => SpareShopProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -54,7 +67,11 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (ctx) => SignUpScreen(),
           LogInScreen.routeName: (ctx) => LogInScreen(),
+
+          // faq
           FAQ.routeName: (ctx) => FAQ(),
+          AddNewQuestionPageScreen.routeName: (ctx) =>
+              AddNewQuestionPageScreen(),
 
           //driver section
           DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),
@@ -75,6 +92,9 @@ class MyApp extends StatelessWidget {
           ServiceCenterList.routeName: (ctx) => ServiceCenterList(),
           ServiceCenterSettignScreen.routeName: (ctx) =>
               ServiceCenterSettignScreen(),
+          ServiceCenterContactScreen.routeName: (ctx) =>
+              ServiceCenterContactScreen(),
+          ServiceCenterServices.routeName: (ctx) => ServiceCenterServices(),
 
           //spare part section
           SparepartShopListScreen.routeName: (ctx) => SparepartShopListScreen(),
@@ -83,8 +103,16 @@ class MyApp extends StatelessWidget {
           SparePartShopFormScreen.routeName: (ctx) => SparePartShopFormScreen(),
           SparePartShopSettignScreen.routeName: (ctx) =>
               SparePartShopSettignScreen(),
+          SpareShopContactScreen.routeName: (ctx) => SpareShopContactScreen(),
+          SpareShopItems.routeName: (ctx) => SpareShopItems(),
 
           DefaultQuestionScreen.routeName: (ctx) => DefaultQuestionScreen(),
+
+          //ratings
+          CustomRatingWidget.routeName: (ctx) => CustomRatingWidget(),
+
+          //map
+          MapScreen.routeName: (ctx) => MapScreen(),
         },
       ),
     );

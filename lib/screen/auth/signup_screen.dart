@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    initialUser = Provider.of<UserProvider>(context).user;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -137,6 +138,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onChanged: (val) {
                                   setState(() {
                                     initialUser = val;
+                                    Provider.of<UserProvider>(context,
+                                            listen: false)
+                                        .userType(initialUser);
                                   });
                                   Provider.of<UserProvider>(context,
                                           listen: false)

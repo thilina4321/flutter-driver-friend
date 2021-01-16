@@ -3,7 +3,7 @@ import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:flutter/material.dart';
 
 class DriverDrawer extends StatelessWidget {

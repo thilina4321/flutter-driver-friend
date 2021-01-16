@@ -1,20 +1,63 @@
+import 'dart:io';
+
+import 'package:driver_friend/model/mechanic_model.dart';
+import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
+import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:driver_friend/widget/mechanic_drawer.dart';
+import 'package:driver_friend/widget/rating.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class MechanicProfileScreen extends StatelessWidget {
+class MechanicProfileScreen extends StatefulWidget {
   static String routeName = '/mechanic-profile';
+
+  @override
+  _MechanicProfileScreenState createState() => _MechanicProfileScreenState();
+}
+
+class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
+  Mechanic data = Mechanic();
+
+  File _profileImage;
+  String _mapImage;
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _profileImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    if (user == UserType.driver) {
+      data = ModalRoute.of(context).settings.arguments;
+    } else {
+      data = Provider.of<UserProvider>(context, listen: false).mechanic;
+    }
+
+    print(data.name);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
-      drawer: MechanicDrawer(),
+      drawer: user == UserType.driver ? DriverDrawer() : MechanicDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,7 +80,7 @@ class MechanicProfileScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Prageesha',
+                          data.name,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -50,7 +93,7 @@ class MechanicProfileScreen extends StatelessWidget {
                             color: Colors.white,
                           ),
                           label: Text(
-                            'Arrachchikattuwa',
+                            data.address,
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -58,14 +101,19 @@ class MechanicProfileScreen extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            ...List.generate(5, (index) {
-                              return Icon(
+                            RatingBarIndicator(
+                              rating: data.rating,
+                              itemBuilder: (context, index) => Icon(
                                 Icons.star,
                                 color: Colors.green,
-                              );
-                            }).toList(),
+                              ),
+                              unratedColor: Colors.white,
+                              itemCount: 5,
+                              itemSize: 20.0,
+                              direction: Axis.horizontal,
+                            ),
                             Text(
-                              '5.0',
+                              data.rating.toString(),
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -93,162 +141,138 @@ class MechanicProfileScreen extends StatelessWidget {
                           size: 30,
                           color: Colors.white,
                         ),
-                        onPressed: () {}),
+                        onPressed: getImage),
                   ),
                 )
               ],
             ),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            Container(
-              margin: const EdgeInsets.all(8),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Card(
                 elevation: 3,
                 child: Container(
                   width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Row(
+                  alignment: Alignment.center,
+                  height: 100,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
                     children: [
-                      Text(
-                        'Change Details',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      CustomeMechanicCard(
+                        title: 'Edit',
+                        icon: Icons.edit,
+                        route: MechanicFormScreen.routeName,
                       ),
-                      SizedBox(
-                        width: 50,
+                      CustomeMechanicCard(
+                          title: 'Contact',
+                          args: data,
+                          icon: Icons.contact_page,
+                          route: MechanicContactScreen.routeName),
+                      CustomeMechanicCard(
+                        title: 'Location',
+                        icon: Icons.location_on,
+                        route: MapScreen.routeName,
                       ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(MechanicFormScreen.routeName);
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.purple,
-                        ),
+                      CustomeMechanicCard(
+                        title: 'Rate',
+                        icon: Icons.star_rate,
+                        route: CustomRatingWidget.routeName,
                       ),
                     ],
                   ),
                 ),
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed(MechanicContactScreen.routeName);
-                    },
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.contact_page,
-                          size: 50,
-                          color: Colors.purple,
-                        ),
-                        Text(
-                          'Contact Us',
-                          style: TextStyle(
-                            color: Colors.purple,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.of(context)
-                          .pushNamed(MechanicProfileScreen.routeName);
-                    },
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.location_on,
-                          size: 50,
-                          color: Colors.purple,
-                        ),
-                        Text(
-                          'Location',
-                          style: TextStyle(
-                            color: Colors.purple,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 25,
-            ),
-            Text(
-              'Description about technical engine and garage',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
             Container(
-              height: 100,
+              height: 300,
+              child: _mapImage == null
+                  ? Center(child: Text('No location yet..'))
+                  : Image.network(
+                      _mapImage,
+                      fit: BoxFit.cover,
+                    ),
+              margin: const EdgeInsets.all(8),
               width: double.infinity,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: [
-                  Container(
-                    height: 50,
-                    width: 130,
-                    margin: EdgeInsets.all(5),
-                    child: Image.asset(
-                      'assets/images/mec_1.jpg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 130,
-                    margin: EdgeInsets.all(5),
-                    child: Image.asset(
-                      'assets/images/mec_3.jpeg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 130,
-                    margin: EdgeInsets.all(5),
-                    child: Image.asset(
-                      'assets/images/mec_1.jpg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Container(
-                    height: 50,
-                    width: 130,
-                    margin: EdgeInsets.all(5),
-                    child: Image.asset(
-                      'assets/images/mec_3.jpeg',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ],
+              decoration: BoxDecoration(
+                border: Border.all(width: 1, color: Colors.purple),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CustomeMechanicCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final String route;
+  final args;
+
+  const CustomeMechanicCard({this.title, this.icon, this.route, this.args});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: Container(
+        child: Column(
+          children: [
+            IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed(route, arguments: args);
+              },
+              icon: Icon(
+                icon,
+                color: Colors.purple,
+              ),
+            ),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CustomMechanicContact extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final String route;
+  final mechanic;
+
+  const CustomMechanicContact(
+      {this.title, this.icon, this.route, this.mechanic});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).pushNamed(route, arguments: mechanic);
+      },
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 50,
+            color: Colors.purple,
+          ),
+          Text(
+            title,
+            style: TextStyle(
+              color: Colors.purple,
+            ),
+          ),
+        ],
       ),
     );
   }

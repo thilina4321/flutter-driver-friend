@@ -1,19 +1,20 @@
-import 'package:driver_friend/model/mechanic_model.dart';
+import 'package:driver_friend/model/service_center.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MechanicContactScreen extends StatefulWidget {
-  static String routeName = 'mechanic-contact';
-
+class ServiceCenterContactScreen extends StatefulWidget {
+  static String routeName = 'service-contact';
   @override
-  _MechanicContactScreenState createState() => _MechanicContactScreenState();
+  _ServiceCenterContactScreenState createState() =>
+      _ServiceCenterContactScreenState();
 }
 
-class _MechanicContactScreenState extends State<MechanicContactScreen> {
-  Mechanic mechanic = Mechanic();
+class _ServiceCenterContactScreenState
+    extends State<ServiceCenterContactScreen> {
+  ServiceCenter serviceCenter = ServiceCenter();
 
   _makingPhoneCall() async {
-    final url = 'tel:${mechanic.mobile}';
+    final url = 'tel:${serviceCenter.mobile}';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -23,11 +24,11 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
 
   @override
   Widget build(BuildContext context) {
-    mechanic = ModalRoute.of(context).settings.arguments;
+    serviceCenter = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Contact ${mechanic.name}'),
+        title: Text('Contact ${serviceCenter.name}'),
       ),
       body: SingleChildScrollView(
         child: Card(
@@ -40,7 +41,7 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  '${mechanic.name} is a Mechanic in Driver Friend Application',
+                  '${serviceCenter.name} is a serviceCenter in Driver Friend Application',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -65,7 +66,7 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'I am ${mechanic.name}',
+                    'I am ${serviceCenter.name}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -75,7 +76,7 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'I am a ${mechanic.rating} start rated mechanic in Driver Friend App',
+                    'I am a ${serviceCenter.rating} start rated serviceCenter in Driver Friend App',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -85,7 +86,7 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'My address is ${mechanic.address}',
+                    'My address is ${serviceCenter.address}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -95,7 +96,7 @@ class _MechanicContactScreenState extends State<MechanicContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'You can contact me from this Number ${mechanic.mobile}',
+                    'You can contact me from this Number ${serviceCenter.mobile}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

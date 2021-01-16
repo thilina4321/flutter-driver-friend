@@ -1,13 +1,21 @@
+import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/faq/add_question.dart';
 import 'package:driver_friend/screen/faq/default_quiz_screen.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/mechanic_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FAQ extends StatelessWidget {
   static String routeName = '/faq';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: DriverDrawer(),
+      drawer: Provider.of<UserProvider>(context, listen: false).user ==
+              UserType.driver
+          ? DriverDrawer()
+          : MechanicDrawer(),
       appBar: AppBar(
         title: Text('FAQ'),
         backgroundColor: Colors.purple,
@@ -40,62 +48,15 @@ class FAQ extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
-              Card(
-                elevation: 5,
-                child: FlatButton(
-                  onPressed: () {},
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.question_answer_outlined,
-                          color: Colors.purple,
-                          size: 30,
-                        ),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Text(
-                          'New Question',
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              CustomFaqCard(
+                icon: Icons.message,
+                route: AddNewQuestionPageScreen.routeName,
+                title: 'New Question',
               ),
-              Card(
-                elevation: 5,
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(DefaultQuestionScreen.routeName);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.thumb_up_sharp,
-                          color: Colors.purple,
-                          size: 30,
-                        ),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Text(
-                          'Find Answer',
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              CustomFaqCard(
+                icon: Icons.thumb_up_sharp,
+                route: DefaultQuestionScreen.routeName,
+                title: 'Find Answers',
               ),
               SizedBox(
                 height: 20,
@@ -114,34 +75,50 @@ class FAQ extends StatelessWidget {
                   ),
                 ],
               ),
-              Card(
-                elevation: 5,
-                child: FlatButton(
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(DefaultQuestionScreen.routeName);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.message_outlined,
-                          color: Colors.purple,
-                          size: 30,
-                        ),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Text(
-                          'FAQ Section',
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              CustomFaqCard(
+                icon: Icons.not_listed_location,
+                route: DefaultQuestionScreen.routeName,
+                title: 'Not Answered yet',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomFaqCard extends StatelessWidget {
+  final String route;
+  final String title;
+  final IconData icon;
+
+  CustomFaqCard({this.icon, this.route, this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 5,
+      child: FlatButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(route);
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                color: Colors.purple,
+                size: 30,
+              ),
+              SizedBox(
+                width: 30,
+              ),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
                 ),
               ),
             ],

@@ -1,7 +1,7 @@
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:flutter/material.dart';
 
 class MechanicDrawer extends StatelessWidget {
@@ -51,10 +51,6 @@ class MechanicDrawer extends StatelessWidget {
                 routeName: MechanicProfileScreen.routeName,
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
-            DrawerIcons(
-                routeName: SparepartShopListScreen.routeName,
-                icon: Icons.shopping_cart_outlined,
-                label: 'Spare Part Shops'),
             DrawerIcons(
               icon: Icons.question_answer_outlined,
               label: 'FAQ',

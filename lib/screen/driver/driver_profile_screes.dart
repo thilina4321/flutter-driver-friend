@@ -3,16 +3,39 @@ import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'dart:io';
 
-class DriverProfileScreen extends StatelessWidget {
+import 'package:image_picker/image_picker.dart';
+
+class DriverProfileScreen extends StatefulWidget {
   static String routeName = '/driver-profile';
+
+  @override
+  _DriverProfileScreenState createState() => _DriverProfileScreenState();
+}
+
+class _DriverProfileScreenState extends State<DriverProfileScreen> {
+  File _profileImage;
+
+  final picker = ImagePicker();
+
+  Future getProfileImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _profileImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -68,7 +91,7 @@ class DriverProfileScreen extends StatelessWidget {
                           size: 30,
                           color: Colors.white,
                         ),
-                        onPressed: () {}),
+                        onPressed: getProfileImage),
                   ),
                 )
               ],

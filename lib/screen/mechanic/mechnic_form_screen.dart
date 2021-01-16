@@ -1,9 +1,51 @@
-import 'package:driver_friend/screen/mechanic/Mechanic.dart';
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-class MechanicFormScreen extends StatelessWidget {
+import 'package:driver_friend/screen/mechanic/Mechanic.dart';
+import 'package:driver_friend/widget/static_map_image.dart';
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:location/location.dart';
+
+class MechanicFormScreen extends StatefulWidget {
   static String routeName = '/mechanic-form';
+
+  @override
+  _MechanicFormScreenState createState() => _MechanicFormScreenState();
+}
+
+class _MechanicFormScreenState extends State<MechanicFormScreen> {
   final _form = GlobalKey<FormState>();
+  File _profileImage;
+  var _mapImagePreview;
+
+  Future<void> getLocation() async {
+    try {
+      final locData = await Location().getLocation();
+      print(locData);
+      final img = LocationHelper.generateGoogleImage(
+          lat: locData.latitude, long: locData.longitude);
+      setState(() {
+        _mapImagePreview = img;
+      });
+    } catch (e) {
+      print('error');
+    }
+  }
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _profileImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,10 +63,15 @@ class MechanicFormScreen extends StatelessWidget {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
+                    labelText: 'User Name',
+                  ),
+                ),
+                TextFormField(
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
                     labelText: 'NIC',
                   ),
                 ),
-
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -44,69 +91,21 @@ class MechanicFormScreen extends StatelessWidget {
                     labelText: 'About',
                   ),
                 ),
-
-                // Column(
-                //   children: [
-                //     Padding(
-                //       padding: const EdgeInsets.all(8.0),
-                //       child: Text(
-                //         'Vehicle types',
-                //         style: TextStyle(
-                //           fontSize: 18,
-                //         ),
-                //       ),
-                //     ),
-                //     Row(
-                //       mainAxisAlignment: MainAxisAlignment.center,
-                //       children: [
-                //         FlatButton(
-                //           onPressed: () {},
-                //           child: Text(
-                //             'Deisel',
-                //             style: TextStyle(
-                //               fontSize: 18,
-                //               fontWeight: FontWeight.bold,
-                //             ),
-                //           ),
-                //         ),
-                //         FlatButton(
-                //           onPressed: () {},
-                //           child: Text(
-                //             'Hybrid',
-                //             style: TextStyle(
-                //               fontSize: 18,
-                //               fontWeight: FontWeight.bold,
-                //             ),
-                //           ),
-                //         ),
-                //         FlatButton(
-                //           onPressed: () {},
-                //           child: Text(
-                //             'Electric',
-                //             style: TextStyle(
-                //               fontSize: 18,
-                //               fontWeight: FontWeight.bold,
-                //             ),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ],
-                // ),
                 Row(
                   children: [
                     Expanded(
                       child: FlatButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.photo_camera,
-                            color: Colors.purple,
-                          ),
-                          label: Text('Profile Picture')),
+                        onPressed: getImage,
+                        icon: Icon(
+                          Icons.photo_camera,
+                          color: Colors.purple,
+                        ),
+                        label: Text('Profile Picture'),
+                      ),
                     ),
                     Expanded(
                       child: FlatButton.icon(
-                          onPressed: () {},
+                          onPressed: getLocation,
                           icon: Icon(
                             Icons.location_on,
                             color: Colors.purple,
@@ -115,13 +114,50 @@ class MechanicFormScreen extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  height: 100,
-                  width: 200,
-                  child: Center(child: Text('Profile Image')),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 2),
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        child: Center(
+                          child: _profileImage == null
+                              ? Text('Profile Image')
+                              : Container(
+                                  width: double.infinity,
+                                  child: Image.file(
+                                    _profileImage,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 2),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Expanded(
+                      child: Container(
+                        height: 100,
+                        child: Center(
+                          child: _mapImagePreview == null
+                              ? Text('Your Location')
+                              : Container(
+                                  width: double.infinity,
+                                  child: Image.network(
+                                    _mapImagePreview,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 2),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   width: double.infinity,
