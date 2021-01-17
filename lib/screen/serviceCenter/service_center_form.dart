@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:driver_friend/model/service_center.dart';
+import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 class ServiceCenterFormScreen extends StatefulWidget {
   static String routeName = '/service_center-form';
@@ -17,8 +20,6 @@ class ServiceCenterFormScreen extends StatefulWidget {
 class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   final _form = GlobalKey<FormState>();
 
-  File _profileImage;
-
   final picker = ImagePicker();
 
   Future getImage() async {
@@ -26,31 +27,51 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
+        serviceCenter.profileImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
     });
   }
 
-  String _mapImagePreview;
-
   Future<void> getLocation() async {
     try {
       final locData = await Location().getLocation();
-      print(locData);
+      serviceCenter.latitude = locData.latitude;
+      serviceCenter.longitude = locData.longitude;
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
       setState(() {
-        _mapImagePreview = img;
+        serviceCenter.mapImagePreview = img;
       });
     } catch (e) {
       print('error');
     }
   }
 
+  ServiceCenter serviceCenter = ServiceCenter();
+
+  _saveServiceCenter() {
+    _form.currentState.save();
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    Provider.of<ServiceCenterProvider>(context, listen: false)
+        .createMechanic(serviceCenter);
+    Navigator.of(context)
+        .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
+  }
+
   @override
   Widget build(BuildContext context) {
+    ServiceCenter editableServiceCenter =
+        Provider.of<ServiceCenterProvider>(context, listen: false).service;
+
+    if (editableServiceCenter != null) {
+      serviceCenter = editableServiceCenter;
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -64,12 +85,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
             child: Column(
               children: [
                 TextFormField(
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                  ),
-                ),
-                TextFormField(
+                  initialValue: serviceCenter.address,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'Address',
@@ -78,6 +94,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
+                  initialValue: serviceCenter.mobile.toString(),
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
@@ -85,6 +102,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.datetime,
+                  initialValue: serviceCenter.openingTime,
                   decoration: InputDecoration(
                     labelText: 'Open time',
                   ),
@@ -92,6 +110,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.datetime,
+                  initialValue: serviceCenter.closingTime,
                   decoration: InputDecoration(
                     labelText: 'Close time',
                   ),
@@ -127,12 +146,12 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                       child: Container(
                         height: 150,
                         width: double.infinity,
-                        child: _profileImage == null
+                        child: serviceCenter.profileImageUrl == null
                             ? Center(child: Text('Profile Image'))
                             : Container(
                                 width: double.infinity,
                                 child: Image.file(
-                                  _profileImage,
+                                  serviceCenter.profileImageUrl,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -147,13 +166,13 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        child: _mapImagePreview == null
+                        child: serviceCenter.mapImagePreview == null
                             ? Center(
                                 child: Text('Your Location'),
                               )
                             : Container(
                                 child: Image.network(
-                                _mapImagePreview,
+                                serviceCenter.mapImagePreview,
                                 fit: BoxFit.cover,
                               )),
                         height: 150,
@@ -168,10 +187,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: RaisedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed(
-                          ServiceCenterProfileScreen.routeName);
-                    },
+                    onPressed: _saveServiceCenter,
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

@@ -1,4 +1,5 @@
 import 'package:driver_friend/model/spare_shop.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 
 class SpareShopProvider with ChangeNotifier {
@@ -17,7 +18,33 @@ class SpareShopProvider with ChangeNotifier {
         address: 'Horana'),
   ];
 
+  SparePartShop get spare {
+    return _spareShop[0];
+  }
+
   List<SparePartShop> get spareShop {
     return _spareShop;
+  }
+
+  TempararyUser _tempararyUser = TempararyUser();
+
+  addToTempararyUser(TempararyUser tempararyUser) {
+    _tempararyUser.email = tempararyUser.email;
+    _tempararyUser.name = tempararyUser.name;
+    _tempararyUser.password = tempararyUser.password;
+    _tempararyUser.userType = tempararyUser.userType;
+
+    notifyListeners();
+  }
+
+  createMechanic(SparePartShop spareshop) {
+    spareshop.id = (_spareShop.length + 1).toString();
+    spareshop.email = _tempararyUser.email;
+    spareshop.name = _tempararyUser.name;
+    spareshop.password = _tempararyUser.password;
+    spareshop.userType = _tempararyUser.userType;
+
+    _spareShop.add(spareshop);
+    notifyListeners();
   }
 }

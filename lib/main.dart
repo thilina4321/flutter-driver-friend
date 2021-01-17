@@ -1,3 +1,4 @@
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
@@ -42,6 +43,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => UserProvider()),
+        ChangeNotifierProvider(
+          create: (ctx) => DriverProvider(),
+        ),
         ChangeNotifierProvider(create: (ctx) => MechanicProvider()),
         ChangeNotifierProvider(create: (ctx) => ServiceCenterProvider()),
         ChangeNotifierProvider(create: (ctx) => SpareShopProvider()),

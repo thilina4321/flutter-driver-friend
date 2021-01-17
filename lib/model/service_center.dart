@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:driver_friend/model/userType.dart';
+
 class ServiceCenter {
   String id;
   String address;
@@ -5,14 +9,26 @@ class ServiceCenter {
   String about;
   String openingTime;
   String closingTime;
-  String profileImageUrl;
+  File profileImageUrl;
   String location;
   double rating;
   String name;
+  double latitude;
+  double longitude;
+  String email;
+  String password;
+  UserType userType;
+  String mapImagePreview;
 
   ServiceCenter(
-      {this.about,
-      this.id,
+      {this.id,
+      this.mapImagePreview,
+      this.about,
+      this.email,
+      this.password,
+      this.userType,
+      this.latitude,
+      this.longitude,
       this.name,
       this.rating,
       this.address,

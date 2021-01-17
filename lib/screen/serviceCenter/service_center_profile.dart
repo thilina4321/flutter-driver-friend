@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
@@ -29,9 +30,6 @@ class _ServiceCenterProfileScreenState
     extends State<ServiceCenterProfileScreen> {
   ServiceCenter serviceCenter = ServiceCenter();
 
-  File _profileImage;
-  String _mapImagePreview;
-
   final picker = ImagePicker();
 
   Future getImage() async {
@@ -39,7 +37,7 @@ class _ServiceCenterProfileScreenState
 
     setState(() {
       if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
+        serviceCenter.profileImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -73,31 +71,13 @@ class _ServiceCenterProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/ser_cover.PNG',
-                    fit: BoxFit.cover,
-                  ),
+                  child: serviceCenter.profileImageUrl == null
+                      ? Center(child: Text('No profile image'))
+                      : Image.file(
+                          serviceCenter.profileImageUrl,
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                Positioned(
-                  top: 40,
-                  left: 180,
-                  child: Container(
-                    color: Colors.black45,
-                    child: FlatButton.icon(
-                        label: Text(
-                          'Edit cover photo',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.photo_camera,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: getImage),
-                  ),
-                )
               ],
             ),
             Padding(
@@ -229,10 +209,10 @@ class _ServiceCenterProfileScreenState
               child: Container(
                 height: 200,
                 width: double.infinity,
-                child: _mapImagePreview == null
+                child: serviceCenter.mapImagePreview == null
                     ? Center(child: Text('No Location yet..'))
                     : Image.network(
-                        _mapImagePreview,
+                        serviceCenter.mapImagePreview,
                         fit: BoxFit.cover,
                       ),
               ),

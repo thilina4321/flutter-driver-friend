@@ -1,4 +1,6 @@
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/auth/logIn_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
@@ -17,6 +19,41 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   var initialUser = UserType.driver;
+  final _form = GlobalKey<FormState>();
+  TempararyUser tempararyUser = TempararyUser();
+
+  var confirmPassword = '';
+
+  _saveTempararyUser() {
+    _form.currentState.save();
+    final isValid = _form.currentState.validate();
+    tempararyUser.userType = initialUser;
+    print(tempararyUser.userType);
+    print('object');
+    if (!isValid) {
+      return;
+    }
+
+    switch (initialUser) {
+      case UserType.mechanic:
+        Provider.of<MechanicProvider>(context, listen: false)
+            .addToTempararyUser(tempararyUser);
+        Navigator.of(context).pushNamed(MechanicFormScreen.routeName);
+        break;
+      case UserType.sparePartShop:
+        Navigator.of(context)
+            .pushReplacementNamed(SparePartShopFormScreen.routeName);
+        break;
+      case UserType.serviceCenter:
+        Navigator.of(context)
+            .pushReplacementNamed(ServiceCenterFormScreen.routeName);
+        break;
+      default:
+        Provider.of<DriverProvider>(context, listen: false)
+            .addToTempararyUser(tempararyUser);
+        Navigator.of(context).pushNamed(DriverFormScreen.routeName);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,11 +108,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 15, vertical: 10),
                       child: Form(
+                        key: _form,
                         child: Column(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+                                onSaved: (value) {
+                                  tempararyUser.name = value;
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'User Name is Required';
+                                  }
+                                  return null;
+                                },
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
@@ -86,6 +133,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+                                onSaved: (value) {
+                                  tempararyUser.email = value;
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Email is Required';
+                                  }
+                                  return null;
+                                },
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
@@ -96,6 +152,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
+                                onSaved: (value) {
+                                  tempararyUser.password = value;
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Password is Required';
+                                  }
+                                  return null;
+                                },
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
@@ -106,6 +171,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 textInputAction: TextInputAction.done,
+                                onSaved: (value) {
+                                  confirmPassword = value;
+                                },
+                                validator: (value) {
+                                  if (value == null) {
+                                    return 'Confirm your password';
+                                  }
+                                  if (confirmPassword !=
+                                      tempararyUser.password) {
+                                    return 'password should be matched';
+                                  }
+                                  return null;
+                                },
                                 decoration: InputDecoration(
                                   labelText: 'Confirm Password',
                                 ),
@@ -155,31 +233,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
                                 child: RaisedButton(
-                                  onPressed: () {
-                                    switch (initialUser) {
-                                      case UserType.mechanic:
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                MechanicFormScreen.routeName);
-                                        break;
-                                      case UserType.sparePartShop:
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                SparePartShopFormScreen
-                                                    .routeName);
-                                        break;
-                                      case UserType.serviceCenter:
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                ServiceCenterFormScreen
-                                                    .routeName);
-                                        break;
-                                      default:
-                                        Navigator.of(context)
-                                            .pushReplacementNamed(
-                                                DriverFormScreen.routeName);
-                                    }
-                                  },
+                                  onPressed: _saveTempararyUser,
                                   color: Colors.purple,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(

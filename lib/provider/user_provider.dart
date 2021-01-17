@@ -1,9 +1,17 @@
-import 'package:driver_friend/model/driver.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:flutter/cupertino.dart';
+
+class TempararyUser {
+  String email;
+  String password;
+  String name;
+  UserType userType;
+
+  TempararyUser({this.email, this.name, this.password, this.userType});
+}
 
 class UserProvider with ChangeNotifier {
   var _userType = UserType.driver;

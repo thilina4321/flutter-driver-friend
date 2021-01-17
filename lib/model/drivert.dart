@@ -2,37 +2,35 @@ import 'dart:io';
 
 import 'package:driver_friend/model/userType.dart';
 
-class Mechanic {
+class Driver {
   String id;
   String email;
   String password;
-  String mapImagePreview;
   String name;
   String nic;
-  int mobile;
-  String address;
-  String about;
-  int location;
+  String mobile;
+  String vehicleNumber;
+  String vehicleColor;
   File profileImageUrl;
-  double rating;
+  File vehicleImageUrl;
   UserType userType;
   double latitude;
   double longitude;
+  String mapImagePreview;
 
-  Mechanic(
-      {this.nic,
+  Driver(
+      {this.id,
+      this.name,
+      this.mapImagePreview,
       this.latitude,
       this.longitude,
       this.userType,
       this.email,
       this.password,
-      this.mapImagePreview,
-      this.id,
-      this.name,
-      this.about,
-      this.address,
+      this.nic,
+      this.mobile,
+      this.vehicleNumber,
+      this.vehicleColor,
       this.profileImageUrl,
-      this.location,
-      this.rating,
-      this.mobile});
+      this.vehicleImageUrl});
 }

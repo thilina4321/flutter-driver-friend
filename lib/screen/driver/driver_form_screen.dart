@@ -1,3 +1,5 @@
+import 'package:driver_friend/model/drivert.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 class DriverFormScreen extends StatefulWidget {
   static String routeName = '/driver-form';
@@ -15,21 +18,22 @@ class DriverFormScreen extends StatefulWidget {
 
 class _DriverFormScreenState extends State<DriverFormScreen> {
   final _form = GlobalKey<FormState>();
+  Driver driver = Driver();
 
   File _profileImage;
   File _vehicleImage;
 
   final picker = ImagePicker();
-  var _mapImagePreview;
 
   Future<void> getLocation() async {
     try {
       final locData = await Location().getLocation();
-      print(locData);
+      driver.latitude = locData.latitude;
+      driver.longitude = locData.longitude;
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
       setState(() {
-        _mapImagePreview = img;
+        driver.mapImagePreview = img;
       });
     } catch (e) {
       print('error');
@@ -41,7 +45,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
+        driver.profileImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -53,7 +57,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _vehicleImage = File(pickedFile.path);
+        driver.vehicleImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -62,6 +66,22 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Driver editableDriver =
+        Provider.of<DriverProvider>(context, listen: false).driver;
+    if (editableDriver != null) {
+      driver = editableDriver;
+    }
+
+    _saveDriver() {
+      _form.currentState.save();
+      final isValid = _form.currentState.validate();
+      if (!isValid) {
+        return;
+      }
+      Provider.of<DriverProvider>(context, listen: false).createDriver(driver);
+      Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -75,26 +95,74 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  onSaved: (value) {
+                    driver.nic = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'NIC is required';
+                    }
+                    if (value.length != 10) {
+                      return 'Invalid NIC';
+                    }
+                    return null;
+                  },
+                  initialValue: driver.nic,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: 'NIC',
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    driver.mobile = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Mobile number is required';
+                    }
+                    if (value.length != 10) {
+                      return 'Invalid Mobile number';
+                    }
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
+                  initialValue: driver.mobile,
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    driver.vehicleNumber = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Vehicle number is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
+                  initialValue: driver.vehicleNumber,
                   decoration: InputDecoration(
                     labelText: 'Vehicle Number',
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    driver.vehicleColor = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Vehicle color is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
+                  initialValue: driver.vehicleColor,
                   decoration: InputDecoration(
                     labelText: 'Vehicle Color',
                   ),
@@ -133,12 +201,12 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                         width: double.infinity,
                         height: 100,
                         alignment: Alignment.center,
-                        child: _profileImage == null
+                        child: driver.profileImageUrl == null
                             ? Text('Profile Image')
                             : Container(
                                 width: double.infinity,
                                 child: Image.file(
-                                  _profileImage,
+                                  driver.profileImageUrl,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -155,12 +223,12 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                         width: double.infinity,
                         height: 100,
                         alignment: Alignment.center,
-                        child: _vehicleImage == null
+                        child: driver.vehicleImageUrl == null
                             ? Text('Vehicle Image')
                             : Container(
                                 width: double.infinity,
                                 child: Image.file(
-                                  _vehicleImage,
+                                  driver.vehicleImageUrl,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -183,12 +251,12 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                   width: double.infinity,
                   height: 200,
                   alignment: Alignment.center,
-                  child: _mapImagePreview == null
+                  child: driver.mapImagePreview == null
                       ? Text('Location not select yet')
                       : Container(
                           width: double.infinity,
                           child: Image.network(
-                            _mapImagePreview,
+                            driver.mapImagePreview,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -200,10 +268,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: RaisedButton(
-                    onPressed: () {
-                      Navigator.of(context)
-                          .pushReplacementNamed(DriverProfileScreen.routeName);
-                    },
+                    onPressed: _saveDriver,
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

@@ -1,18 +1,34 @@
+import 'dart:io';
+
+import 'package:driver_friend/model/userType.dart';
+
 class SparePartShop {
   String id;
+  String email;
+  String password;
+  UserType userType;
   String address;
   int mobile;
   String about;
   String openingTime;
   String closingTime;
-  String profileImageUrl;
+  File profileImageUrl;
   String location;
+  String mapImagePreview;
   double rating;
   String name;
+  double latitude;
+  double longitude;
 
   SparePartShop(
       {this.about,
       this.id,
+      this.email,
+      this.password,
+      this.userType,
+      this.mapImagePreview,
+      this.latitude,
+      this.longitude,
       this.name,
       this.rating,
       this.address,

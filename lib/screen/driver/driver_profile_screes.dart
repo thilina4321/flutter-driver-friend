@@ -1,3 +1,5 @@
+import 'package:driver_friend/model/drivert.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 
 class DriverProfileScreen extends StatefulWidget {
   static String routeName = '/driver-profile';
@@ -18,24 +21,13 @@ class DriverProfileScreen extends StatefulWidget {
 }
 
 class _DriverProfileScreenState extends State<DriverProfileScreen> {
-  File _profileImage;
+  Driver driver = Driver();
 
   final picker = ImagePicker();
 
-  Future getProfileImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    driver = Provider.of<DriverProvider>(context, listen: false).driver;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -50,50 +42,26 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/car.jpg',
-                    fit: BoxFit.cover,
-                  ),
+                  child: driver.vehicleImageUrl == null
+                      ? Center(child: Text('Cover photo'))
+                      : Image.file(
+                          driver.vehicleImageUrl,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 Positioned(
                   top: 70,
                   left: MediaQuery.of(context).size.width / 4,
-                  child: CircleAvatar(
-                    radius: 70,
-                    backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
-                  ),
-                ),
-                Positioned(
-                  top: 100,
-                  left: 180,
-                  child: FlatButton(
-                      onPressed: () {},
-                      child: Icon(
-                        Icons.photo_camera,
-                        size: 23,
-                        color: Colors.white,
-                      )),
-                ),
-                Positioned(
-                  top: 20,
-                  left: 180,
-                  child: Container(
-                    color: Colors.black45,
-                    child: FlatButton.icon(
-                        label: Text(
-                          'Edit cover photo',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                  child: driver.profileImageUrl == null
+                      ? Center(
+                          child: Text('profile'),
+                        )
+                      : CircleAvatar(
+                          radius: 70,
+                          backgroundColor: Colors.grey,
+                          backgroundImage: FileImage(driver.profileImageUrl),
                         ),
-                        icon: Icon(
-                          Icons.photo_camera,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: getProfileImage),
-                  ),
-                )
+                ),
               ],
             ),
             SizedBox(
@@ -102,7 +70,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Janitha Perera',
+                driver.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25,
@@ -113,7 +81,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Janitha Perera is a vehicle owner of the driver friend mobile application',
+                '${driver.name} is a vehicle owner of the driver friend mobile application',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,

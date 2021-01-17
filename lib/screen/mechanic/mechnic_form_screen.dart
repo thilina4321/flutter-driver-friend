@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:driver_friend/model/mechanic_model.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
 
 class MechanicFormScreen extends StatefulWidget {
   static String routeName = '/mechanic-form';
@@ -15,17 +18,30 @@ class MechanicFormScreen extends StatefulWidget {
 
 class _MechanicFormScreenState extends State<MechanicFormScreen> {
   final _form = GlobalKey<FormState>();
-  File _profileImage;
-  var _mapImagePreview;
+
+  Mechanic mechanic = Mechanic();
+
+  _saveMechanic() {
+    _form.currentState.save();
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    Provider.of<MechanicProvider>(context, listen: false)
+        .createMechanic(mechanic);
+    Navigator.of(context).pushReplacementNamed(MechanicProfileScreen.routeName);
+  }
 
   Future<void> getLocation() async {
     try {
       final locData = await Location().getLocation();
-      print(locData);
+      mechanic.latitude = locData.latitude;
+      mechanic.longitude = locData.longitude;
+
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
       setState(() {
-        _mapImagePreview = img;
+        mechanic.mapImagePreview = img;
       });
     } catch (e) {
       print('error');
@@ -39,7 +55,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
+        mechanic.profileImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -48,6 +64,11 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Mechanic editableMechanic =
+        Provider.of<MechanicProvider>(context, listen: false).mechanic;
+    if (editableMechanic != null) {
+      mechanic = editableMechanic;
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -62,12 +83,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
               children: [
                 TextFormField(
                   textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    labelText: 'User Name',
-                  ),
-                ),
-                TextFormField(
-                  textInputAction: TextInputAction.next,
+                  initialValue: mechanic.nic,
                   decoration: InputDecoration(
                     labelText: 'NIC',
                   ),
@@ -75,18 +91,21 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
+                  initialValue: mechanic.mobile.toString(),
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
+                  initialValue: mechanic.address,
                   decoration: InputDecoration(
                     labelText: 'Address',
                   ),
                 ),
                 TextFormField(
                   textInputAction: TextInputAction.next,
+                  initialValue: mechanic.about,
                   decoration: InputDecoration(
                     labelText: 'About',
                   ),
@@ -120,12 +139,12 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                       child: Container(
                         height: 100,
                         child: Center(
-                          child: _profileImage == null
+                          child: mechanic.profileImageUrl == null
                               ? Text('Profile Image')
                               : Container(
                                   width: double.infinity,
                                   child: Image.file(
-                                    _profileImage,
+                                    mechanic.profileImageUrl,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -142,12 +161,12 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                       child: Container(
                         height: 100,
                         child: Center(
-                          child: _mapImagePreview == null
+                          child: mechanic.mapImagePreview == null
                               ? Text('Your Location')
                               : Container(
                                   width: double.infinity,
                                   child: Image.network(
-                                    _mapImagePreview,
+                                    mechanic.mapImagePreview,
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -163,10 +182,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
                   child: RaisedButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacementNamed(
-                          MechanicProfileScreen.routeName);
-                    },
+                    onPressed: _saveMechanic,
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
@@ -23,10 +24,7 @@ class MechanicProfileScreen extends StatefulWidget {
 }
 
 class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
-  Mechanic data = Mechanic();
-
-  File _profileImage;
-  String _mapImage;
+  Mechanic mechanic = Mechanic();
 
   final picker = ImagePicker();
 
@@ -35,7 +33,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
 
     setState(() {
       if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
+        mechanic.profileImageUrl = File(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -46,12 +44,12 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     if (user == UserType.driver) {
-      data = ModalRoute.of(context).settings.arguments;
+      mechanic = ModalRoute.of(context).settings.arguments;
     } else {
-      data = Provider.of<UserProvider>(context, listen: false).mechanic;
+      mechanic = Provider.of<MechanicProvider>(context, listen: false).mechanic;
     }
 
-    print(data.name);
+    print(mechanic.name);
 
     return Scaffold(
       appBar: AppBar(
@@ -67,8 +65,8 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                 Container(
                   height: 250,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/mec_cover.jpg',
+                  child: Image.file(
+                    mechanic.profileImageUrl,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -80,7 +78,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                     child: Column(
                       children: [
                         Text(
-                          data.name,
+                          mechanic.name,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 25,
@@ -93,7 +91,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                             color: Colors.white,
                           ),
                           label: Text(
-                            data.address,
+                            mechanic.address,
                             style: TextStyle(
                               color: Colors.white,
                             ),
@@ -102,7 +100,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                         Row(
                           children: [
                             RatingBarIndicator(
-                              rating: data.rating,
+                              rating: mechanic.rating,
                               itemBuilder: (context, index) => Icon(
                                 Icons.star,
                                 color: Colors.green,
@@ -113,7 +111,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                               direction: Axis.horizontal,
                             ),
                             Text(
-                              data.rating.toString(),
+                              mechanic.rating.toString(),
                               style: TextStyle(
                                 color: Colors.white,
                               ),
@@ -167,7 +165,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                       ),
                       CustomeMechanicCard(
                           title: 'Contact',
-                          args: data,
+                          args: mechanic,
                           icon: Icons.contact_page,
                           route: MechanicContactScreen.routeName),
                       CustomeMechanicCard(
@@ -187,10 +185,10 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
             ),
             Container(
               height: 300,
-              child: _mapImage == null
+              child: mechanic.profileImageUrl == null
                   ? Center(child: Text('No location yet..'))
-                  : Image.network(
-                      _mapImage,
+                  : Image.file(
+                      mechanic.profileImageUrl,
                       fit: BoxFit.cover,
                     ),
               margin: const EdgeInsets.all(8),

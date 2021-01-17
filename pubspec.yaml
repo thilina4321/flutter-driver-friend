@@ -34,7 +34,9 @@ dependencies:
   flutter_rating_bar: ^3.2.0+1
   image_picker: ^0.6.7+21
   google_maps_flutter: ^1.1.1
-  location: ^3.0.0 
+  location: ^3.0.0
+  http: ^0.12.2
+
 
 
 
