@@ -1,5 +1,7 @@
+import 'package:driver_friend/provider/faq_provider.dart';
 import 'package:driver_friend/screen/faq/answer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DefaultQuestionScreen extends StatelessWidget {
   static String routeName = 'default-quiz';
@@ -65,25 +67,30 @@ class DefaultQuestionScreen extends StatelessWidget {
         backgroundColor: Colors.purple,
         child: Icon(Icons.search),
       ),
-      body: ListView.builder(
-          itemCount: quiz.length,
-          itemBuilder: (ctx, index) {
-            return Card(
-              elevation: 3,
-              child: ListTile(
-                title: Text(quiz[index]),
-                trailing: FlatButton(
-                  child: Text(
-                    'Go',
-                    style: TextStyle(color: Colors.purple),
+      body: Consumer<FaqProvider>(
+        builder: (ctx, faq, _) {
+          return ListView.builder(
+              itemCount: faq.questions.length,
+              itemBuilder: (ctx, index) {
+                return Card(
+                  elevation: 3,
+                  child: ListTile(
+                    title: Text(faq.questions[index].question),
+                    trailing: FlatButton(
+                      child: Text(
+                        'Go',
+                        style: TextStyle(color: Colors.purple),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(AnswerScreen.routeName,
+                            arguments: faq.questions[index]);
+                      },
+                    ),
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(AnswerScreen.routeName);
-                  },
-                ),
-              ),
-            );
-          }),
+                );
+              });
+        },
+      ),
     );
   }
 }

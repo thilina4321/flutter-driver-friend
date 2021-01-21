@@ -46,16 +46,17 @@ class _ServiceCenterProfileScreenState
 
   @override
   Widget build(BuildContext context) {
-    final ServiceCenter data = ModalRoute.of(context).settings.arguments;
-    if (data != null) {
-      serviceCenter = data;
-    } else {
-      serviceCenter =
-          Provider.of<UserProvider>(context, listen: false).serviceCenter;
-    }
-
     final UserType user =
         Provider.of<UserProvider>(context, listen: false).user;
+
+    if (user == UserType.driver) {
+      serviceCenter = ModalRoute.of(context).settings.arguments;
+    } else {
+      serviceCenter =
+          Provider.of<ServiceCenterProvider>(context, listen: false).service;
+    }
+
+    print(serviceCenter.name + 'ss');
 
     return Scaffold(
       appBar: AppBar(
@@ -82,14 +83,16 @@ class _ServiceCenterProfileScreenState
             ),
             Padding(
               padding: const EdgeInsets.all(2.0),
-              child: Text(
-                serviceCenter.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: serviceCenter.name == null
+                  ? Text('')
+                  : Text(
+                      serviceCenter.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

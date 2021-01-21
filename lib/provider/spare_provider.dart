@@ -37,14 +37,15 @@ class SpareShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  createMechanic(SparePartShop spareshop) {
+  createSpareShop(SparePartShop spareshop) {
     spareshop.id = (_spareShop.length + 1).toString();
     spareshop.email = _tempararyUser.email;
     spareshop.name = _tempararyUser.name;
     spareshop.password = _tempararyUser.password;
     spareshop.userType = _tempararyUser.userType;
 
-    _spareShop.add(spareshop);
+    print(spareshop.mobile);
+    _spareShop.insert(0, spareshop);
     notifyListeners();
   }
 }

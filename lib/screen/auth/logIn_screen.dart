@@ -1,8 +1,53 @@
+import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
+import 'package:driver_friend/screen/mechanic/Mechanic.dart';
+import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
+import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
+import 'package:driver_friend/widget/polyline.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class LogInScreen extends StatelessWidget {
+class LogInScreen extends StatefulWidget {
   static String routeName = '/login';
+
+  @override
+  _LogInScreenState createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends State<LogInScreen> {
+  var initialUser = UserType.driver;
+  final _form = GlobalKey<FormState>();
+
+  _saveTempararyUser() {
+    _form.currentState.save();
+    bool isValid = _form.currentState.validate();
+
+    print(isValid);
+    // if (!isValid) {
+    //   return;
+    // }
+
+    switch (initialUser) {
+      case UserType.mechanic:
+        Navigator.of(context).pushNamed(MechanicProfileScreen.routeName);
+        break;
+      case UserType.sparePartShop:
+        Navigator.of(context)
+            .pushReplacementNamed(SparePartShopProfileScreen.routeName);
+        break;
+      case UserType.serviceCenter:
+        Navigator.of(context)
+            .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
+        break;
+      default:
+        Navigator.of(context).pushNamed(DriverProfileScreen.routeName);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +59,11 @@ class LogInScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(PolyLineScreen.routeName);
+                    },
+                    child: Text('map')),
                 Row(
                   children: [
                     Icon(
@@ -68,6 +118,7 @@ class LogInScreen extends StatelessWidget {
                   height: 40,
                 ),
                 Form(
+                  key: _form,
                   child: Column(
                     children: [
                       Card(
@@ -98,14 +149,47 @@ class LogInScreen extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonFormField(
+                          decoration: InputDecoration(
+                            labelText: 'User Type',
+                          ),
+                          items: [
+                            DropdownMenuItem(
+                              value: UserType.driver,
+                              child: Text('Driver'),
+                            ),
+                            DropdownMenuItem(
+                              value: UserType.mechanic,
+                              child: Text('Mechanic'),
+                            ),
+                            DropdownMenuItem(
+                              value: UserType.serviceCenter,
+                              child: Text('Service Center'),
+                            ),
+                            DropdownMenuItem(
+                              value: UserType.sparePartShop,
+                              child: Text('Spare Part Shop'),
+                            ),
+                          ],
+                          onChanged: (val) {
+                            setState(() {
+                              initialUser = val;
+                              Provider.of<UserProvider>(context, listen: false)
+                                  .userType(initialUser);
+                            });
+                            Provider.of<UserProvider>(context, listen: false)
+                                .userType(initialUser);
+                          },
+                          value: initialUser,
+                        ),
+                      ),
                       Container(
                         margin: const EdgeInsets.only(top: 20),
                         width: double.infinity,
                         child: RaisedButton(
-                          onPressed: () {
-                            Navigator.of(context).pushReplacementNamed(
-                                DriverProfileScreen.routeName);
-                          },
+                          onPressed: _saveTempararyUser,
                           color: Colors.purple,
                           child: Padding(
                             padding: const EdgeInsets.all(20),

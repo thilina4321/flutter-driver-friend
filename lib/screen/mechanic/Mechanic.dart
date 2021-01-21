@@ -45,6 +45,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
     final user = Provider.of<UserProvider>(context, listen: false).user;
     if (user == UserType.driver) {
       mechanic = ModalRoute.of(context).settings.arguments;
+      print(mechanic.profileImageUrl);
     } else {
       mechanic = Provider.of<MechanicProvider>(context, listen: false).mechanic;
     }
@@ -65,10 +66,12 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                 Container(
                   height: 250,
                   width: double.infinity,
-                  child: Image.file(
-                    mechanic.profileImageUrl,
-                    fit: BoxFit.cover,
-                  ),
+                  child: mechanic.profileImageUrl == null
+                      ? Center(child: Text('Mechanic image'))
+                      : Image.file(
+                          mechanic.profileImageUrl,
+                          fit: BoxFit.cover,
+                        ),
                 ),
                 Positioned(
                   top: 150,
@@ -122,26 +125,6 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 20,
-                  left: 180,
-                  child: Container(
-                    color: Colors.black45,
-                    child: FlatButton.icon(
-                        label: Text(
-                          'Edit cover photo',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.photo_camera,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: getImage),
-                  ),
-                )
               ],
             ),
             SizedBox(
@@ -158,11 +141,12 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      CustomeMechanicCard(
-                        title: 'Edit',
-                        icon: Icons.edit,
-                        route: MechanicFormScreen.routeName,
-                      ),
+                      if (user == UserType.mechanic)
+                        CustomeMechanicCard(
+                          title: 'Edit',
+                          icon: Icons.edit,
+                          route: MechanicFormScreen.routeName,
+                        ),
                       CustomeMechanicCard(
                           title: 'Contact',
                           args: mechanic,
@@ -185,17 +169,17 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
             ),
             Container(
               height: 300,
-              child: mechanic.profileImageUrl == null
+              child: mechanic.mapImagePreview == null
                   ? Center(child: Text('No location yet..'))
-                  : Image.file(
-                      mechanic.profileImageUrl,
-                      fit: BoxFit.cover,
+                  : Card(
+                      elevation: 20,
+                      child: Image.network(
+                        mechanic.mapImagePreview,
+                        fit: BoxFit.cover,
+                      ),
                     ),
               margin: const EdgeInsets.all(8),
               width: double.infinity,
-              decoration: BoxDecoration(
-                border: Border.all(width: 1, color: Colors.purple),
-              ),
             ),
           ],
         ),

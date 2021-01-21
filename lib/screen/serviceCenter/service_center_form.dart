@@ -85,6 +85,16 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  onSaved: (value) {
+                    serviceCenter.address = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Address is required';
+                    }
+
+                    return null;
+                  },
                   initialValue: serviceCenter.address,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -92,6 +102,16 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    serviceCenter.mobile = int.parse(value);
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Mobile number is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   initialValue: serviceCenter.mobile.toString(),
@@ -100,6 +120,16 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    serviceCenter.openingTime = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Open Time is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.datetime,
                   initialValue: serviceCenter.openingTime,
@@ -108,6 +138,16 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    serviceCenter.closingTime = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Close time is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.datetime,
                   initialValue: serviceCenter.closingTime,

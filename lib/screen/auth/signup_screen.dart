@@ -1,6 +1,8 @@
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/auth/logIn_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
@@ -26,13 +28,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   _saveTempararyUser() {
     _form.currentState.save();
-    final isValid = _form.currentState.validate();
+    bool isValid = _form.currentState.validate();
     tempararyUser.userType = initialUser;
-    print(tempararyUser.userType);
-    print('object');
-    if (!isValid) {
-      return;
-    }
+    print(tempararyUser.email);
+    print(isValid);
+    // if (!isValid) {
+    //   return;
+    // }
 
     switch (initialUser) {
       case UserType.mechanic:
@@ -41,10 +43,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         Navigator.of(context).pushNamed(MechanicFormScreen.routeName);
         break;
       case UserType.sparePartShop:
+        Provider.of<SpareShopProvider>(context, listen: false)
+            .addToTempararyUser(tempararyUser);
         Navigator.of(context)
             .pushReplacementNamed(SparePartShopFormScreen.routeName);
         break;
       case UserType.serviceCenter:
+        Provider.of<ServiceCenterProvider>(context, listen: false)
+            .addToTempararyUser(tempararyUser);
         Navigator.of(context)
             .pushReplacementNamed(ServiceCenterFormScreen.routeName);
         break;
@@ -118,7 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   tempararyUser.name = value;
                                 },
                                 validator: (value) {
-                                  if (value == null) {
+                                  if (value == '') {
                                     return 'User Name is Required';
                                   }
                                   return null;
@@ -137,7 +143,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   tempararyUser.email = value;
                                 },
                                 validator: (value) {
-                                  if (value == null) {
+                                  if (value == '') {
                                     return 'Email is Required';
                                   }
                                   return null;
@@ -156,7 +162,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   tempararyUser.password = value;
                                 },
                                 validator: (value) {
-                                  if (value == null) {
+                                  if (value == '') {
                                     return 'Password is Required';
                                   }
                                   return null;
@@ -175,7 +181,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   confirmPassword = value;
                                 },
                                 validator: (value) {
-                                  if (value == null) {
+                                  if (value == '') {
                                     return 'Confirm your password';
                                   }
                                   if (confirmPassword !=

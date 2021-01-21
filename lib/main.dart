@@ -1,4 +1,5 @@
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/faq_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
@@ -31,6 +32,7 @@ import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_setting.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
+import 'package:driver_friend/widget/polyline.dart';
 import 'package:driver_friend/widget/rating.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +51,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => MechanicProvider()),
         ChangeNotifierProvider(create: (ctx) => ServiceCenterProvider()),
         ChangeNotifierProvider(create: (ctx) => SpareShopProvider()),
+        ChangeNotifierProvider(create: (ctx) => FaqProvider()),
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -56,23 +59,24 @@ class MyApp extends StatelessWidget {
           accentColor: Color(0xff2e1503),
           accentColorBrightness: Brightness.dark,
           textTheme: ThemeData.light().textTheme.copyWith(
-              headline1: TextStyle(
-                color: Colors.black,
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
+                headline1: TextStyle(
+                  color: Colors.black,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+                headline2: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                ),
+                button: TextStyle(
+                  color: Colors.white,
+                ),
               ),
-              headline2: TextStyle(
-                fontSize: 18,
-                color: Colors.grey,
-                fontWeight: FontWeight.bold,
-              ),
-              button: TextStyle(
-                color: Colors.white,
-              )),
         ),
         routes: {
-          '/': (ctx) => SignUpScreen(),
-          LogInScreen.routeName: (ctx) => LogInScreen(),
+          '/': (ctx) => LogInScreen(),
+          SignUpScreen.routeName: (ctx) => SignUpScreen(),
 
           // faq
           FAQ.routeName: (ctx) => FAQ(),
@@ -121,6 +125,7 @@ class MyApp extends StatelessWidget {
 
           //map
           MapScreen.routeName: (ctx) => MapScreen(),
+          PolyLineScreen.routeName: (ctx) => PolyLineScreen(),
         },
       ),
     );

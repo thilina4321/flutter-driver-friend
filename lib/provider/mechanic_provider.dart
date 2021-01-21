@@ -2,6 +2,8 @@ import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MechanicProvider with ChangeNotifier {
   List<Mechanic> _mechanics = [
@@ -36,15 +38,21 @@ class MechanicProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  createMechanic(Mechanic mechanic) {
+  Future<void> createMechanic(Mechanic mechanic) async {
     mechanic.id = (_mechanics.length + 1).toString();
     mechanic.email = _tempararyUser.email;
     mechanic.name = _tempararyUser.name;
     mechanic.password = _tempararyUser.password;
     mechanic.userType = _tempararyUser.userType;
 
-    _mechanics.add(mechanic);
-    notifyListeners();
+    try {
+      await http.post(
+        'http://localhost/api/mechanics/add-data',
+        body: json.encode(mechanic),
+      );
+      _mechanics.insert(0, mechanic);
+      notifyListeners();
+    } catch (e) {}
   }
 
   List<Mechanic> get mechanics {

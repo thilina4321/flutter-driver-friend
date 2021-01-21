@@ -69,24 +69,28 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                driver.name,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: driver.name == null
+                  ? Text('')
+                  : Text(
+                      driver.name,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
-                '${driver.name} is a vehicle owner of the driver friend mobile application',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
+              child: driver.name == null
+                  ? Text('')
+                  : Text(
+                      '${driver.name} is a vehicle owner of the driver friend mobile application',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
             ),
             Container(
               margin: const EdgeInsets.all(8),

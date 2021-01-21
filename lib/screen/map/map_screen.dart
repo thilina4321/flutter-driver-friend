@@ -14,6 +14,24 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   Completer<GoogleMapController> _controller = Completer();
 
+  Set<Polyline> lines = {};
+
+  @override
+  void initState() {
+    super.initState();
+    lines.add(
+      Polyline(
+        points: [
+          LatLng(37.42796133580664, -122.085749655962),
+          LatLng(37.43296265331129, -122.08832357078792),
+        ],
+        endCap: Cap.squareCap,
+        geodesic: false,
+        polylineId: PolylineId("line_one"),
+      ),
+    );
+  }
+
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 15,
@@ -37,6 +55,7 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,
+        polylines: lines,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

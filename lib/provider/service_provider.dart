@@ -43,7 +43,7 @@ class ServiceCenterProvider with ChangeNotifier {
     service.password = _tempararyUser.password;
     service.userType = _tempararyUser.userType;
 
-    _serviceCenters.add(service);
+    _serviceCenters.insert(0, service);
     notifyListeners();
   }
 }

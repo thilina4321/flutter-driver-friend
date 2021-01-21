@@ -39,7 +39,6 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
   }
 
   final picker = ImagePicker();
-  SparePartShop spareShop = SparePartShop();
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -59,8 +58,10 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
     if (!isValid) {
       return;
     }
+    print(sparePartShop.mobile + 5);
+    print('s');
     Provider.of<SpareShopProvider>(context, listen: false)
-        .createMechanic(spareShop);
+        .createSpareShop(sparePartShop);
     Navigator.of(context)
         .pushReplacementNamed(SparePartShopProfileScreen.routeName);
   }
@@ -87,6 +88,16 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  onSaved: (value) {
+                    sparePartShop.address = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Address is required';
+                    }
+
+                    return null;
+                  },
                   initialValue: sparePartShop.address,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -94,14 +105,41 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    sparePartShop.mobile = int.parse(value);
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Mobile number is required';
+                    }
+
+                    if (value.length != 10) {
+                      print('10');
+                      return 'Invalid mobile number';
+                    }
+
+                    return null;
+                  },
                   initialValue: sparePartShop.mobile.toString(),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
+                  maxLines: null,
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    sparePartShop.about = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'About is required';
+                    }
+
+                    return null;
+                  },
+                  maxLines: null,
                   initialValue: sparePartShop.about,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -109,6 +147,16 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    sparePartShop.openingTime = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Opening Time is required';
+                    }
+
+                    return null;
+                  },
                   initialValue: sparePartShop.openingTime,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
@@ -118,6 +166,16 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                 TextFormField(
                   textInputAction: TextInputAction.next,
                   initialValue: sparePartShop.closingTime,
+                  onSaved: (value) {
+                    sparePartShop.closingTime = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Closing Time is required';
+                    }
+
+                    return null;
+                  },
                   decoration: InputDecoration(
                     labelText: 'closing time',
                   ),

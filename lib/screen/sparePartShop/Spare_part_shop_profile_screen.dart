@@ -30,34 +30,20 @@ class SparePartShopProfileScreen extends StatefulWidget {
 class _SparePartShopProfileScreenState
     extends State<SparePartShopProfileScreen> {
   SparePartShop spareShops = SparePartShop();
-  File _profileImage;
-  String _mapImage;
 
   final picker = ImagePicker();
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _profileImage = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final SparePartShop data = ModalRoute.of(context).settings.arguments;
-    if (data != null) {
-      spareShops = data;
-    } else {
-      spareShops = Provider.of<UserProvider>(context, listen: false).spareShop;
-    }
-
     final UserType user =
         Provider.of<UserProvider>(context, listen: false).user;
+    if (user == UserType.driver) {
+      spareShops = ModalRoute.of(context).settings.arguments;
+    } else {
+      spareShops = Provider.of<SpareShopProvider>(context, listen: false).spare;
+    }
+    print(spareShops.mobile);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -72,31 +58,13 @@ class _SparePartShopProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/spa_pro.jpg',
-                    fit: BoxFit.cover,
-                  ),
+                  child: spareShops.profileImageUrl == null
+                      ? Center(child: Text('Spare shop'))
+                      : Image.file(
+                          spareShops.profileImageUrl,
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                Positioned(
-                  top: 20,
-                  left: 180,
-                  child: Container(
-                    color: Colors.black45,
-                    child: FlatButton.icon(
-                        label: Text(
-                          'Edit cover photo',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.photo_camera,
-                          size: 30,
-                          color: Colors.white,
-                        ),
-                        onPressed: getImage),
-                  ),
-                )
               ],
             ),
             Padding(
@@ -114,7 +82,7 @@ class _SparePartShopProfileScreenState
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 RatingBarIndicator(
-                  rating: spareShops.rating,
+                  rating: 4,
                   itemBuilder: (context, index) => Icon(
                     Icons.star,
                     color: Colors.green,
@@ -124,7 +92,7 @@ class _SparePartShopProfileScreenState
                   itemSize: 20.0,
                   direction: Axis.horizontal,
                 ),
-                Text(spareShops.rating.toString()),
+                Text('4'),
               ],
             ),
             if (user == UserType.sparePartShop)
@@ -222,13 +190,13 @@ class _SparePartShopProfileScreenState
               height: 200,
               child: Card(
                 elevation: 3,
-                child: _mapImage == null
+                child: spareShops.mapImagePreview == null
                     ? Center(child: Text('No Location yet..'))
                     : Container(
                         height: 200,
                         width: double.infinity,
-                        child: Image.asset(
-                          'assets/images/ser_loc.jpg',
+                        child: Image.network(
+                          spareShops.mapImagePreview,
                           fit: BoxFit.cover,
                         ),
                       ),

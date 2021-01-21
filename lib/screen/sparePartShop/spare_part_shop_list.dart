@@ -40,7 +40,7 @@ class SparepartShopListScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         RatingBarIndicator(
-                          rating: spareShops[index].rating / 6,
+                          rating: 2,
                           itemBuilder: (context, index) => Icon(
                             Icons.star,
                             color: Colors.green,

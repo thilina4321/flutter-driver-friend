@@ -12,6 +12,7 @@
         
         <meta-data android:name="com.google.android.geo.API_KEY"
                android:value="AIzaSyDmno8-8jbPOH50GcUiM0qvgM0Qum50Yvo"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -49,4 +50,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+
+
 </manifest>

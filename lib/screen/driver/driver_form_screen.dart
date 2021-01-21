@@ -5,6 +5,7 @@ import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'dart:async';
 
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -19,9 +20,6 @@ class DriverFormScreen extends StatefulWidget {
 class _DriverFormScreenState extends State<DriverFormScreen> {
   final _form = GlobalKey<FormState>();
   Driver driver = Driver();
-
-  File _profileImage;
-  File _vehicleImage;
 
   final picker = ImagePicker();
 
@@ -64,20 +62,37 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     });
   }
 
+  Future simpleImage(BuildContext context) async {
+    Provider.of<DriverProvider>(context, listen: false)
+        .simple('pickedFile.path');
+    // final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    // setState(() {
+    //   if (pickedFile != null) {
+    //     print(pickedFile.path);
+    //     Provider.of<DriverProvider>(context, listen: false)
+    //         .simple(pickedFile.path);
+    //   } else {
+    //     print('No image selected.');
+    //   }
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     Driver editableDriver =
         Provider.of<DriverProvider>(context, listen: false).driver;
-    if (editableDriver != null) {
+    if (editableDriver.nic != null) {
+      print(editableDriver.nic);
       driver = editableDriver;
     }
 
     _saveDriver() {
       _form.currentState.save();
       final isValid = _form.currentState.validate();
-      if (!isValid) {
-        return;
-      }
+      // if (!isValid) {
+      //   return;
+      // }
       Provider.of<DriverProvider>(context, listen: false).createDriver(driver);
       Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
     }
@@ -94,6 +109,11 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
             margin: const EdgeInsets.all(20),
             child: Column(
               children: [
+                FlatButton.icon(
+                  onPressed: () => simpleImage(context),
+                  icon: Icon(Icons.image),
+                  label: Text('add'),
+                ),
                 TextFormField(
                   onSaved: (value) {
                     driver.nic = value;

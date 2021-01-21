@@ -82,6 +82,18 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  onSaved: (value) {
+                    mechanic.nic = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'NIC is required';
+                    }
+                    if (value.length != 10) {
+                      return 'Invalid NIC';
+                    }
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   initialValue: mechanic.nic,
                   decoration: InputDecoration(
@@ -89,6 +101,18 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    mechanic.mobile = int.parse(value);
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Mobile number is required';
+                    }
+                    if (value.length != 10) {
+                      return 'Invalid NIC';
+                    }
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   initialValue: mechanic.mobile.toString(),
@@ -97,6 +121,17 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  maxLines: null,
+                  onSaved: (value) {
+                    mechanic.address = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Address is required';
+                    }
+
+                    return null;
+                  },
                   textInputAction: TextInputAction.next,
                   initialValue: mechanic.address,
                   decoration: InputDecoration(
@@ -104,6 +139,17 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   ),
                 ),
                 TextFormField(
+                  onSaved: (value) {
+                    mechanic.about = value;
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'About is required';
+                    }
+
+                    return null;
+                  },
+                  maxLines: null,
                   textInputAction: TextInputAction.next,
                   initialValue: mechanic.about,
                   decoration: InputDecoration(

@@ -1,4 +1,6 @@
+import 'package:driver_friend/provider/faq_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AnswerScreen extends StatefulWidget {
   static String routeName = 'answer-faq';
@@ -16,12 +18,15 @@ class _AnswerScreenState extends State<AnswerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Question data = ModalRoute.of(context).settings.arguments;
+    print(data.questionImage);
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Answer'),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
+      appBar: AppBar(
+        title: Text('Answer'),
+      ),
+      body: SingleChildScrollView(
+        child: Consumer<FaqProvider>(builder: (ctx, faq, _) {
+          return Column(
             children: [
               SingleChildScrollView(
                 child: Card(
@@ -29,14 +34,22 @@ class _AnswerScreenState extends State<AnswerScreen> {
                   child: Column(
                     children: [
                       Container(
-                        height: 200,
-                        margin: const EdgeInsets.all(2),
-                        width: double.infinity,
-                        child: Image.asset(
-                          'assets/images/faq_q.jpg',
-                          fit: BoxFit.cover,
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(data.question),
                         ),
                       ),
+                      if (data.questionImage != null)
+                        Container(
+                          height: 200,
+                          margin: const EdgeInsets.all(2),
+                          width: double.infinity,
+                          child: Image.file(
+                            data.questionImage,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
@@ -55,45 +68,49 @@ class _AnswerScreenState extends State<AnswerScreen> {
                         children: [
                           Spacer(),
                           FlatButton(
-                              onPressed: saveComment, child: Text('Comment')),
+                            onPressed: saveComment,
+                            child: Text('Answer'),
+                          ),
                         ],
                       )
                     ],
                   ),
                 ),
               ),
-              Container(
-                height: 500,
-                child: ListView.builder(
-                    itemCount: 21,
-                    itemBuilder: (ctx, index) {
-                      return Column(
-                        children: [
-                          ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  AssetImage('assets/images/dri_pro.jpg'),
-                            ),
-                            title: Text(
-                                'this is a game chaning movement this is a game chaning movement'),
-                          ),
-                          Row(
-                            children: [
-                              Spacer(),
-                              FlatButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(color: Colors.red),
-                                  )),
-                            ],
-                          )
-                        ],
-                      );
-                    }),
-              ),
+              // Container(
+              //   height: 500,
+              //   child: ListView.builder(
+              //       itemCount: 21,
+              //       itemBuilder: (ctx, index) {
+              //         return Column(
+              //           children: [
+              //             ListTile(
+              //               leading: CircleAvatar(
+              //                 backgroundImage: FileImage(
+              //                     faq.answer.comment[index].profileImage),
+              //               ),
+              //               title: Text(faq.answer.comment[index].answer),
+              //             ),
+              //             Row(
+              //               children: [
+              //                 Spacer(),
+              //                 FlatButton(
+              //                   onPressed: () {},
+              //                   child: Text(
+              //                     'Delete',
+              //                     style: TextStyle(color: Colors.red),
+              //                   ),
+              //                 ),
+              //               ],
+              //             )
+              //           ],
+              //         );
+              //       }),
+              // ),
             ],
-          ),
-        ));
+          );
+        }),
+      ),
+    );
   }
 }
