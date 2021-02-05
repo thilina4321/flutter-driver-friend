@@ -9,13 +9,13 @@ import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
 import 'package:driver_friend/screen/serviceCenter/service_contact.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/rating.dart';
 import 'package:driver_friend/widget/service_center_drawer.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 
 class ServiceCenterProfileScreen extends StatefulWidget {
@@ -56,8 +56,6 @@ class _ServiceCenterProfileScreenState
           Provider.of<ServiceCenterProvider>(context, listen: false).service;
     }
 
-    print(serviceCenter.name + 'ss');
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -72,13 +70,37 @@ class _ServiceCenterProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: serviceCenter.profileImageUrl == null
-                      ? Center(child: Text('No profile image'))
-                      : Image.file(
-                          serviceCenter.profileImageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                  child: Image.asset(
+                    'assets/images/ser_pro.jpg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                //    serviceCenter.profileImageUrl == null
+                //       ? Container(color: Colors.black)
+                //       : Image.file(
+                //           serviceCenter.profileImageUrl,
+                //           fit: BoxFit.cover,
+                //         ),
+                // ),
+                if (user == UserType.serviceCenter)
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: Container(
+                      color: Colors.black45,
+                      child: FlatButton.icon(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Edit photo',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Padding(
@@ -201,6 +223,23 @@ class _ServiceCenterProfileScreenState
                       ),
                     ),
                   ),
+                  Card(
+                    elevation: 3,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            CustomRatingWidget.routeName,
+                            arguments: serviceCenter.rating);
+                      },
+                      child: const Text(
+                        'Rate Me',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -212,12 +251,17 @@ class _ServiceCenterProfileScreenState
               child: Container(
                 height: 200,
                 width: double.infinity,
-                child: serviceCenter.mapImagePreview == null
-                    ? Center(child: Text('No Location yet..'))
-                    : Image.network(
-                        serviceCenter.mapImagePreview,
-                        fit: BoxFit.cover,
-                      ),
+                child: Image.network(
+                  LocationHelper.generateGoogleImage(
+                      lat: 37.42796133580664, long: -122.085749655962),
+                  // fit: BoxFit.cover,
+                ),
+                // serviceCenter.mapImagePreview == null
+                //     ? Center(child: Text('No Location yet..'))
+                //     : Image.network(
+                //         serviceCenter.mapImagePreview,
+                //         fit: BoxFit.cover,
+                //       ),
               ),
             ),
           ],

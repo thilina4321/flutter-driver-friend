@@ -8,12 +8,13 @@ import 'dart:convert';
 class MechanicProvider with ChangeNotifier {
   List<Mechanic> _mechanics = [
     Mechanic(
-        id: '1',
-        rating: 2.0,
-        name: "Minol",
-        address: '64/1 Aracchnikattuwa',
-        userType: UserType.mechanic,
-        mobile: 0776543322),
+      id: '1',
+      rating: 4.0,
+      name: "Minol",
+      address: '64/1 Aracchnikattuwa',
+      userType: UserType.mechanic,
+      mobile: 0776543322,
+    ),
     Mechanic(
         id: '2',
         rating: 5.0,

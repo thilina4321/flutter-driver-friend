@@ -18,8 +18,9 @@ class _AnswerScreenState extends State<AnswerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Question data = ModalRoute.of(context).settings.arguments;
-    print(data.questionImage);
+    // String data = ModalRoute.of(context).settings.arguments;
+    String data = 'Why is my check engine\'s light on';
+    // print(data);
     return Scaffold(
       appBar: AppBar(
         title: Text('Answer'),
@@ -37,19 +38,24 @@ class _AnswerScreenState extends State<AnswerScreen> {
                         alignment: Alignment.topLeft,
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(data.question),
-                        ),
-                      ),
-                      if (data.questionImage != null)
-                        Container(
-                          height: 200,
-                          margin: const EdgeInsets.all(2),
-                          width: double.infinity,
-                          child: Image.file(
-                            data.questionImage,
-                            fit: BoxFit.cover,
+                          child: Text(
+                            data,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
+                      ),
+                      Container(
+                        height: 200,
+                        margin: const EdgeInsets.all(2),
+                        width: double.infinity,
+                        child: Image.asset(
+                          'assets/images/faq.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: TextField(
@@ -77,36 +83,38 @@ class _AnswerScreenState extends State<AnswerScreen> {
                   ),
                 ),
               ),
-              // Container(
-              //   height: 500,
-              //   child: ListView.builder(
-              //       itemCount: 21,
-              //       itemBuilder: (ctx, index) {
-              //         return Column(
-              //           children: [
-              //             ListTile(
-              //               leading: CircleAvatar(
-              //                 backgroundImage: FileImage(
-              //                     faq.answer.comment[index].profileImage),
-              //               ),
-              //               title: Text(faq.answer.comment[index].answer),
-              //             ),
-              //             Row(
-              //               children: [
-              //                 Spacer(),
-              //                 FlatButton(
-              //                   onPressed: () {},
-              //                   child: Text(
-              //                     'Delete',
-              //                     style: TextStyle(color: Colors.red),
-              //                   ),
-              //                 ),
-              //               ],
-              //             )
-              //           ],
-              //         );
-              //       }),
-              // ),
+              Container(
+                height: 500,
+                child: ListView.builder(
+                    itemCount: 5,
+                    itemBuilder: (ctx, index) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: AssetImage(
+                                'assets/images/dri_pro.jpg',
+                              ),
+                            ),
+                            title: Text(
+                                'This is the default question that we provide just for UI part of the application'),
+                          ),
+                          Row(
+                            children: [
+                              Spacer(),
+                              FlatButton(
+                                onPressed: () {},
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      );
+                    }),
+              ),
             ],
           );
         }),

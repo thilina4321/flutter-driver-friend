@@ -9,6 +9,8 @@ class Mechanic {
   String mapImagePreview;
   String name;
   String nic;
+  String city;
+
   int mobile;
   String address;
   String about;
@@ -21,6 +23,7 @@ class Mechanic {
 
   Mechanic(
       {this.nic,
+      this.city,
       this.latitude,
       this.longitude,
       this.userType,

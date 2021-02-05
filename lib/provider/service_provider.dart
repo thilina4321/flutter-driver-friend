@@ -6,13 +6,13 @@ class ServiceCenterProvider with ChangeNotifier {
   final List<ServiceCenter> _serviceCenters = [
     ServiceCenter(
         id: '2',
-        rating: 3.0,
+        rating: 5.0,
         name: 'Tharuka Service Center',
         mobile: 05555555555,
         address: 'Dehiattakandiya'),
     ServiceCenter(
         id: '3',
-        rating: 4.0,
+        rating: 4.5,
         name: 'Malikshi Service Center',
         mobile: 0666666666,
         address: 'Horana'),

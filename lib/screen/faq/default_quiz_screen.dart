@@ -70,12 +70,12 @@ class DefaultQuestionScreen extends StatelessWidget {
       body: Consumer<FaqProvider>(
         builder: (ctx, faq, _) {
           return ListView.builder(
-              itemCount: faq.questions.length,
+              itemCount: 5,
               itemBuilder: (ctx, index) {
                 return Card(
                   elevation: 3,
                   child: ListTile(
-                    title: Text(faq.questions[index].question),
+                    title: Text(quiz[index]),
                     trailing: FlatButton(
                       child: Text(
                         'Go',
@@ -83,7 +83,7 @@ class DefaultQuestionScreen extends StatelessWidget {
                       ),
                       onPressed: () {
                         Navigator.of(context).pushNamed(AnswerScreen.routeName,
-                            arguments: faq.questions[index]);
+                            arguments: quiz[index]);
                       },
                     ),
                   ),

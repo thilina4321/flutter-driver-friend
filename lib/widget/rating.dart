@@ -10,6 +10,7 @@ class CustomRatingWidget extends StatefulWidget {
 class _CustomRatingWidgetState extends State<CustomRatingWidget> {
   final _form = GlobalKey<FormState>();
   String initialValue = '0';
+  double rating;
 
   _saveRating() {
     final isValid = _form.currentState.validate();
@@ -25,6 +26,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
 
   @override
   Widget build(BuildContext context) {
+    rating = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -41,7 +43,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
                 ),
               ),
               RatingBarIndicator(
-                rating: 3,
+                rating: rating,
                 itemBuilder: (context, index) => Icon(
                   Icons.star,
                   color: Colors.green,
@@ -50,7 +52,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
                 itemSize: 30.0,
                 direction: Axis.horizontal,
               ),
-              Text('3.0 ratings'),
+              Text(rating.toString()),
               SizedBox(
                 height: 2,
               ),

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,16 +23,21 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
 
   final picker = ImagePicker();
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        serviceCenter.profileImageUrl = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+  Future saveImage(context) async {
+    var pickedFile;
+    try {
+      pickedFile =
+          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
+      setState(() {
+        if (pickedFile != null) {
+          serviceCenter.profileImageUrl = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> getLocation() async {
@@ -162,7 +168,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   children: [
                     Expanded(
                         child: FlatButton.icon(
-                      onPressed: getImage,
+                      onPressed: () => saveImage(context),
                       icon: Icon(
                         Icons.photo_camera,
                         color: Colors.purple,

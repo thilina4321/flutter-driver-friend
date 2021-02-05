@@ -1,5 +1,6 @@
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/auth/signup_screen.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
@@ -11,6 +12,7 @@ import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.d
 import 'package:driver_friend/widget/polyline.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart';
 
 class LogInScreen extends StatefulWidget {
   static String routeName = '/login';
@@ -59,11 +61,11 @@ class _LogInScreenState extends State<LogInScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(PolyLineScreen.routeName);
-                    },
-                    child: Text('map')),
+                // FlatButton(
+                //     onPressed: () {
+                //       Navigator.of(context).pushNamed(PolyLineScreen.routeName);
+                //     },
+                //     child: Text('map')),
                 Row(
                   children: [
                     Icon(
@@ -75,7 +77,8 @@ class _LogInScreenState extends State<LogInScreen> {
                         margin: const EdgeInsets.only(top: 20),
                         child: RaisedButton(
                           onPressed: () {
-                            Navigator.of(context).pushReplacementNamed('/');
+                            Navigator.of(context)
+                                .pushReplacementNamed(SignUpScreen.routeName);
                           },
                           color: Colors.black,
                           child: Padding(
@@ -141,6 +144,7 @@ class _LogInScreenState extends State<LogInScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
                             textInputAction: TextInputAction.done,
+                            obscureText: true,
                             decoration: InputDecoration(
                               icon: Icon(Icons.lock_outline),
                               labelText: 'Password',
@@ -149,42 +153,42 @@ class _LogInScreenState extends State<LogInScreen> {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: DropdownButtonFormField(
-                          decoration: InputDecoration(
-                            labelText: 'User Type',
-                          ),
-                          items: [
-                            DropdownMenuItem(
-                              value: UserType.driver,
-                              child: Text('Driver'),
-                            ),
-                            DropdownMenuItem(
-                              value: UserType.mechanic,
-                              child: Text('Mechanic'),
-                            ),
-                            DropdownMenuItem(
-                              value: UserType.serviceCenter,
-                              child: Text('Service Center'),
-                            ),
-                            DropdownMenuItem(
-                              value: UserType.sparePartShop,
-                              child: Text('Spare Part Shop'),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            setState(() {
-                              initialUser = val;
-                              Provider.of<UserProvider>(context, listen: false)
-                                  .userType(initialUser);
-                            });
-                            Provider.of<UserProvider>(context, listen: false)
-                                .userType(initialUser);
-                          },
-                          value: initialUser,
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: DropdownButtonFormField(
+                      //     decoration: InputDecoration(
+                      //       labelText: 'User Type',
+                      //     ),
+                      //     items: [
+                      //       DropdownMenuItem(
+                      //         value: UserType.driver,
+                      //         child: Text('Driver'),
+                      //       ),
+                      //       DropdownMenuItem(
+                      //         value: UserType.mechanic,
+                      //         child: Text('Mechanic'),
+                      //       ),
+                      //       DropdownMenuItem(
+                      //         value: UserType.serviceCenter,
+                      //         child: Text('Service Center'),
+                      //       ),
+                      //       DropdownMenuItem(
+                      //         value: UserType.sparePartShop,
+                      //         child: Text('Spare Part Shop'),
+                      //       ),
+                      //     ],
+                      //     onChanged: (val) {
+                      //       setState(() {
+                      //         initialUser = val;
+                      //         Provider.of<UserProvider>(context, listen: false)
+                      //             .userType(initialUser);
+                      //       });
+                      //       Provider.of<UserProvider>(context, listen: false)
+                      //           .userType(initialUser);
+                      //     },
+                      //     value: initialUser,
+                      //   ),
+                      // ),
                       Container(
                         margin: const EdgeInsets.only(top: 20),
                         width: double.infinity,

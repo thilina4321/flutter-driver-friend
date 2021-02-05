@@ -10,6 +10,7 @@ import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:driver_friend/widget/mechanic_drawer.dart';
 import 'package:driver_friend/widget/rating.dart';
+import 'package:driver_friend/widget/static_map_image.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -64,15 +65,37 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
             Stack(
               children: [
                 Container(
-                  height: 250,
-                  width: double.infinity,
-                  child: mechanic.profileImageUrl == null
-                      ? Center(child: Text('Mechanic image'))
-                      : Image.file(
-                          mechanic.profileImageUrl,
-                          fit: BoxFit.cover,
-                        ),
-                ),
+                    height: 250,
+                    width: double.infinity,
+                    child: Image.asset(
+                      'assets/images/mec_pro.jpg',
+                      fit: BoxFit.cover,
+                    )),
+                //   mechanic.profileImageUrl == null
+                //       ? Container(
+                //           color: Colors.black,
+                //         )
+                //       : Image.network(
+                //           'mechanic.profileImageUrl',
+                //           fit: BoxFit.cover,
+                //         ),
+                // ),
+                if (user == UserType.mechanic)
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: FlatButton.icon(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                      ),
+                      label: Text(
+                        'Edit photo',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
                 Positioned(
                   top: 150,
                   left: MediaQuery.of(context).size.width / 4,
@@ -158,26 +181,44 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                         route: MapScreen.routeName,
                       ),
                       CustomeMechanicCard(
-                        title: 'Rate',
-                        icon: Icons.star_rate,
-                        route: CustomRatingWidget.routeName,
-                      ),
+                          title: 'Rate',
+                          icon: Icons.star_rate,
+                          route: CustomRatingWidget.routeName,
+                          args: mechanic.rating),
                     ],
                   ),
                 ),
               ),
             ),
             Container(
-              height: 300,
-              child: mechanic.mapImagePreview == null
-                  ? Center(child: Text('No location yet..'))
-                  : Card(
-                      elevation: 20,
-                      child: Image.network(
-                        mechanic.mapImagePreview,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              height: 200,
+              child: Card(
+                elevation: 20,
+                child: Image.network(
+                  LocationHelper.generateGoogleImage(
+                      lat: 37.42796133580664, long: -122.085749655962),
+                  // fit: BoxFit.cover,
+                ),
+                //  mechanic.latitude == null
+                //     ? Center(
+                //         child: Text('My place'),
+                //       )
+                //     : Image.network(
+                //         LocationHelper.generateGoogleImage(),
+                //         // mechanic.mapImagePreview,
+                //         fit: BoxFit.cover,
+                //       ),
+              ),
+              //  mechanic.mapImagePreview == null
+              //     ? Center(child: Text('No location yet..'))
+              //     : Card(
+              //         elevation: 20,
+              //         child: Image.network(
+              //           LocationHelper.generateGoogleImage(),
+              //           // mechanic.mapImagePreview,
+              //           fit: BoxFit.cover,
+              //         ),
+              //       ),
               margin: const EdgeInsets.all(8),
               width: double.infinity,
             ),

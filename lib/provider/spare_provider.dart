@@ -6,16 +6,16 @@ class SpareShopProvider with ChangeNotifier {
   final List<SparePartShop> _spareShop = [
     SparePartShop(
         id: '2',
-        rating: 3.0,
-        name: 'Tharuka Spare shop ',
+        rating: 5.0,
+        name: 'Liyo Spare shop ',
         mobile: 077777777,
-        address: 'Dehiattakandiya'),
+        address: 'Alpitiya'),
     SparePartShop(
         id: '3',
-        rating: 4.0,
-        name: 'Malikshi Spare Shop',
+        rating: 4.5,
+        name: 'Minol Spare Shop',
         mobile: 07666666,
-        address: 'Horana'),
+        address: 'Bangadeniya'),
   ];
 
   SparePartShop get spare {

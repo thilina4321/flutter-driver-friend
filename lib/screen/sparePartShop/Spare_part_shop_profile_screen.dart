@@ -1,19 +1,16 @@
-import 'dart:io';
-
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
 
-import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
-import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
-import 'package:driver_friend/screen/serviceCenter/service_contact.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_contact.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/rating.dart';
 import 'package:driver_friend/widget/spare_part_shop_drawer.dart';
+import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
@@ -58,13 +55,39 @@ class _SparePartShopProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: spareShops.profileImageUrl == null
-                      ? Center(child: Text('Spare shop'))
-                      : Image.file(
-                          spareShops.profileImageUrl,
-                          fit: BoxFit.cover,
-                        ),
+                  child: Image.asset(
+                    'assets/images/spare.jpg',
+                    fit: BoxFit.cover,
+                  ),
                 ),
+                //    spareShops.profileImageUrl == null
+                //       ? Container(
+                //           color: Colors.black,
+                //         )
+                //       : Image.file(
+                //           spareShops.profileImageUrl,
+                //           fit: BoxFit.cover,
+                //         ),
+                // ),
+                if (user == UserType.sparePartShop)
+                  Positioned(
+                    top: 20,
+                    left: 20,
+                    child: Container(
+                      color: Colors.black45,
+                      child: FlatButton.icon(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.camera_alt,
+                          color: Colors.white,
+                        ),
+                        label: Text(
+                          'Edit photo',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Padding(
@@ -132,56 +155,78 @@ class _SparePartShopProfileScreenState
                   ),
                 ),
               ),
-            Row(
-              children: [
-                Card(
-                  elevation: 3,
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(
-                          SpareShopContactScreen.routeName,
-                          arguments: spareShops);
-                    },
-                    child: const Text(
-                      'Contacts',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 15,
+            Container(
+              height: 50,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  Card(
+                    elevation: 3,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            SpareShopContactScreen.routeName,
+                            arguments: spareShops);
+                      },
+                      child: const Text(
+                        'Contacts',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Card(
-                  elevation: 3,
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(SpareShopItems.routeName);
-                    },
-                    child: const Text(
-                      'Items',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.blue,
+                  Card(
+                    elevation: 3,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .pushNamed(SpareShopItems.routeName);
+                      },
+                      child: const Text(
+                        'Items',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Card(
-                  elevation: 3,
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pushNamed(MapScreen.routeName);
-                    },
-                    child: const Text(
-                      'Location',
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.blue,
+                  Card(
+                    elevation: 3,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(MapScreen.routeName);
+                      },
+                      child: const Text(
+                        'Location',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Card(
+                    elevation: 3,
+                    child: FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                            CustomRatingWidget.routeName,
+                            arguments: spareShops.rating);
+                      },
+                      child: const Text(
+                        'Rate us',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             SizedBox(
               height: 20,
@@ -190,16 +235,22 @@ class _SparePartShopProfileScreenState
               height: 200,
               child: Card(
                 elevation: 3,
-                child: spareShops.mapImagePreview == null
-                    ? Center(child: Text('No Location yet..'))
-                    : Container(
-                        height: 200,
-                        width: double.infinity,
-                        child: Image.network(
-                          spareShops.mapImagePreview,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                child: Image.network(
+                  LocationHelper.generateGoogleImage(
+                      lat: 37.42796133580664, long: -122.085749655962),
+                  // fit: BoxFit.cover,
+                ),
+
+                // spareShops.mapImagePreview == null
+                //     ? Center(child: Text('No Location yet..'))
+                //     : Container(
+                //         height: 200,
+                //         width: double.infinity,
+                //         child: Image.network(
+                //           spareShops.mapImagePreview,
+                //           fit: BoxFit.cover,
+                //         ),
+                //       ),
               ),
             ),
           ],

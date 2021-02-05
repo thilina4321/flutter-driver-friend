@@ -76,20 +76,23 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
                     ),
                   ),
                 ),
-                FlatButton(
-                  onPressed: getImage,
-                  child: Text(
-                    'Add photo',
-                    style: TextStyle(
-                      color: Colors.purple,
-                    ),
-                  ),
-                ),
                 Container(
                   height: 100,
                   child: Center(
                     child: question.questionImage == null
-                        ? Text('You can add a image too')
+                        ? FlatButton.icon(
+                            icon: Icon(
+                              Icons.camera_alt,
+                              color: Colors.purple,
+                            ),
+                            onPressed: getImage,
+                            label: Text(
+                              'Add photo',
+                              style: TextStyle(
+                                color: Colors.purple,
+                              ),
+                            ),
+                          )
                         : Container(
                             width: double.infinity,
                             child: Image.file(

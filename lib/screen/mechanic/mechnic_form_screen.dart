@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -50,16 +51,21 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
   final picker = ImagePicker();
 
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        mechanic.profileImageUrl = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+  Future saveImage(context) async {
+    var pickedFile;
+    try {
+      pickedFile =
+          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
+      setState(() {
+        if (pickedFile != null) {
+          mechanic.profileImageUrl = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -160,7 +166,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   children: [
                     Expanded(
                       child: FlatButton.icon(
-                        onPressed: getImage,
+                        onPressed: () => saveImage(context),
                         icon: Icon(
                           Icons.photo_camera,
                           color: Colors.purple,

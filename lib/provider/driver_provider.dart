@@ -1,7 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class DriverProvider with ChangeNotifier {
@@ -26,27 +27,27 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> simple(String filename) async {
-    try {
-      var driver = await http.get('http://127.0.0.1/api/simple');
-      if (driver.statusCode == 200) {
-        print(driver);
-      } else {
-        print('some error');
-      }
+    // try {
+    //   // var driver = await http.get('http://127.0.0.1/api/simple');
+    //   // if (driver.statusCode == 200) {
+    //   //   print(driver);
+    //   } else {
+    //     print('some error');
+    //   }
 
-      // var req = http.MultipartRequest(
-      //     'POST', Uri.parse('http://localhost:3000/api/simple'));
+    //   // var req = http.MultipartRequest(
+    //   //     'POST', Uri.parse('http://localhost:3000/api/simple'));
 
-      // print('hello world --- 2');
+    //   // print('hello world --- 2');
 
-      // req.files.add(await http.MultipartFile.fromPath('images', filename));
-      // print('hello world --- 3');
-      // req.send();
-      // print('hello world --- 4');
-    } catch (e) {
-      print('hello world ---- Error');
-      print(e);
-    }
+    //   // req.files.add(await http.MultipartFile.fromPath('images', filename));
+    //   // print('hello world --- 3');
+    //   // req.send();
+    //   // print('hello world --- 4');
+    // } catch (e) {
+    //   print('hello world ---- Error');
+    //   print(e);
+    // }
   }
 
   Future<void> createDriver(Driver driver) async {
@@ -56,17 +57,31 @@ class DriverProvider with ChangeNotifier {
     driver.password = _tempararyUser.password;
     driver.userType = _tempararyUser.userType;
 
-    try {
-      await http.post('http://localhost:3000/api/drivers/add-data',
-          body: json.encode(driver), headers: {'Authorizarion': ''});
-      var a = http.MultipartRequest('POST', Uri.parse('uri'));
+    // _drivers.add(driver);
+    print(driver.email);
+    print(driver.name);
+    print(driver.nic);
+    print(driver.password);
 
-      a.files.add(await http.MultipartFile.fromPath('field', 'filePath'));
-      a.fields['name'] = 'name';
-      var b = await a.send();
-      _drivers.add(driver);
-      notifyListeners();
-    } catch (e) {}
+    _drivers.add(driver);
+    notifyListeners();
+
+    // try {
+
+    //   Dio dio = new Dio();
+    //   var newDriver = await dio.post(
+    //       'https://dirver-friend.herokuapp.com/api/drivers/add-data',
+    //       data: {
+    //         'email': 'gemba@gmail.com',
+    //         'password': 'thilina',
+    //         'name': 'thilina'
+    //       });
+
+    //   print(newDriver.data);
+
+    // } catch (e) {
+    //   print(e);
+    // }
   }
 
   List<Driver> get drivers {

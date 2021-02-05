@@ -1,8 +1,10 @@
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'dart:async';
@@ -28,8 +30,14 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       final locData = await Location().getLocation();
       driver.latitude = locData.latitude;
       driver.longitude = locData.longitude;
+
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
+
+      List<geoCoding.Placemark> placemarks = await geoCoding
+          .placemarkFromCoordinates(driver.latitude, driver.longitude);
+      print(placemarks[0].name);
+
       setState(() {
         driver.mapImagePreview = img;
       });
@@ -38,44 +46,20 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     }
   }
 
-  Future getProfileImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        driver.profileImageUrl = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  Future vehicleImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        driver.vehicleImageUrl = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
   Future simpleImage(BuildContext context) async {
-    Provider.of<DriverProvider>(context, listen: false)
-        .simple('pickedFile.path');
-    // final pickedFile = await picker.getImage(source: ImageSource.camera);
+    // Provider.of<DriverProvider>(context, listen: false)
+    //     .simple('pickedFile.path');
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
 
-    // setState(() {
-    //   if (pickedFile != null) {
-    //     print(pickedFile.path);
-    //     Provider.of<DriverProvider>(context, listen: false)
-    //         .simple(pickedFile.path);
-    //   } else {
-    //     print('No image selected.');
-    //   }
-    // });
+    setState(() {
+      if (pickedFile != null) {
+        print(pickedFile.path);
+        Provider.of<DriverProvider>(context, listen: false)
+            .simple(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -87,13 +71,14 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       driver = editableDriver;
     }
 
-    _saveDriver() {
+    _saveDriver() async {
       _form.currentState.save();
       final isValid = _form.currentState.validate();
-      // if (!isValid) {
-      //   return;
-      // }
-      Provider.of<DriverProvider>(context, listen: false).createDriver(driver);
+      if (!isValid) {
+        return;
+      }
+      await Provider.of<DriverProvider>(context, listen: false)
+          .createDriver(driver);
       Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
     }
 
@@ -109,11 +94,6 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
             margin: const EdgeInsets.all(20),
             child: Column(
               children: [
-                FlatButton.icon(
-                  onPressed: () => simpleImage(context),
-                  icon: Icon(Icons.image),
-                  label: Text('add'),
-                ),
                 TextFormField(
                   onSaved: (value) {
                     driver.nic = value;
@@ -190,75 +170,75 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                 SizedBox(
                   height: 30,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: FlatButton.icon(
-                        onPressed: getProfileImage,
-                        icon: Icon(
-                          Icons.photo_camera,
-                          color: Colors.purple,
-                        ),
-                        label: Text('Profile Picture'),
-                      ),
-                    ),
-                    Expanded(
-                      child: FlatButton.icon(
-                        onPressed: vehicleImage,
-                        icon: Icon(
-                          Icons.photo_camera,
-                          color: Colors.purple,
-                        ),
-                        label: Text('Vehicle Picture'),
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        height: 100,
-                        alignment: Alignment.center,
-                        child: driver.profileImageUrl == null
-                            ? Text('Profile Image')
-                            : Container(
-                                width: double.infinity,
-                                child: Image.file(
-                                  driver.profileImageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        height: 100,
-                        alignment: Alignment.center,
-                        child: driver.vehicleImageUrl == null
-                            ? Text('Vehicle Image')
-                            : Container(
-                                width: double.infinity,
-                                child: Image.file(
-                                  driver.vehicleImageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: FlatButton.icon(
+                //         onPressed: () => saveImage(context),
+                //         icon: Icon(
+                //           Icons.photo_camera,
+                //           color: Colors.purple,
+                //         ),
+                //         label: Text('Profile Picture'),
+                //       ),
+                //     ),
+                //     Expanded(
+                //       child: FlatButton.icon(
+                //         onPressed: () => saveImage(context, 'vehicle'),
+                //         icon: Icon(
+                //           Icons.photo_camera,
+                //           color: Colors.purple,
+                //         ),
+                //         label: Text('Vehicle Picture'),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: Container(
+                //         width: double.infinity,
+                //         height: 100,
+                //         alignment: Alignment.center,
+                //         child: driver.profileImageUrl == null
+                //             ? Text('Profile Image')
+                //             : Container(
+                //                 width: double.infinity,
+                //                 child: Image.file(
+                //                   driver.profileImageUrl,
+                //                   fit: BoxFit.cover,
+                //                 ),
+                //               ),
+                //         decoration: BoxDecoration(
+                //           border: Border.all(width: 1),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(
+                //       width: 2,
+                //     ),
+                //     Expanded(
+                //       child: Container(
+                //         width: double.infinity,
+                //         height: 100,
+                //         alignment: Alignment.center,
+                //         child: driver.vehicleImageUrl == null
+                //             ? Text('Vehicle Image')
+                //             : Container(
+                //                 width: double.infinity,
+                //                 child: Image.file(
+                //                   driver.vehicleImageUrl,
+                //                   fit: BoxFit.cover,
+                //                 ),
+                //               ),
+                //         decoration: BoxDecoration(
+                //           border: Border.all(width: 1),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 FlatButton.icon(
                   onPressed: getLocation,
                   icon: Icon(

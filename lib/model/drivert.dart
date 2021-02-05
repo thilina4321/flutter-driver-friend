@@ -17,10 +17,12 @@ class Driver {
   double latitude;
   double longitude;
   String mapImagePreview;
+  String city;
 
   Driver(
       {this.id,
       this.name,
+      this.city,
       this.mapImagePreview,
       this.latitude,
       this.longitude,

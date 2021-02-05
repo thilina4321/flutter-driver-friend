@@ -13,6 +13,8 @@ class ServiceCenter {
   String location;
   double rating;
   String name;
+  String city;
+
   double latitude;
   double longitude;
   String email;
@@ -22,6 +24,7 @@ class ServiceCenter {
 
   ServiceCenter(
       {this.id,
+      this.city,
       this.mapImagePreview,
       this.about,
       this.email,

@@ -32,9 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     tempararyUser.userType = initialUser;
     print(tempararyUser.email);
     print(isValid);
-    // if (!isValid) {
-    //   return;
-    // }
+    if (!isValid) {
+      return;
+    }
 
     switch (initialUser) {
       case UserType.mechanic:
@@ -168,6 +168,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   return null;
                                 },
                                 textInputAction: TextInputAction.next,
+                                obscureText: true,
                                 decoration: InputDecoration(
                                   labelText: 'Password',
                                 ),
@@ -177,6 +178,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 textInputAction: TextInputAction.done,
+                                obscureText: true,
                                 onSaved: (value) {
                                   confirmPassword = value;
                                 },
@@ -261,8 +263,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             FlatButton(
                                 onPressed: () {
-                                  Navigator.of(context).pushReplacementNamed(
-                                      LogInScreen.routeName);
+                                  Navigator.of(context)
+                                      .pushReplacementNamed('/');
                                 },
                                 child: Text(
                                   'Switch To Loging',

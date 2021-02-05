@@ -1,14 +1,16 @@
+import 'dart:io';
+
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
-import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/pick_image.dart';
+import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -28,6 +30,29 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   @override
   Widget build(BuildContext context) {
     driver = Provider.of<DriverProvider>(context, listen: false).driver;
+    Future saveImage(context, [String imageType = 'profile']) async {
+      var pickedFile;
+      try {
+        pickedFile =
+            await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
+        setState(() {
+          if (pickedFile != null) {
+            if (imageType == 'profile') {
+              driver.profileImageUrl = File(pickedFile.path);
+              print(driver.profileImageUrl);
+            } else {
+              driver.vehicleImageUrl = File(pickedFile.path);
+            }
+          } else {
+            print('No image selected.');
+          }
+        });
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    print(driver.profileImageUrl);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -43,18 +68,61 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                   height: 200,
                   width: double.infinity,
                   child: driver.vehicleImageUrl == null
-                      ? Center(child: Text('Cover photo'))
+                      ? Container(
+                          color: Colors.black,
+                        )
                       : Image.file(
                           driver.vehicleImageUrl,
                           fit: BoxFit.cover,
                         ),
                 ),
                 Positioned(
-                  top: 70,
-                  left: MediaQuery.of(context).size.width / 4,
+                  right: 20,
+                  top: 20,
+                  child: Container(
+                    color: Colors.black54,
+                    child: FlatButton.icon(
+                      onPressed: () => saveImage(context, 'cover'),
+                      label: Text(
+                        'Edit cover photo',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  right: 20,
+                  top: 60,
+                  child: Container(
+                    color: Colors.black45,
+                    child: FlatButton.icon(
+                      onPressed: () => saveImage(context),
+                      label: Text(
+                        'Edit profile photo',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      icon: Icon(
+                        Icons.camera_alt,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 100,
+                  left: MediaQuery.of(context).size.width / 3,
                   child: driver.profileImageUrl == null
-                      ? Center(
-                          child: Text('profile'),
+                      ? CircleAvatar(
+                          child: Text(
+                            'Profile',
+                            textAlign: TextAlign.center,
+                          ),
+                          radius: 70,
+                          backgroundColor: Colors.grey,
                         )
                       : CircleAvatar(
                           radius: 70,
@@ -221,6 +289,34 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                           label: Text('FAQ Section')),
                     ),
                   ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    'My Home',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  Card(
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: driver.latitude == null
+                          ? Center(
+                              child: Text('My home'),
+                            )
+                          : Image.network(
+                              LocationHelper.generateGoogleImage(
+                                  lat: driver.latitude, long: driver.longitude),
+                              // fit: BoxFit.cover,
+                            ),
+                    ),
+                  )
                 ],
               ),
             ),

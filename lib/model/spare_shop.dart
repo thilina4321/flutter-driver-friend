@@ -10,6 +10,7 @@ class SparePartShop {
   String address;
   int mobile;
   String about;
+  String city;
   String openingTime;
   String closingTime;
   File profileImageUrl;
@@ -24,6 +25,7 @@ class SparePartShop {
       {this.about,
       this.id,
       this.email,
+      this.city,
       this.password,
       this.userType,
       this.mapImagePreview,
