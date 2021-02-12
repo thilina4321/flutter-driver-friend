@@ -11,7 +11,7 @@ class SparepartShopListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<SparePartShop> spareShops =
-        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
+        Provider.of<SpareShopProvider>(context, listen: false).spareShops;
     return Scaffold(
       appBar: AppBar(
         title: Text('Nearest Spare part shops'),

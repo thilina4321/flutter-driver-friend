@@ -1,14 +1,5 @@
 import 'package:driver_friend/model/userType.dart';
-import 'package:driver_friend/provider/driver_provider.dart';
-import 'package:driver_friend/provider/mechanic_provider.dart';
-import 'package:driver_friend/provider/service_provider.dart';
-import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:driver_friend/screen/auth/logIn_screen.dart';
-import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
-import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
-import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -22,43 +13,22 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   var initialUser = UserType.driver;
   final _form = GlobalKey<FormState>();
-  TempararyUser tempararyUser = TempararyUser();
+  User user = User();
 
   var confirmPassword = '';
 
-  _saveTempararyUser() {
+  Future<void> _saveTempararyUser() async {
     _form.currentState.save();
     bool isValid = _form.currentState.validate();
-    tempararyUser.userType = initialUser;
-    print(tempararyUser.email);
+    user.userType = initialUser;
+    print(user.email);
     print(isValid);
     if (!isValid) {
       return;
     }
 
-    switch (initialUser) {
-      case UserType.mechanic:
-        Provider.of<MechanicProvider>(context, listen: false)
-            .addToTempararyUser(tempararyUser);
-        Navigator.of(context).pushNamed(MechanicFormScreen.routeName);
-        break;
-      case UserType.sparePartShop:
-        Provider.of<SpareShopProvider>(context, listen: false)
-            .addToTempararyUser(tempararyUser);
-        Navigator.of(context)
-            .pushReplacementNamed(SparePartShopFormScreen.routeName);
-        break;
-      case UserType.serviceCenter:
-        Provider.of<ServiceCenterProvider>(context, listen: false)
-            .addToTempararyUser(tempararyUser);
-        Navigator.of(context)
-            .pushReplacementNamed(ServiceCenterFormScreen.routeName);
-        break;
-      default:
-        Provider.of<DriverProvider>(context, listen: false)
-            .addToTempararyUser(tempararyUser);
-        Navigator.of(context).pushNamed(DriverFormScreen.routeName);
-    }
+    await Provider.of<UserProvider>(context, listen: false).signup(user);
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   @override
@@ -121,7 +91,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 onSaved: (value) {
-                                  tempararyUser.name = value;
+                                  user.name = value;
                                 },
                                 validator: (value) {
                                   if (value == '') {
@@ -140,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 onSaved: (value) {
-                                  tempararyUser.email = value;
+                                  user.email = value;
                                 },
                                 validator: (value) {
                                   if (value == '') {
@@ -159,7 +129,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.all(8.0),
                               child: TextFormField(
                                 onSaved: (value) {
-                                  tempararyUser.password = value;
+                                  user.password = value;
                                 },
                                 validator: (value) {
                                   if (value == '') {
@@ -186,8 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   if (value == '') {
                                     return 'Confirm your password';
                                   }
-                                  if (confirmPassword !=
-                                      tempararyUser.password) {
+                                  if (confirmPassword != user.password) {
                                     return 'password should be matched';
                                   }
                                   return null;
@@ -224,13 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 onChanged: (val) {
                                   setState(() {
                                     initialUser = val;
-                                    Provider.of<UserProvider>(context,
-                                            listen: false)
-                                        .userType(initialUser);
                                   });
-                                  Provider.of<UserProvider>(context,
-                                          listen: false)
-                                      .userType(initialUser);
                                 },
                                 value: initialUser,
                               ),

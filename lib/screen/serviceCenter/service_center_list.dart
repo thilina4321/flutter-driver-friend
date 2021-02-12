@@ -12,7 +12,7 @@ class ServiceCenterList extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<ServiceCenter> serviceCenters =
         Provider.of<ServiceCenterProvider>(context, listen: false)
-            .serviceCenter;
+            .serviceCenters;
     return Scaffold(
       appBar: AppBar(
         title: Text('Nearest Service Center'),

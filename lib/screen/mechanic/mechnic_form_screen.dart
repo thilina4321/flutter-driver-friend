@@ -22,13 +22,13 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
   Mechanic mechanic = Mechanic();
 
-  _saveMechanic() {
+  Future<void> _saveMechanic() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
-    Provider.of<MechanicProvider>(context, listen: false)
+    await Provider.of<MechanicProvider>(context, listen: false)
         .createMechanic(mechanic);
     Navigator.of(context).pushReplacementNamed(MechanicProfileScreen.routeName);
   }

@@ -1,49 +1,109 @@
+import 'package:dio/dio.dart';
+import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/model/service_center.dart';
-import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 
 class ServiceCenterProvider with ChangeNotifier {
+  Dio dio = new Dio();
+  final url = 'https://dirver-friend.herokuapp.com/api/service-centers';
   final List<ServiceCenter> _serviceCenters = [
     ServiceCenter(
         id: '2',
         rating: 5.0,
         name: 'Tharuka Service Center',
         mobile: 05555555555,
-        address: 'Dehiattakandiya'),
-    ServiceCenter(
-        id: '3',
-        rating: 4.5,
-        name: 'Malikshi Service Center',
-        mobile: 0666666666,
-        address: 'Horana'),
+        address: 'Dehiattakandiya')
   ];
+
+  List<Service> _services;
+  ServiceCenter _serviceCenter;
 
   ServiceCenter get service {
     return _serviceCenters[0];
   }
 
-  List<ServiceCenter> get serviceCenter {
+  List<ServiceCenter> get serviceCenters {
     return _serviceCenters;
   }
 
-  TempararyUser _tempararyUser = TempararyUser();
-  addToTempararyUser(TempararyUser tempararyUser) {
-    _tempararyUser.email = tempararyUser.email;
-    _tempararyUser.name = tempararyUser.name;
-    _tempararyUser.password = tempararyUser.password;
-    _tempararyUser.userType = tempararyUser.userType;
-
-    notifyListeners();
+  ServiceCenter get serviceCenter {
+    return _serviceCenter;
   }
 
-  createMechanic(ServiceCenter service) {
-    service.id = (_serviceCenters.length + 1).toString();
-    service.email = _tempararyUser.email;
-    service.name = _tempararyUser.name;
-    service.password = _tempararyUser.password;
-    service.userType = _tempararyUser.userType;
+  List<Service> get services {
+    return [..._services];
+  }
 
-    _serviceCenters.insert(0, service);
-    notifyListeners();
+  Future<void> fetchServiceCenter() async {
+    try {
+      var serviceCenter = await dio.get('/service-centers');
+      _serviceCenter = serviceCenter.data;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> createServiceCenter(ServiceCenter serviceCenter) async {
+    try {
+      var newServiceCenter =
+          await dio.post('$url/add-data', data: serviceCenter);
+
+      // {
+      //   'address': serviceCenter.address,
+      //   'mobile': serviceCenter.mobile,
+      //   'mapImageUrl': serviceCenter.mapImagePreview,
+      //   'longitude': serviceCenter.longitude,
+      //   'latitude': serviceCenter.latitude,
+      //   'city': serviceCenter.city,
+      //   'userType': serviceCenter.userType
+      // }
+
+      print(newServiceCenter.data);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteServiceCenter(String id) async {
+    try {
+      var center = await dio.delete('$url/delete-service-center');
+      print(center);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> addService(Service service) async {
+    try {
+      var newService = await dio.post('$url/add-service', data: service);
+      print(service);
+      _services.add(newService.data);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> fetchServices(String id) async {
+    List<Service> services = [];
+    try {
+      var fetchedServices = await dio.get('$url/services');
+      services = fetchedServices.data;
+      _services = services;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> deleteService(String id) async {
+    try {
+      var service = await dio.delete('$url/delete-service/$id');
+      print(service.data);
+    } catch (e) {
+      print(e);
+    }
   }
 }

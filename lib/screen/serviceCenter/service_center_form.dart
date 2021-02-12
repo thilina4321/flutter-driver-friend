@@ -57,14 +57,14 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
 
   ServiceCenter serviceCenter = ServiceCenter();
 
-  _saveServiceCenter() {
+  Future<void> _saveServiceCenter() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
-    Provider.of<ServiceCenterProvider>(context, listen: false)
-        .createMechanic(serviceCenter);
+    await Provider.of<ServiceCenterProvider>(context, listen: false)
+        .createServiceCenter(serviceCenter);
     Navigator.of(context)
         .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
   }

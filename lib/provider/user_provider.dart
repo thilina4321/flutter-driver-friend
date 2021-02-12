@@ -1,16 +1,18 @@
+import 'package:dio/dio.dart';
+import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:flutter/cupertino.dart';
 
-class TempararyUser {
+class User {
   String email;
   String password;
   String name;
   UserType userType;
 
-  TempararyUser({this.email, this.name, this.password, this.userType});
+  User({this.email, this.name, this.password, this.userType});
 }
 
 class UserProvider with ChangeNotifier {
@@ -52,6 +54,37 @@ class UserProvider with ChangeNotifier {
 
   UserType get user {
     return _userType;
+  }
+
+  Future<void> signup(User user) async {
+    var data = {
+      'email': user.email,
+      'password': user.password,
+      'userName': user.name,
+    };
+    Dio dio = new Dio();
+    const url = 'https://driver-friend.herokuapp.com/api';
+    var u;
+
+    try {
+      switch (user.userType) {
+        case UserType.mechanic:
+          u = await dio.post('$url/drivers/signup', data: data);
+          break;
+        case UserType.sparePartShop:
+          u = await dio.post('$url/drivers/signup', data: data);
+          break;
+        case UserType.serviceCenter:
+          u = await dio.post('$url/drivers/signup', data: data);
+          break;
+        default:
+          u = await dio.post('$url/drivers/signup', data: data);
+      }
+      print(u);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 
   userType(newUser) {

@@ -1,12 +1,10 @@
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
-import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart' as geoCoding;
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'dart:async';
 
 import 'package:location/location.dart';
@@ -54,8 +52,6 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     setState(() {
       if (pickedFile != null) {
         print(pickedFile.path);
-        Provider.of<DriverProvider>(context, listen: false)
-            .simple(pickedFile.path);
       } else {
         print('No image selected.');
       }
@@ -71,7 +67,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       driver = editableDriver;
     }
 
-    _saveDriver() async {
+    Future<void> _saveDriver() async {
       _form.currentState.save();
       final isValid = _form.currentState.validate();
       if (!isValid) {

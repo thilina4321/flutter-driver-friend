@@ -58,15 +58,14 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
     }
   }
 
-  _saveSpareShop() {
+  Future<void> _saveSpareShop() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
-    print(sparePartShop.mobile + 5);
-    print('s');
-    Provider.of<SpareShopProvider>(context, listen: false)
+
+    await Provider.of<SpareShopProvider>(context, listen: false)
         .createSpareShop(sparePartShop);
     Navigator.of(context)
         .pushReplacementNamed(SparePartShopProfileScreen.routeName);
