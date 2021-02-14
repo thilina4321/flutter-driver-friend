@@ -13,7 +13,7 @@ class MechanicProvider with ChangeNotifier {
       name: "Minol",
       address: '64/1 Aracchnikattuwa',
       userType: UserType.mechanic,
-      mobile: 0776543322,
+      mobile: '0776543322',
     )
   ];
 
@@ -27,10 +27,20 @@ class MechanicProvider with ChangeNotifier {
     return _mechanic;
   }
 
-  Future<void> fetchMechanic() async {
+  Future<void> fetchMechanic(id) async {
     try {
-      var mechanic = await dio.get('$url/mechanics');
-      mechanic = mechanic.data;
+      var fetchedMechanic = await dio.get('$url/mechanics');
+      var mechanic = fetchedMechanic.data['mechanic'];
+
+      _mechanic = Mechanic(
+        id: mechanic['_id'],
+        nic: mechanic['nic'],
+        mobile: mechanic['mobile'],
+        city: mechanic['city'],
+        latitude: mechanic['latitude'],
+        longitude: mechanic['longitude'],
+      );
+
       notifyListeners();
     } catch (e) {
       print(e);
@@ -38,26 +48,35 @@ class MechanicProvider with ChangeNotifier {
   }
 
   Future<void> createMechanic(Mechanic mechanic) async {
+    var data = {
+      'mechanicId': mechanic.id,
+      'nic': mechanic.nic,
+      'address': mechanic.address,
+      'mobile': mechanic.mobile,
+      'longitude': mechanic.longitude,
+      'latitude': mechanic.latitude,
+      'city': mechanic.city,
+      'about': mechanic.about
+    };
     try {
-      var newDriver = await dio.post('$url/add-data', data: mechanic);
+      var newMechanic = await dio.post(
+          'https://driver-friend.herokuapp.com/api/mechanics/add-data',
+          data: data);
+      var mec = newMechanic.data['mechanic'];
+      _mechanic = Mechanic(
+          id: mec['mechanicId'],
+          nic: mec['nic'],
+          mobile: mec['mobile'],
+          about: mec['about'],
+          longitude: mec['longitude'],
+          latitude: mec['latitude'],
+          city: mec['city']);
+      print(mec);
 
-      // {
-      //   'nic': mechanic.nic,
-      //   'address': mechanic.address,
-      //   'mobile': mechanic.mobile,
-      //   'mapImageUrl': mechanic.mapImagePreview,
-      //   'longitude': mechanic.longitude,
-      //   'latitude': mechanic.latitude,
-      //   'city': mechanic.city,
-      //   'userType': mechanic.userType
-      // }
-
-      print(newDriver.data);
       notifyListeners();
-
-      print(newDriver.data);
     } catch (e) {
       print(e);
+      print('hello');
     }
   }
 

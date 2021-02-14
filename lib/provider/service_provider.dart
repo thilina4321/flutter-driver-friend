@@ -5,22 +5,22 @@ import 'package:flutter/material.dart';
 
 class ServiceCenterProvider with ChangeNotifier {
   Dio dio = new Dio();
-  final url = 'https://dirver-friend.herokuapp.com/api/service-centers';
+  final url = 'https://driver-friend.herokuapp.com/api/service-centers';
   final List<ServiceCenter> _serviceCenters = [
-    ServiceCenter(
-        id: '2',
-        rating: 5.0,
-        name: 'Tharuka Service Center',
-        mobile: 05555555555,
-        address: 'Dehiattakandiya')
+    // ServiceCenter(
+    //     id: '2',
+    //     rating: 5.0,
+    //     name: 'Tharuka Service Center',
+    //     mobile: 05555555555,
+    //     address: 'Dehiattakandiya')
   ];
 
   List<Service> _services;
   ServiceCenter _serviceCenter;
 
-  ServiceCenter get service {
-    return _serviceCenters[0];
-  }
+  // ServiceCenter get service {
+  //   return _serviceCenters[0];
+  // }
 
   List<ServiceCenter> get serviceCenters {
     return _serviceCenters;
@@ -34,10 +34,22 @@ class ServiceCenterProvider with ChangeNotifier {
     return [..._services];
   }
 
-  Future<void> fetchServiceCenter() async {
+  Future<void> fetchServiceCenter(id) async {
     try {
-      var serviceCenter = await dio.get('/service-centers');
-      _serviceCenter = serviceCenter.data;
+      var fetchedCenter = await dio.get('$url/service-center/$id');
+      print(fetchedCenter.data);
+
+      var serviceCenter = fetchedCenter.data['serviceCenter'];
+
+      _serviceCenter = ServiceCenter(
+        id: serviceCenter['_id'],
+        mobile: serviceCenter['mobile'],
+        city: serviceCenter['city'],
+        latitude: serviceCenter['latitude'],
+        longitude: serviceCenter['longitude'],
+      );
+
+      // _serviceCenter = serviceCenter.data;
       notifyListeners();
     } catch (e) {
       print(e);
@@ -45,22 +57,35 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> createServiceCenter(ServiceCenter serviceCenter) async {
+    print(serviceCenter.id);
+    var data = {
+      'centerId': serviceCenter.id,
+      'address': serviceCenter.address,
+      'mobile': serviceCenter.mobile,
+      'longitude': serviceCenter.longitude,
+      'latitude': serviceCenter.latitude,
+      'city': serviceCenter.city,
+      'userType': serviceCenter.userType
+    };
     try {
-      var newServiceCenter =
-          await dio.post('$url/add-data', data: serviceCenter);
+      var newServiceCenter = await dio.post(
+          'https://driver-friend.herokuapp.com/api/service-centers/add-data',
+          data: data);
+      var ser = newServiceCenter.data['serviceCenter'];
+      print(ser);
+      _serviceCenter = ServiceCenter(
+          id: ser['centerId'],
+          mobile: ser['mobile'],
+          about: ser['about'],
+          longitude: ser['longitude'],
+          latitude: ser['latitude'],
+          city: ser['city']);
 
-      // {
-      //   'address': serviceCenter.address,
-      //   'mobile': serviceCenter.mobile,
-      //   'mapImageUrl': serviceCenter.mapImagePreview,
-      //   'longitude': serviceCenter.longitude,
-      //   'latitude': serviceCenter.latitude,
-      //   'city': serviceCenter.city,
-      //   'userType': serviceCenter.userType
-      // }
-
-      print(newServiceCenter.data);
+      print(_serviceCenter);
       notifyListeners();
+
+      // print(newServiceCenter.data);
+
     } catch (e) {
       print(e);
     }

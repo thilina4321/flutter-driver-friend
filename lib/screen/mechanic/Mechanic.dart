@@ -41,17 +41,33 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
     });
   }
 
+  var me;
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserProvider>(context, listen: false).user;
-    if (user == UserType.driver) {
-      mechanic = ModalRoute.of(context).settings.arguments;
-      print(mechanic.profileImageUrl);
+    // if (user == UserType.driver) {
+    //   mechanic = ModalRoute.of(context).settings.arguments;
+    //   print(mechanic.profileImageUrl);
+    // } else {
+    //   mechanic = Provider.of<MechanicProvider>(context, listen: false).mechanic;
+    // }
+
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
+    if (Provider.of<MechanicProvider>(context).mechanic != null) {
+      mechanic = Provider.of<MechanicProvider>(context).mechanic;
     } else {
-      mechanic = Provider.of<MechanicProvider>(context, listen: false).mechanic;
+      mechanic = Mechanic(id: me['_id'], name: me['userName']);
     }
 
-    print(mechanic.name);
+    mechanic.id = me['_id'];
+    mechanic.name = me['userName'];
+
+    print(mechanic.latitude);
+    print('mechanic.nic');
+
+    print(mechanic.address);
 
     return Scaffold(
       appBar: AppBar(
@@ -65,37 +81,37 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
             Stack(
               children: [
                 Container(
-                    height: 250,
-                    width: double.infinity,
-                    child: Image.asset(
-                      'assets/images/mec_pro.jpg',
-                      fit: BoxFit.cover,
-                    )),
-                //   mechanic.profileImageUrl == null
-                //       ? Container(
-                //           color: Colors.black,
-                //         )
-                //       : Image.network(
-                //           'mechanic.profileImageUrl',
-                //           fit: BoxFit.cover,
-                //         ),
-                // ),
-                if (user == UserType.mechanic)
-                  Positioned(
-                    top: 20,
-                    left: 20,
-                    child: FlatButton.icon(
-                      onPressed: () {},
-                      icon: Icon(
-                        Icons.camera_alt,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        'Edit photo',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  height: 250,
+                  width: double.infinity,
+                  child:
+                      // Image.asset(
+                      //   'assets/images/mec_pro.jpg',
+                      //   fit: BoxFit.cover,
+                      // )),
+                      mechanic.profileImageUrl == null
+                          ? Container(
+                              color: Colors.black,
+                            )
+                          : Image.network(
+                              'mechanic.profileImageUrl',
+                              fit: BoxFit.cover,
+                            ),
+                ),
+                Positioned(
+                  top: 20,
+                  left: 20,
+                  child: FlatButton.icon(
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.camera_alt,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Edit photo',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
+                ),
                 Positioned(
                   top: 150,
                   left: MediaQuery.of(context).size.width / 4,
@@ -110,40 +126,42 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                             fontSize: 25,
                           ),
                         ),
-                        FlatButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.location_on,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            mechanic.address,
-                            style: TextStyle(
+                        if (mechanic.address != null)
+                          FlatButton.icon(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.location_on,
                               color: Colors.white,
                             ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            RatingBarIndicator(
-                              rating: mechanic.rating,
-                              itemBuilder: (context, index) => Icon(
-                                Icons.star,
-                                color: Colors.green,
-                              ),
-                              unratedColor: Colors.white,
-                              itemCount: 5,
-                              itemSize: 20.0,
-                              direction: Axis.horizontal,
-                            ),
-                            Text(
-                              mechanic.rating.toString(),
+                            label: Text(
+                              'mechanic.address',
                               style: TextStyle(
                                 color: Colors.white,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        if (mechanic.rating != null)
+                          Row(
+                            children: [
+                              RatingBarIndicator(
+                                rating: mechanic.rating,
+                                itemBuilder: (context, index) => Icon(
+                                  Icons.star,
+                                  color: Colors.green,
+                                ),
+                                unratedColor: Colors.white,
+                                itemCount: 5,
+                                itemSize: 20.0,
+                                direction: Axis.horizontal,
+                              ),
+                              Text(
+                                mechanic.rating.toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ),
@@ -164,12 +182,12 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      if (user == UserType.mechanic)
-                        CustomeMechanicCard(
-                          title: 'Edit',
-                          icon: Icons.edit,
-                          route: MechanicFormScreen.routeName,
-                        ),
+                      // if (user == UserType.mechanic)
+                      CustomeMechanicCard(
+                        title: 'Edit',
+                        icon: Icons.edit,
+                        route: MechanicFormScreen.routeName,
+                      ),
                       CustomeMechanicCard(
                           title: 'Contact',
                           args: mechanic,
@@ -190,38 +208,51 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                 ),
               ),
             ),
-            Container(
-              height: 200,
-              child: Card(
-                elevation: 20,
-                child: Image.network(
-                  LocationHelper.generateGoogleImage(
-                      lat: 37.42796133580664, long: -122.085749655962),
-                  // fit: BoxFit.cover,
+            if (mechanic.nic == null)
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(MechanicFormScreen.routeName,
+                      arguments: mechanic.id);
+                },
+                color: Colors.purple,
+                child: Text(
+                  'Create profile',
+                  style: TextStyle(color: Colors.white),
                 ),
-                //  mechanic.latitude == null
-                //     ? Center(
-                //         child: Text('My place'),
-                //       )
-                //     : Image.network(
-                //         LocationHelper.generateGoogleImage(),
-                //         // mechanic.mapImagePreview,
-                //         fit: BoxFit.cover,
-                //       ),
               ),
-              //  mechanic.mapImagePreview == null
-              //     ? Center(child: Text('No location yet..'))
-              //     : Card(
-              //         elevation: 20,
-              //         child: Image.network(
-              //           LocationHelper.generateGoogleImage(),
-              //           // mechanic.mapImagePreview,
-              //           fit: BoxFit.cover,
-              //         ),
-              //       ),
-              margin: const EdgeInsets.all(8),
-              width: double.infinity,
-            ),
+            if (mechanic.latitude != null)
+              Container(
+                height: 200,
+                child: Card(
+                  elevation: 20,
+                  child: Image.network(
+                    LocationHelper.generateGoogleImage(
+                        lat: 37.42796133580664, long: -122.085749655962),
+                    // fit: BoxFit.cover,
+                  ),
+                  //  mechanic.latitude == null
+                  //     ? Center(
+                  //         child: Text('My place'),
+                  //       )
+                  //     : Image.network(
+                  //         LocationHelper.generateGoogleImage(),
+                  //         // mechanic.mapImagePreview,
+                  //         fit: BoxFit.cover,
+                  //       ),
+                ),
+                //  mechanic.mapImagePreview == null
+                //     ? Center(child: Text('No location yet..'))
+                //     : Card(
+                //         elevation: 20,
+                //         child: Image.network(
+                //           LocationHelper.generateGoogleImage(),
+                //           // mechanic.mapImagePreview,
+                //           fit: BoxFit.cover,
+                //         ),
+                //       ),
+                margin: const EdgeInsets.all(8),
+                width: double.infinity,
+              ),
           ],
         ),
       ),

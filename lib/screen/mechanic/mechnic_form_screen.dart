@@ -8,6 +8,8 @@ import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
+
 import 'package:provider/provider.dart';
 
 class MechanicFormScreen extends StatefulWidget {
@@ -19,6 +21,7 @@ class MechanicFormScreen extends StatefulWidget {
 
 class _MechanicFormScreenState extends State<MechanicFormScreen> {
   final _form = GlobalKey<FormState>();
+  var id;
 
   Mechanic mechanic = Mechanic();
 
@@ -28,6 +31,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (!isValid) {
       return;
     }
+    mechanic.id = id;
     await Provider.of<MechanicProvider>(context, listen: false)
         .createMechanic(mechanic);
     Navigator.of(context).pushReplacementNamed(MechanicProfileScreen.routeName);
@@ -41,6 +45,12 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
+
+      List<geoCoding.Placemark> placemarks = await geoCoding
+          .placemarkFromCoordinates(mechanic.latitude, mechanic.longitude);
+      print(placemarks[0].name);
+      mechanic.city = placemarks[0].name;
+
       setState(() {
         mechanic.mapImagePreview = img;
       });
@@ -75,6 +85,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (editableMechanic != null) {
       mechanic = editableMechanic;
     }
+    id = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -108,20 +119,20 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                 ),
                 TextFormField(
                   onSaved: (value) {
-                    mechanic.mobile = int.parse(value);
+                    mechanic.mobile = value;
                   },
                   validator: (value) {
                     if (value == null) {
                       return 'Mobile number is required';
                     }
                     if (value.length != 10) {
-                      return 'Invalid NIC';
+                      return 'Invalid Mobile Number';
                     }
                     return null;
                   },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
-                  initialValue: mechanic.mobile.toString(),
+                  initialValue: mechanic.mobile,
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
@@ -166,16 +177,6 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                   children: [
                     Expanded(
                       child: FlatButton.icon(
-                        onPressed: () => saveImage(context),
-                        icon: Icon(
-                          Icons.photo_camera,
-                          color: Colors.purple,
-                        ),
-                        label: Text('Profile Picture'),
-                      ),
-                    ),
-                    Expanded(
-                      child: FlatButton.icon(
                           onPressed: getLocation,
                           icon: Icon(
                             Icons.location_on,
@@ -187,31 +188,12 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                 ),
                 Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        height: 100,
-                        child: Center(
-                          child: mechanic.profileImageUrl == null
-                              ? Text('Profile Image')
-                              : Container(
-                                  width: double.infinity,
-                                  child: Image.file(
-                                    mechanic.profileImageUrl,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 2),
-                        ),
-                      ),
-                    ),
                     SizedBox(
                       width: 2,
                     ),
                     Expanded(
                       child: Container(
-                        height: 100,
+                        height: 200,
                         child: Center(
                           child: mechanic.mapImagePreview == null
                               ? Text('Your Location')

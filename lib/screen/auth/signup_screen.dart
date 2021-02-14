@@ -1,7 +1,7 @@
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/user_provider.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/material.dart';
 
 class SignUpScreen extends StatefulWidget {
   static String routeName = '/signup';
@@ -18,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   var confirmPassword = '';
 
   Future<void> _saveTempararyUser() async {
+    print(initialUser);
     _form.currentState.save();
     bool isValid = _form.currentState.validate();
     user.userType = initialUser;
@@ -33,7 +34,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    initialUser = Provider.of<UserProvider>(context).user;
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -194,6 +194,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   setState(() {
                                     initialUser = val;
                                   });
+                                  print(initialUser);
                                 },
                                 value: initialUser,
                               ),

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_form_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
@@ -23,13 +24,31 @@ class DriverProfileScreen extends StatefulWidget {
 }
 
 class _DriverProfileScreenState extends State<DriverProfileScreen> {
-  Driver driver = Driver();
+  var me;
 
   final picker = ImagePicker();
 
   @override
+  void initState() {
+    // Provider.of<DriverProvider>(context, listen: false).fetchDriver();
+    super.initState();
+  }
+
+  Driver driver;
+
+  @override
   Widget build(BuildContext context) {
-    driver = Provider.of<DriverProvider>(context, listen: false).driver;
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
+    if (Provider.of<DriverProvider>(context).driver != null) {
+      driver = Provider.of<DriverProvider>(context).driver;
+    } else {
+      driver = Driver(id: me['_id'], name: me['userName']);
+    }
+
+    driver.id = me['_id'];
+    driver.name = me['userName'];
+
     Future saveImage(context, [String imageType = 'profile']) async {
       var pickedFile;
       try {
@@ -52,7 +71,6 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
       }
     }
 
-    print(driver.profileImageUrl);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -157,169 +175,196 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
             ),
-            Container(
-              margin: const EdgeInsets.all(8),
-              child: Card(
-                elevation: 3,
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Change Details',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Spacer(),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Spacer(),
-                      IconButton(
-                        onPressed: () {
-                          Navigator.of(context)
-                              .pushNamed(DriverFormScreen.routeName);
-                        },
-                        icon: Icon(
-                          Icons.edit,
-                          color: Colors.purple,
-                        ),
-                      ),
-                    ],
+            if (driver.nic == null)
+              RaisedButton(
+                color: Colors.purple,
+                onPressed: () {
+                  Navigator.of(context).pushNamed(DriverFormScreen.routeName,
+                      arguments: driver.id);
+                },
+                child: Text(
+                  'Create Profile',
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
                 ),
               ),
-            ),
-            Container(
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                children: [
-                  Text(
-                    'Your DashBoard',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          child: FlatButton(
-                            padding: const EdgeInsets.all(0),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(MechanicListScreen.routeName);
-                            },
-                            child: Card(
-                              elevation: 3,
-                              child: Center(child: Text('Mechanics')),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          child: FlatButton(
-                            padding: const EdgeInsets.all(0),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(ServiceCenterList.routeName);
-                            },
-                            child: Card(
-                              elevation: 3,
-                              child: Center(child: Text('Service Centers')),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          height: 100,
-                          child: FlatButton(
-                            padding: const EdgeInsets.all(0),
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(SparepartShopListScreen.routeName);
-                            },
-                            child: Card(
-                              elevation: 3,
-                              child: Center(child: Text('Spare Part Shop')),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Text(
-                    'Get Help From Experts',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Container(
+            if (driver.nic != null)
+              Container(
+                margin: const EdgeInsets.all(8),
+                child: Card(
+                  elevation: 3,
+                  child: Container(
                     width: double.infinity,
-                    child: Card(
-                      elevation: 3,
-                      child: FlatButton.icon(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Change Details',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Spacer(),
+                        SizedBox(
+                          width: 50,
+                        ),
+                        Spacer(),
+                        IconButton(
                           onPressed: () {
-                            Navigator.of(context).pushNamed(FAQ.routeName);
+                            Navigator.of(context)
+                                .pushNamed(DriverFormScreen.routeName);
                           },
-                          icon: Icon(Icons.question_answer_rounded,
-                              color: Colors.green),
-                          label: Text('FAQ Section')),
+                          icon: Icon(
+                            Icons.edit,
+                            color: Colors.purple,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'My Home',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Card(
-                    child: Container(
-                      height: 200,
-                      width: double.infinity,
-                      child: driver.latitude == null
-                          ? Center(
-                              child: Text('My home'),
-                            )
-                          : Image.network(
-                              LocationHelper.generateGoogleImage(
-                                  lat: driver.latitude, long: driver.longitude),
-                              // fit: BoxFit.cover,
-                            ),
-                    ),
-                  )
-                ],
+                ),
               ),
-            ),
+            if (driver.nic != null)
+              Container(
+                margin: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    Text(
+                      'Your DashBoard',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            child: FlatButton(
+                              padding: const EdgeInsets.all(0),
+                              onPressed: () async {
+                                await Provider.of<DriverProvider>(context,
+                                        listen: false)
+                                    .nearMechanic();
+                                Navigator.of(context)
+                                    .pushNamed(MechanicListScreen.routeName);
+                              },
+                              child: Card(
+                                elevation: 3,
+                                child: Center(child: Text('Mechanics')),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            child: FlatButton(
+                              padding: const EdgeInsets.all(0),
+                              onPressed: () async {
+                                await Provider.of<DriverProvider>(context,
+                                        listen: false)
+                                    .nearService();
+                                Navigator.of(context)
+                                    .pushNamed(ServiceCenterList.routeName);
+                              },
+                              child: Card(
+                                elevation: 3,
+                                child: Center(child: Text('Service Centers')),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Container(
+                            height: 100,
+                            child: FlatButton(
+                              padding: const EdgeInsets.all(0),
+                              onPressed: () async {
+                                await Provider.of<DriverProvider>(context,
+                                        listen: false)
+                                    .nearSpare();
+                                Navigator.of(context).pushNamed(
+                                    SparepartShopListScreen.routeName);
+                              },
+                              child: Card(
+                                elevation: 3,
+                                child: Center(child: Text('Spare Part Shop')),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Text(
+                      'Get Help From Experts',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      child: Card(
+                        elevation: 3,
+                        child: FlatButton.icon(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(FAQ.routeName);
+                            },
+                            icon: Icon(Icons.question_answer_rounded,
+                                color: Colors.green),
+                            label: Text('FAQ Section')),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Text(
+                      'My Home',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Card(
+                      child: Container(
+                        height: 200,
+                        width: double.infinity,
+                        child: driver.latitude == null
+                            ? Center(
+                                child: Text('My Location'),
+                              )
+                            : Image.network(
+                                LocationHelper.generateGoogleImage(
+                                    lat: driver.latitude,
+                                    long: driver.longitude),
+                                // fit: BoxFit.cover,
+                              ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
           ],
         ),
       ),

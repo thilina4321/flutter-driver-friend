@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
 
 class ServiceCenterFormScreen extends StatefulWidget {
   static String routeName = '/service_center-form';
@@ -22,6 +23,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   final _form = GlobalKey<FormState>();
 
   final picker = ImagePicker();
+  var id;
 
   Future saveImage(context) async {
     var pickedFile;
@@ -47,6 +49,13 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
       serviceCenter.longitude = locData.longitude;
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
+
+      List<geoCoding.Placemark> placemarks =
+          await geoCoding.placemarkFromCoordinates(
+              serviceCenter.latitude, serviceCenter.longitude);
+      print(placemarks[0].name);
+      serviceCenter.city = placemarks[0].name;
+
       setState(() {
         serviceCenter.mapImagePreview = img;
       });
@@ -63,20 +72,22 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     if (!isValid) {
       return;
     }
+    serviceCenter.id = id;
     await Provider.of<ServiceCenterProvider>(context, listen: false)
         .createServiceCenter(serviceCenter);
-    Navigator.of(context)
-        .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
+    // Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    ServiceCenter editableServiceCenter =
-        Provider.of<ServiceCenterProvider>(context, listen: false).service;
+    id = ModalRoute.of(context).settings.arguments;
 
-    if (editableServiceCenter != null) {
-      serviceCenter = editableServiceCenter;
-    }
+    // ServiceCenter editableServiceCenter =
+    //     Provider.of<ServiceCenterProvider>(context, listen: false).service;
+
+    // if (editableServiceCenter != null) {
+    //   serviceCenter = editableServiceCenter;
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +120,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 ),
                 TextFormField(
                   onSaved: (value) {
-                    serviceCenter.mobile = int.parse(value);
+                    serviceCenter.mobile = value;
                   },
                   validator: (value) {
                     if (value == null) {
@@ -120,7 +131,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   },
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
-                  initialValue: serviceCenter.mobile.toString(),
+                  initialValue: serviceCenter.mobile,
                   decoration: InputDecoration(
                     labelText: 'Mobile Number',
                   ),
@@ -167,15 +178,6 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 Row(
                   children: [
                     Expanded(
-                        child: FlatButton.icon(
-                      onPressed: () => saveImage(context),
-                      icon: Icon(
-                        Icons.photo_camera,
-                        color: Colors.purple,
-                      ),
-                      label: Text('Profile Picture'),
-                    )),
-                    Expanded(
                       child: FlatButton.icon(
                           onPressed: getLocation,
                           icon: Icon(
@@ -188,27 +190,6 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                 ),
                 Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        height: 150,
-                        width: double.infinity,
-                        child: serviceCenter.profileImageUrl == null
-                            ? Center(child: Text('Profile Image'))
-                            : Container(
-                                width: double.infinity,
-                                child: Image.file(
-                                  serviceCenter.profileImageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
                     Expanded(
                       child: Container(
                         width: double.infinity,

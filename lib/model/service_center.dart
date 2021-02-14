@@ -5,7 +5,7 @@ import 'package:driver_friend/model/userType.dart';
 class ServiceCenter {
   String id;
   String address;
-  int mobile;
+  String mobile;
   String about;
   String openingTime;
   String closingTime;

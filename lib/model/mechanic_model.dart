@@ -11,7 +11,7 @@ class Mechanic {
   String nic;
   String city;
 
-  int mobile;
+  String mobile;
   String address;
   String about;
   int location;

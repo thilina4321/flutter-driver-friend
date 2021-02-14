@@ -35,6 +35,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       List<geoCoding.Placemark> placemarks = await geoCoding
           .placemarkFromCoordinates(driver.latitude, driver.longitude);
       print(placemarks[0].name);
+      driver.city = placemarks[0].name;
 
       setState(() {
         driver.mapImagePreview = img;
@@ -60,12 +61,15 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Driver editableDriver =
-        Provider.of<DriverProvider>(context, listen: false).driver;
-    if (editableDriver.nic != null) {
-      print(editableDriver.nic);
-      driver = editableDriver;
-    }
+    // Driver editableDriver =
+    //     Provider.of<DriverProvider>(context, listen: false).driver;
+    // if (editableDriver.nic != null) {
+    //   print(editableDriver.nic);
+    //   driver = editableDriver;
+    // }
+
+    var id = ModalRoute.of(context).settings.arguments;
+    driver.id = id;
 
     Future<void> _saveDriver() async {
       _form.currentState.save();

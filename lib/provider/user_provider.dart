@@ -16,6 +16,9 @@ class User {
 }
 
 class UserProvider with ChangeNotifier {
+  Dio dio = new Dio();
+  final url = 'https://driver-friend.herokuapp.com/api/drivers';
+  final signupurl = 'https://driver-friend.herokuapp.com/api';
   var _userType = UserType.driver;
 
   final Mechanic _mechanic = Mechanic(
@@ -24,13 +27,13 @@ class UserProvider with ChangeNotifier {
       userType: UserType.mechanic,
       name: "Fernando",
       address: '66 Homagama',
-      mobile: 0712345433);
+      mobile: '0712345433');
 
   final ServiceCenter _serviceCenter = ServiceCenter(
       id: '1',
       rating: 4.5,
       name: 'Liyo Service Center',
-      mobile: 0777777777,
+      mobile: '0777777777',
       address: 'Alpitiya');
 
   final SparePartShop _spareShop = SparePartShop(
@@ -56,31 +59,47 @@ class UserProvider with ChangeNotifier {
     return _userType;
   }
 
+  Map<String, dynamic> _user;
+
+  get me {
+    return _user;
+  }
+
   Future<void> signup(User user) async {
     var data = {
       'email': user.email,
       'password': user.password,
       'userName': user.name,
     };
-    Dio dio = new Dio();
-    const url = 'https://driver-friend.herokuapp.com/api';
+
     var u;
 
     try {
       switch (user.userType) {
         case UserType.mechanic:
-          u = await dio.post('$url/drivers/signup', data: data);
-          break;
-        case UserType.sparePartShop:
-          u = await dio.post('$url/drivers/signup', data: data);
+          u = await dio.post('$signupurl/mechanics/signup', data: data);
           break;
         case UserType.serviceCenter:
-          u = await dio.post('$url/drivers/signup', data: data);
+          u = await dio.post('$signupurl/service-centers/signup', data: data);
+          break;
+        case UserType.sparePartShop:
+          u = await dio.post('$signupurl/sparepart-shops/signup', data: data);
           break;
         default:
-          u = await dio.post('$url/drivers/signup', data: data);
+          u = await dio.post('$signupurl/drivers/signup', data: data);
       }
       print(u);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> login(email, password) async {
+    try {
+      var user = await dio
+          .post('$url/login', data: {'email': email, 'password': password});
+      _user = user.data['user'];
       notifyListeners();
     } catch (e) {
       print(e);

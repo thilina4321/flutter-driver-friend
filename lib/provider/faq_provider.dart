@@ -1,13 +1,15 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Question {
   String id;
   String question;
   File questionImage;
+  String driverId;
 
-  Question({this.question, this.questionImage, this.id});
+  Question({this.question, this.questionImage, this.id, this.driverId});
 }
 
 class Comment {
@@ -38,6 +40,8 @@ class FaqProvider with ChangeNotifier {
   Answer _answer;
   List<Question> _questions = [];
   List<Answer> _answers = [];
+  var url = 'https://driver-friend.herokuapp.com/api';
+  Dio dio = new Dio();
 
   List<Question> get questions {
     return [..._questions];
@@ -55,9 +59,34 @@ class FaqProvider with ChangeNotifier {
     return _answer;
   }
 
-  addQuestion(Question question) {
-    question.id = (_questions.length + 1).toString();
-    _questions.add(question);
+  Future<void> addQuestion(Question question) async {
+    var data = {
+      'driverId': question.driverId,
+      'imageUrl': question.questionImage,
+      'question': question.question
+    };
+    try {
+      var question = await dio.post('$url/create', data: data);
+      var quiz = question.data['savedQuestion'];
+      _question = Question(
+          id: quiz['_id'],
+          question: quiz['question'],
+          driverId: quiz['driverId'],
+          questionImage: quiz['questionImage']);
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> fetchNotAnsweredQuestions() async {
+    var questions = [];
+    var fetchedQuestions = await dio.get('$url/not-answered');
+  }
+
+  Future<void> fetchAnsweredQuestions() async {
+    var questions = [];
+    var fetchedQuestions = await dio.get('$url/answered');
   }
 
   deleteQuestion(String id) {

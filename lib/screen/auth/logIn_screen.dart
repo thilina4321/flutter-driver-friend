@@ -1,10 +1,17 @@
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/screen/auth/signup_screen.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:flutter/material.dart';
+
+import 'package:driver_friend/provider/user_provider.dart';
+import 'package:provider/provider.dart';
 
 class LogInScreen extends StatefulWidget {
   static String routeName = '/login';
@@ -17,7 +24,10 @@ class _LogInScreenState extends State<LogInScreen> {
   var initialUser = UserType.driver;
   final _form = GlobalKey<FormState>();
 
-  _saveTempararyUser() {
+  // var user = {'email':'', 'password':''};
+  Map<String, String> user = {'email': '', 'password': ''};
+
+  Future<void> _saveTempararyUser() async {
     _form.currentState.save();
     bool isValid = _form.currentState.validate();
 
@@ -26,21 +36,57 @@ class _LogInScreenState extends State<LogInScreen> {
     //   return;
     // }
 
-    switch (initialUser) {
-      case UserType.mechanic:
+    print(user['password'] + "msm");
+
+    await Provider.of<UserProvider>(context, listen: false)
+        .login(user['email'], user['password']);
+
+    var me = await Provider.of<UserProvider>(context, listen: false).me;
+    print(me);
+
+    switch (me['role']) {
+      case 'mechanic':
+        print('object');
+        await Provider.of<MechanicProvider>(context, listen: false)
+            .fetchMechanic(me['_id']);
         Navigator.of(context).pushNamed(MechanicProfileScreen.routeName);
         break;
-      case UserType.sparePartShop:
-        Navigator.of(context)
-            .pushReplacementNamed(SparePartShopProfileScreen.routeName);
+
+      case 'serviceCenter':
+        await Provider.of<ServiceCenterProvider>(context, listen: false)
+            .fetchServiceCenter(me['_id']);
+        Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
         break;
-      case UserType.serviceCenter:
-        Navigator.of(context)
-            .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
+
+      case 'sparePartShop':
+        await Provider.of<SpareShopProvider>(context, listen: false)
+            .fetchSpareShop(me['_id']);
+        Navigator.of(context).pushNamed(SparePartShopProfileScreen.routeName);
         break;
+
       default:
+        await Provider.of<DriverProvider>(context, listen: false)
+            .fetchDriver(me['_id']);
         Navigator.of(context).pushNamed(DriverProfileScreen.routeName);
     }
+
+    // switch (initialUser) {
+    //   case UserType.mechanic:
+    //     Navigator.of(context).pushNamed(MechanicProfileScreen.routeName);
+    //     break;
+    //   case UserType.sparePartShop:
+    //     Navigator.of(context)
+    //         .pushReplacementNamed(SparePartShopProfileScreen.routeName);
+    //     break;
+    //   case UserType.serviceCenter:
+    //     Navigator.of(context)
+    //         .pushReplacementNamed(ServiceCenterProfileScreen.routeName);
+    //     break;
+    //   default:
+    //     await Provider.of<UserProvider>(context, listen: false)
+    //         .login(user['email'], user['password']);
+    //   // Navigator.of(context).pushNamed(DriverProfileScreen.routeName);
+    // }
   }
 
   @override
@@ -121,6 +167,9 @@ class _LogInScreenState extends State<LogInScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: TextFormField(
+                            onSaved: (value) {
+                              user['email'] = value;
+                            },
                             textInputAction: TextInputAction.next,
                             decoration: InputDecoration(
                               icon: Icon(Icons.email_outlined),
@@ -137,6 +186,9 @@ class _LogInScreenState extends State<LogInScreen> {
                           child: TextFormField(
                             textInputAction: TextInputAction.done,
                             obscureText: true,
+                            onSaved: (value) {
+                              user['password'] = value;
+                            },
                             decoration: InputDecoration(
                               icon: Icon(Icons.lock_outline),
                               labelText: 'Password',

@@ -34,14 +34,18 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    _saveQuestion() {
+    var id = ModalRoute.of(context).settings.arguments;
+    question.driverId = id;
+
+    Future<void> _saveQuestion() async {
       _form.currentState.save();
       final isValid = _form.currentState.validate();
       if (!isValid) {
         return;
       }
 
-      Provider.of<FaqProvider>(context, listen: false).addQuestion(question);
+      await Provider.of<FaqProvider>(context, listen: false)
+          .addQuestion(question);
       Navigator.of(context).pushReplacementNamed(FAQ.routeName);
     }
 

@@ -6,9 +6,8 @@ import 'package:driver_friend/model/spare_shop.dart';
 import 'package:flutter/material.dart';
 
 class DriverProvider with ChangeNotifier {
-  final url = 'https://dirver-friend.herokuapp.com/api/drivers';
+  final url = 'https://driver-friend.herokuapp.com/api/drivers';
   Dio dio = new Dio();
-  List<Driver> _drivers = [];
   Driver _driver;
 
   List<Mechanic> _nearMechanics = [];
@@ -16,18 +15,7 @@ class DriverProvider with ChangeNotifier {
   List<SparePartShop> _nearSpare = [];
 
   Driver get driver {
-    if (_drivers.length == 0) {
-      return Driver();
-    }
-    return _drivers[0];
-  }
-
-  Driver get me {
     return _driver;
-  }
-
-  List<Driver> get drivers {
-    return [..._drivers];
   }
 
   List<Mechanic> get nearMechanics {
@@ -43,31 +31,56 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> createDriver(Driver driver) async {
+    var data = {
+      'driverId': driver.id,
+      'nic': driver.nic,
+      'mobile': driver.mobile,
+      'vehicleNumber': driver.vehicleNumber,
+      'vehicleColor': driver.vehicleColor,
+      'longitude': driver.longitude,
+      'latitude': driver.latitude,
+      'city': driver.city
+    };
+    print(data);
     try {
-      var newDriver = await dio.post('$url/add-data', data: {
-        'nic': driver.nic,
-        'mobile': driver.mobile,
-        'vehicleNumber': driver.vehicleNumber,
-        'vehicleColor': driver.vehicleColor,
-        'mapImageUrl': driver.mapImagePreview,
-        'longitude': driver.longitude,
-        'latitude': driver.latitude,
-        'city': driver.city
-      });
+      var newDriver = await dio.post('$url/add-data', data: data);
+      var driver = newDriver.data['driver'];
 
-      print(newDriver.data);
-      _drivers.add(newDriver.data);
+      _driver = Driver(
+          id: driver['driverId'],
+          nic: driver['nic'],
+          mobile: driver['mobile'],
+          vehicleNumber: driver['vehicleNumber'],
+          vehicleColor: driver['vehicleColor'],
+          longitude: driver['longitude'],
+          latitude: driver['latitude']);
+      print(_driver.latitude);
       notifyListeners();
-
-      print(newDriver.data);
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> fetchDriver() async {
-    var driver = await dio.get('path');
-    _driver = driver.data;
+  Future<void> fetchDriver(id) async {
+    try {
+      var fetchedDriver = await dio.get('$url/driver/$id');
+      print(fetchedDriver.data);
+      var driver = fetchedDriver.data['driver'];
+      _driver = Driver(
+        id: driver['_id'],
+        nic: driver['nic'],
+        mobile: driver['mobile'],
+        vehicleColor: driver['vehicleColor'],
+        vehicleNumber: driver['vehicleNumber'],
+        city: driver['city'],
+        latitude: driver['latitude'],
+        longitude: driver['longitude'],
+      );
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
+
     notifyListeners();
   }
 
@@ -96,19 +109,20 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> nearMechanic() async {
-    var mechanics = await dio.get('/near-mechanic');
+    var mechanics = await dio.get('$url/near-mechanic');
     _nearMechanics = mechanics.data;
     notifyListeners();
   }
 
   Future<void> nearService() async {
-    var service = await dio.get('/near-service');
+    var service = await dio.get('$url/near-service');
     _nearService = service.data;
+
     notifyListeners();
   }
 
   Future<void> nearSpare() async {
-    var spare = await dio.get('/near-spare');
+    var spare = await dio.get('$url/near-spare');
     _nearSpare = spare.data;
     notifyListeners();
   }

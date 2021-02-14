@@ -8,6 +8,8 @@ import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:location/location.dart';
+import 'package:geocoding/geocoding.dart' as geoCoding;
+
 import 'package:provider/provider.dart';
 
 class SparePartShopFormScreen extends StatefulWidget {
@@ -22,12 +24,19 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
   final _form = GlobalKey<FormState>();
 
   SparePartShop sparePartShop = SparePartShop();
+  var id;
 
   Future<void> getLocation() async {
     try {
       final locData = await Location().getLocation();
       sparePartShop.latitude = locData.latitude;
       sparePartShop.longitude = locData.longitude;
+
+      List<geoCoding.Placemark> placemarks =
+          await geoCoding.placemarkFromCoordinates(
+              sparePartShop.latitude, sparePartShop.longitude);
+      print(placemarks[0].name);
+      sparePartShop.city = placemarks[0].name;
 
       final img = LocationHelper.generateGoogleImage(
           lat: locData.latitude, long: locData.longitude);
@@ -41,29 +50,15 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
 
   final picker = ImagePicker();
 
-  Future saveImage(context) async {
-    var pickedFile;
-    try {
-      pickedFile =
-          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
-      setState(() {
-        if (pickedFile != null) {
-          sparePartShop.profileImageUrl = File(pickedFile.path);
-        } else {
-          print('No image selected.');
-        }
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
   Future<void> _saveSpareShop() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
+
+    sparePartShop.id = id;
+    print(sparePartShop.id);
 
     await Provider.of<SpareShopProvider>(context, listen: false)
         .createSpareShop(sparePartShop);
@@ -74,11 +69,14 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
   @override
   Widget build(BuildContext context) {
     SparePartShop editablrSpareShop =
-        Provider.of<SpareShopProvider>(context, listen: false).spare;
+        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
 
     if (editablrSpareShop != null) {
       sparePartShop = editablrSpareShop;
     }
+
+    id = ModalRoute.of(context).settings.arguments;
+    print(id);
 
     return Scaffold(
       appBar: AppBar(
@@ -192,15 +190,6 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                   children: [
                     Expanded(
                       child: FlatButton.icon(
-                          onPressed: () => saveImage(context),
-                          icon: Icon(
-                            Icons.photo_camera,
-                            color: Colors.purple,
-                          ),
-                          label: Text('Profile Image')),
-                    ),
-                    Expanded(
-                      child: FlatButton.icon(
                         onPressed: getLocation,
                         icon: Icon(
                           Icons.photo_camera,
@@ -213,28 +202,6 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                 ),
                 Row(
                   children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        height: 150,
-                        alignment: Alignment.center,
-                        child: sparePartShop.profileImageUrl == null
-                            ? Text('Profile Image')
-                            : Container(
-                                width: double.infinity,
-                                child: Image.file(
-                                  sparePartShop.profileImageUrl,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 2,
-                    ),
                     Expanded(
                       child: Container(
                         height: 150,

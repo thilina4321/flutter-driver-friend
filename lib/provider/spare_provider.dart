@@ -7,12 +7,12 @@ class SpareShopProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://dirver-friend.herokuapp.com/api/sparepart-shops';
   List<SparePartShop> _spareShops = [
-    SparePartShop(
-        id: '2',
-        rating: 5.0,
-        name: 'Liyo Spare shop ',
-        mobile: 077777777,
-        address: 'Alpitiya')
+    // SparePartShop(
+    //     id: '2',
+    //     rating: 5.0,
+    //     name: 'Liyo Spare shop ',
+    //     mobile: 077777777,
+    //     address: 'Alpitiya')
   ];
   SparePartShop _spareShop;
 
@@ -20,9 +20,9 @@ class SpareShopProvider with ChangeNotifier {
     return _spareShop;
   }
 
-  SparePartShop get spare {
-    return _spareShops[0];
-  }
+  // SparePartShop get spare {
+  //   return _spareShops[0];
+  // }
 
   List<SparePartShop> get spareShops {
     return _spareShops;
@@ -40,35 +40,53 @@ class SpareShopProvider with ChangeNotifier {
   }
 
   Future<void> createSpareShop(SparePartShop spareShop) async {
+    var data = {
+      'shopId': spareShop.id,
+      'address': spareShop.address,
+      'mapImageUrl': spareShop.mapImagePreview,
+      'longitude': spareShop.longitude,
+      'latitude': spareShop.latitude,
+      'city': spareShop.city,
+      'userType': spareShop.userType
+    };
     try {
       Dio dio = new Dio();
-      var newSpareShop = await dio.post('$url/add-data', data: spareShop);
-
-      // {
-      //   'address': spareShop.address,
-      //   'mobile': spareShop.mobile,
-      //   'mapImageUrl': spareShop.mapImagePreview,
-      //   'longitude': spareShop.longitude,
-      //   'latitude': spareShop.latitude,
-      //   'city': spareShop.city,
-      //   'userType': spareShop.userType
-      // }
+      var newSpareShop = await dio.post(
+          'https://driver-friend.herokuapp.com/api/sparepart-shops/add-data',
+          data: data);
 
       print(newSpareShop.data);
-      _spareShops.add(newSpareShop.data);
+      var ser = newSpareShop.data['spareshop'];
+
+      _spareShop = SparePartShop(
+          id: ser['shopId'],
+          mobile: ser['mobile'],
+          about: ser['about'],
+          longitude: ser['longitude'],
+          latitude: ser['latitude'],
+          address: ser['address'],
+          city: ser['city']);
+
       notifyListeners();
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> get fetchSpareShops async {
-    List<SparePartShop> shops = [];
-
+  Future<void> fetchSpareShop(id) async {
     try {
-      var fetchedShops = await dio.get('$url/shops');
-      shops = fetchedShops.data;
-      _spareShops = shops;
+      var fetchedShops = await dio.get('$url/spare-shop/$id');
+      var shops = fetchedShops.data['sparePartShop'];
+
+      _spareShop = SparePartShop(
+        id: shops['_id'],
+        mobile: shops['mobile'],
+        city: shops['city'],
+        latitude: shops['latitude'],
+        longitude: shops['longitude'],
+      );
+
+      print(_spareShop);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -97,8 +115,9 @@ class SpareShopProvider with ChangeNotifier {
   }
 
   Future<void> createPart(String id, SparePart part) async {
+    var data;
     try {
-      var shop = await dio.patch('$url/create-spare/$id', data: spare);
+      var shop = await dio.patch('$url/create-spare/$id', data: data);
       print(shop.data);
     } catch (e) {
       print(e);

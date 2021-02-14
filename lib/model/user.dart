@@ -1,16 +1,7 @@
 class User {
-  String nic;
-  String mobile;
-  String vehicleNumber;
-  String vehicleColor;
-  String profileImageUrl;
-  String vehicleImageUrl;
+  String id;
+  String userName;
+  String email;
 
-  User(
-      {this.nic,
-      this.mobile,
-      this.vehicleNumber,
-      this.vehicleColor,
-      this.profileImageUrl,
-      this.vehicleImageUrl});
+  User({this.id, this.userName, this.email});
 }

@@ -1,10 +1,13 @@
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DriverSettignScreen extends StatelessWidget {
   static String routeName = 'driver-setting';
   @override
   Widget build(BuildContext context) {
+    var id = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: Text('Driver Settings Page'),
@@ -111,7 +114,10 @@ class DriverSettignScreen extends StatelessWidget {
                                 Container(
                                   alignment: Alignment.center,
                                   child: FlatButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await Provider.of<DriverProvider>(context,
+                                              listen: false)
+                                          .deleteDriver(id);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

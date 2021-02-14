@@ -31,6 +31,7 @@ class _ServiceCenterProfileScreenState
   ServiceCenter serviceCenter = ServiceCenter();
 
   final picker = ImagePicker();
+  var me;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -49,18 +50,37 @@ class _ServiceCenterProfileScreenState
     final UserType user =
         Provider.of<UserProvider>(context, listen: false).user;
 
-    if (user == UserType.driver) {
+    if (user == UserType.serviceCenter) {
       serviceCenter = ModalRoute.of(context).settings.arguments;
     } else {
-      serviceCenter =
-          Provider.of<ServiceCenterProvider>(context, listen: false).service;
+      serviceCenter = Provider.of<ServiceCenterProvider>(context, listen: false)
+          .serviceCenter;
     }
+
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
+    if (Provider.of<ServiceCenterProvider>(context, listen: false)
+            .serviceCenter !=
+        null) {
+      print('object');
+      serviceCenter = Provider.of<ServiceCenterProvider>(context, listen: false)
+          .serviceCenter;
+    } else {
+      serviceCenter = ServiceCenter(id: me['_id'], name: me['userName']);
+    }
+
+    serviceCenter.id = me['_id'];
+    serviceCenter.name = me['userName'];
+
+    print(serviceCenter.mobile);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
-      drawer: user == UserType.driver ? DriverDrawer() : ServiceCenterDrawer(),
+      drawer:
+          //  user == UserType.driver ? DriverDrawer() :
+          ServiceCenterDrawer(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,19 +90,19 @@ class _ServiceCenterProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/ser_pro.jpg',
-                    fit: BoxFit.cover,
-                  ),
+                  child:
+                      // Image.asset(
+                      //   'assets/images/ser_pro.jpg',
+                      //   fit: BoxFit.cover,
+                      // ),
+                      serviceCenter.profileImageUrl == null
+                          ? Container(color: Colors.black)
+                          : Image.file(
+                              serviceCenter.profileImageUrl,
+                              fit: BoxFit.cover,
+                            ),
                 ),
-                //    serviceCenter.profileImageUrl == null
-                //       ? Container(color: Colors.black)
-                //       : Image.file(
-                //           serviceCenter.profileImageUrl,
-                //           fit: BoxFit.cover,
-                //         ),
-                // ),
-                if (user == UserType.serviceCenter)
+                if (me['role'] == 'serviceCenter')
                   Positioned(
                     top: 20,
                     left: 20,
@@ -119,17 +139,17 @@ class _ServiceCenterProfileScreenState
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                RatingBarIndicator(
-                  rating: serviceCenter.rating,
-                  itemBuilder: (context, index) => Icon(
-                    Icons.star,
-                    color: Colors.green,
-                  ),
-                  unratedColor: Colors.black54,
-                  itemCount: 5,
-                  itemSize: 20.0,
-                  direction: Axis.horizontal,
-                ),
+                // RatingBarIndicator(
+                //   rating: serviceCenter.rating,
+                //   itemBuilder: (context, index) => Icon(
+                //     Icons.star,
+                //     color: Colors.green,
+                //   ),
+                //   unratedColor: Colors.black54,
+                //   itemCount: 5,
+                //   itemSize: 20.0,
+                //   direction: Axis.horizontal,
+                // ),
                 Text(serviceCenter.rating.toString()),
               ],
             ),
@@ -246,24 +266,40 @@ class _ServiceCenterProfileScreenState
             SizedBox(
               height: 20,
             ),
-            Card(
-              elevation: 3,
-              child: Container(
-                height: 200,
-                width: double.infinity,
-                child: Image.network(
-                  LocationHelper.generateGoogleImage(
-                      lat: 37.42796133580664, long: -122.085749655962),
-                  // fit: BoxFit.cover,
+            if (serviceCenter.mobile == null)
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                      ServiceCenterFormScreen.routeName,
+                      arguments: serviceCenter.id);
+                },
+                color: Colors.purple,
+                child: Text(
+                  'Create profile',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
-                // serviceCenter.mapImagePreview == null
-                //     ? Center(child: Text('No Location yet..'))
-                //     : Image.network(
-                //         serviceCenter.mapImagePreview,
-                //         fit: BoxFit.cover,
-                //       ),
               ),
-            ),
+            if (serviceCenter.latitude != null)
+              Card(
+                elevation: 3,
+                child: Container(
+                  height: 200,
+                  width: double.infinity,
+                  child: Image.network(
+                    LocationHelper.generateGoogleImage(
+                        lat: 37.42796133580664, long: -122.085749655962),
+                    // fit: BoxFit.cover,
+                  ),
+                  // serviceCenter.mapImagePreview == null
+                  //     ? Center(child: Text('No Location yet..'))
+                  //     : Image.network(
+                  //         serviceCenter.mapImagePreview,
+                  //         fit: BoxFit.cover,
+                  //       ),
+                ),
+              ),
           ],
         ),
       ),

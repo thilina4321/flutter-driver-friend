@@ -26,20 +26,36 @@ class SparePartShopProfileScreen extends StatefulWidget {
 
 class _SparePartShopProfileScreenState
     extends State<SparePartShopProfileScreen> {
-  SparePartShop spareShops = SparePartShop();
+  SparePartShop spareShop = SparePartShop();
 
   final picker = ImagePicker();
+  var me;
 
   @override
   Widget build(BuildContext context) {
     final UserType user =
         Provider.of<UserProvider>(context, listen: false).user;
     if (user == UserType.driver) {
-      spareShops = ModalRoute.of(context).settings.arguments;
+      spareShop = ModalRoute.of(context).settings.arguments;
     } else {
-      spareShops = Provider.of<SpareShopProvider>(context, listen: false).spare;
+      spareShop =
+          Provider.of<SpareShopProvider>(context, listen: false).spareShop;
     }
-    print(spareShops.mobile);
+    // print(spareShops.mobile);
+
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
+    if (Provider.of<SpareShopProvider>(context, listen: false).spareShop !=
+        null) {
+      print('object');
+      spareShop =
+          Provider.of<SpareShopProvider>(context, listen: false).spareShop;
+    } else {
+      spareShop = SparePartShop(id: me['_id'], name: me['userName']);
+    }
+
+    spareShop.id = me['_id'];
+    spareShop.name = me['userName'];
 
     return Scaffold(
       appBar: AppBar(
@@ -55,20 +71,20 @@ class _SparePartShopProfileScreenState
                 Container(
                   height: 200,
                   width: double.infinity,
-                  child: Image.asset(
-                    'assets/images/spare.jpg',
-                    fit: BoxFit.cover,
-                  ),
+                  child: spareShop.profileImageUrl == null
+                      ? Container(
+                          color: Colors.black,
+                        )
+                      : Image.file(
+                          spareShop.profileImageUrl,
+                          fit: BoxFit.cover,
+                        ),
                 ),
-                //    spareShops.profileImageUrl == null
-                //       ? Container(
-                //           color: Colors.black,
-                //         )
-                //       : Image.file(
-                //           spareShops.profileImageUrl,
-                //           fit: BoxFit.cover,
-                //         ),
+                // Image.asset(
+                //   'assets/images/spare.jpg',
+                //   fit: BoxFit.cover,
                 // ),
+
                 if (user == UserType.sparePartShop)
                   Positioned(
                     top: 20,
@@ -93,7 +109,7 @@ class _SparePartShopProfileScreenState
             Padding(
               padding: const EdgeInsets.all(2.0),
               child: Text(
-                spareShops.name,
+                spareShop.name,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25,
@@ -118,43 +134,43 @@ class _SparePartShopProfileScreenState
                 Text('4'),
               ],
             ),
-            if (user == UserType.sparePartShop)
-              Container(
-                margin: const EdgeInsets.all(3),
-                child: Card(
-                  elevation: 3,
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 15),
-                    child: Row(
-                      children: [
-                        Text(
-                          'Change Details',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+            // if (user == UserType.sparePartShop)
+            Container(
+              margin: const EdgeInsets.all(3),
+              child: Card(
+                elevation: 3,
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Change Details',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
                         ),
-                        SizedBox(
-                          width: 50,
+                      ),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.of(context)
+                              .pushNamed(SparePartShopFormScreen.routeName);
+                        },
+                        icon: Icon(
+                          Icons.edit,
+                          color: Colors.purple,
                         ),
-                        Spacer(),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.of(context)
-                                .pushNamed(SparePartShopFormScreen.routeName);
-                          },
-                          icon: Icon(
-                            Icons.edit,
-                            color: Colors.purple,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
+            ),
             Container(
               height: 50,
               child: ListView(
@@ -166,7 +182,7 @@ class _SparePartShopProfileScreenState
                       onPressed: () {
                         Navigator.of(context).pushNamed(
                             SpareShopContactScreen.routeName,
-                            arguments: spareShops);
+                            arguments: spareShop);
                       },
                       child: const Text(
                         'Contacts',
@@ -214,7 +230,7 @@ class _SparePartShopProfileScreenState
                       onPressed: () {
                         Navigator.of(context).pushNamed(
                             CustomRatingWidget.routeName,
-                            arguments: spareShops.rating);
+                            arguments: spareShop.rating);
                       },
                       child: const Text(
                         'Rate us',
@@ -228,31 +244,45 @@ class _SparePartShopProfileScreenState
                 ],
               ),
             ),
+            if (spareShop.latitude == null)
+              RaisedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(
+                      SparePartShopFormScreen.routeName,
+                      arguments: spareShop.id);
+                },
+                color: Colors.purple,
+                child: Text(
+                  'Create profile',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
             SizedBox(
               height: 20,
             ),
-            Container(
-              height: 200,
-              child: Card(
-                elevation: 3,
-                child: Image.network(
-                  LocationHelper.generateGoogleImage(
-                      lat: 37.42796133580664, long: -122.085749655962),
-                  // fit: BoxFit.cover,
-                ),
+            if (spareShop.latitude != null)
+              Container(
+                height: 200,
+                child: Card(
+                  elevation: 3,
+                  child: Image.network(
+                    LocationHelper.generateGoogleImage(
+                        lat: 37.42796133580664, long: -122.085749655962),
+                    // fit: BoxFit.cover,
+                  ),
 
-                // spareShops.mapImagePreview == null
-                //     ? Center(child: Text('No Location yet..'))
-                //     : Container(
-                //         height: 200,
-                //         width: double.infinity,
-                //         child: Image.network(
-                //           spareShops.mapImagePreview,
-                //           fit: BoxFit.cover,
-                //         ),
-                //       ),
+                  // spareShops.mapImagePreview == null
+                  //     ? Center(child: Text('No Location yet..'))
+                  //     : Container(
+                  //         height: 200,
+                  //         width: double.infinity,
+                  //         child: Image.network(
+                  //           spareShops.mapImagePreview,
+                  //           fit: BoxFit.cover,
+                  //         ),
+                  //       ),
+                ),
               ),
-            ),
           ],
         ),
       ),
