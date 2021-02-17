@@ -81,6 +81,8 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    serviceCenter = Provider.of<ServiceCenterProvider>(context, listen: false)
+        .serviceCenter;
 
     return Scaffold(
       appBar: AppBar(

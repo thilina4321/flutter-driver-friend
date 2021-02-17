@@ -2,7 +2,8 @@ class SparePart {
   String image;
   String name;
   String description;
-  double price;
+  String price;
+  String id;
 
-  SparePart({this.image, this.name, this.description, this.price});
+  SparePart({this.image, this.name, this.description, this.price, this.id});
 }

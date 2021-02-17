@@ -1,3 +1,4 @@
+import 'package:driver_friend/screen/serviceCenter/add-services.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,11 @@ class ServiceCenterDrawer extends StatelessWidget {
                 routeName: ServiceCenterProfileScreen.routeName,
                 icon: Icons.folder_outlined,
                 label: 'My Profile'),
-            DrawerIcons(icon: Icons.perm_data_setting, label: 'Manage Parts'),
+            DrawerIcons(
+              icon: Icons.perm_data_setting,
+              label: 'Manage Parts',
+              routeName: CreateNewServiceScreen.routeName,
+            ),
             DrawerIcons(icon: Icons.logout, label: 'Log Out'),
             DrawerIcons(
               icon: Icons.settings,

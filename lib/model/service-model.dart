@@ -1,8 +1,9 @@
-class Service {
+class SparePart {
+  String id;
   String image;
   String name;
   String description;
-  double price;
+  String price;
 
-  Service({this.image, this.name, this.description, this.price});
+  SparePart({this.image, this.name, this.description, this.price, this.id});
 }

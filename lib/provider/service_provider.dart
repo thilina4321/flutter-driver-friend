@@ -6,21 +6,10 @@ import 'package:flutter/material.dart';
 class ServiceCenterProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://driver-friend.herokuapp.com/api/service-centers';
-  List<ServiceCenter> _serviceCenters = [
-    // ServiceCenter(
-    //     id: '2',
-    //     rating: 5.0,
-    //     name: 'Tharuka Service Center',
-    //     mobile: 05555555555,
-    //     address: 'Dehiattakandiya')
-  ];
+  List<ServiceCenter> _serviceCenters = [];
 
-  List<Service> _services;
+  List<SparePart> _services;
   ServiceCenter _serviceCenter;
-
-  // ServiceCenter get service {
-  //   return _serviceCenters[0];
-  // }
 
   List<ServiceCenter> get serviceCenters {
     return _serviceCenters;
@@ -30,7 +19,7 @@ class ServiceCenterProvider with ChangeNotifier {
     return _serviceCenter;
   }
 
-  List<Service> get services {
+  List<SparePart> get services {
     return [..._services];
   }
 
@@ -47,6 +36,9 @@ class ServiceCenterProvider with ChangeNotifier {
         city: serviceCenter['city'],
         latitude: serviceCenter['latitude'],
         longitude: serviceCenter['longitude'],
+        address: serviceCenter['address'],
+        openingTime: serviceCenter['openTime'],
+        closingTime: serviceCenter['closeTime'],
       );
 
       // _serviceCenter = serviceCenter.data;
@@ -65,7 +57,9 @@ class ServiceCenterProvider with ChangeNotifier {
       'longitude': serviceCenter.longitude,
       'latitude': serviceCenter.latitude,
       'city': serviceCenter.city,
-      'userType': serviceCenter.userType
+      'userType': serviceCenter.userType,
+      'openTime': serviceCenter.openingTime,
+      'closeTime': serviceCenter.closingTime,
     };
     try {
       var newServiceCenter = await dio.post(
@@ -79,6 +73,7 @@ class ServiceCenterProvider with ChangeNotifier {
           about: ser['about'],
           longitude: ser['longitude'],
           latitude: ser['latitude'],
+          address: ser['address'],
           city: ser['city']);
 
       notifyListeners();
@@ -96,35 +91,66 @@ class ServiceCenterProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addService(Service service) async {
+  Future<void> addService(SparePart service) async {
+    // FormData data = new FormData.fromMap({
+    //   'name': service.name,
+    //   'description': service.description,
+    //   'price': service.price
+    // });
+    var data = {
+      'name': service.name,
+      'description': service.description,
+      'price': service.price
+    };
     try {
-      var newService = await dio.post('$url/add-service', data: service);
-      print(service);
-      _services.add(newService.data);
+      var newService = await dio.post('$url/create-service', data: data);
+      var fetchedService = newService.data['service'];
+      _services.add(
+        SparePart(
+            id: fetchedService['_id'],
+            name: service.name,
+            description: service.description,
+            price: service.price),
+      );
+
+      print(fetchedService);
       notifyListeners();
     } catch (e) {
       print(e);
+      throw e;
     }
   }
 
-  Future<void> fetchServices(String id) async {
-    List<Service> services = [];
+  Future<void> fetchServices() async {
+    List<SparePart> services = [];
     try {
       var fetchedServices = await dio.get('$url/services');
-      services = fetchedServices.data;
+      var getServices = fetchedServices.data['services'];
+      getServices.forEach((service) {
+        services.add(
+          SparePart(
+              id: service['_id'],
+              name: service['name'],
+              price: service['price'].toString(),
+              description: service['description']),
+        );
+      });
       _services = services;
+      print(getServices);
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
   Future<void> deleteService(String id) async {
+    print(id);
     try {
-      var service = await dio.delete('$url/delete-service/$id');
-      print(service.data);
+      await dio.delete('$url/delete-service/$id');
+      _services.removeWhere((service) => service.id == id);
+      notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 

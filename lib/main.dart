@@ -19,6 +19,7 @@ import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
+import 'package:driver_friend/screen/serviceCenter/add-services.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
@@ -27,6 +28,7 @@ import 'package:driver_friend/screen/serviceCenter/service_contact.dart';
 import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:driver_friend/screen/auth/signup_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
+import 'package:driver_friend/screen/sparePartShop/add-part.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_contact.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
@@ -107,6 +109,7 @@ class MyApp extends StatelessWidget {
           ServiceCenterContactScreen.routeName: (ctx) =>
               ServiceCenterContactScreen(),
           ServiceCenterServices.routeName: (ctx) => ServiceCenterServices(),
+          CreateNewServiceScreen.routeName: (ctx) => CreateNewServiceScreen(),
 
           //spare part section
           SparepartShopListScreen.routeName: (ctx) => SparepartShopListScreen(),
@@ -117,6 +120,7 @@ class MyApp extends StatelessWidget {
               SparePartShopSettignScreen(),
           SpareShopContactScreen.routeName: (ctx) => SpareShopContactScreen(),
           SpareShopItems.routeName: (ctx) => SpareShopItems(),
+          CreateNewPartScreen.routeName: (ctx) => CreateNewPartScreen(),
 
           DefaultQuestionScreen.routeName: (ctx) => DefaultQuestionScreen(),
 
