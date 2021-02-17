@@ -92,6 +92,7 @@ class UserProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print(e);
+      throw e;
     }
   }
 
@@ -102,7 +103,7 @@ class UserProvider with ChangeNotifier {
       _user = user.data['user'];
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 

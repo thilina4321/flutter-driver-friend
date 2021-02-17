@@ -14,83 +14,124 @@ class DefaultQuestionScreen extends StatelessWidget {
     'How do i increase fuel efficiency',
     'How do i check the coolant level',
   ];
+
+  List<Question> _questions = [];
+  Future<void> fetchData(context) async {
+    await Provider.of<FaqProvider>(context, listen: false).fetchQuestions();
+  }
+
+  var comment = TextEditingController();
+  saveComment() {}
+
   @override
   Widget build(BuildContext context) {
+    _questions =
+        Provider.of<FaqProvider>(context, listen: false).answeredQuestions;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Frequently Ask Questions',
-          style: TextStyle(color: Colors.white),
+        appBar: AppBar(
+          title: Text(
+            'Frequently Ask Questions',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-              ),
-              context: context,
-              builder: (ctx) {
-                return Container(
-                  margin: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Welcome to the Search option in FAQ section',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            showModalBottomSheet(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                ),
+                context: context,
+                builder: (ctx) {
+                  return Container(
+                    margin: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Welcome to the Search option in FAQ section',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextField(
-                        decoration: InputDecoration(
-                          labelText: 'Search',
+                        SizedBox(
+                          height: 20,
                         ),
-                      ),
-                      FlatButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Serach',
-                            style: TextStyle(
-                              color: Colors.purple,
-                            ),
-                          ))
-                    ],
-                  ),
-                );
-              });
-        },
-        backgroundColor: Colors.purple,
-        child: Icon(Icons.search),
-      ),
-      body: Consumer<FaqProvider>(
-        builder: (ctx, faq, _) {
-          return ListView.builder(
-              itemCount: 5,
-              itemBuilder: (ctx, index) {
-                return Card(
-                  elevation: 3,
-                  child: ListTile(
-                    title: Text(quiz[index]),
-                    trailing: FlatButton(
-                      child: Text(
-                        'Go',
-                        style: TextStyle(color: Colors.purple),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pushNamed(AnswerScreen.routeName,
-                            arguments: quiz[index]);
-                      },
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Search',
+                          ),
+                        ),
+                        FlatButton(
+                            onPressed: () {},
+                            child: Text(
+                              'Serach',
+                              style: TextStyle(
+                                color: Colors.purple,
+                              ),
+                            ))
+                      ],
                     ),
-                  ),
-                );
-              });
-        },
-      ),
-    );
+                  );
+                });
+          },
+          backgroundColor: Colors.purple,
+          child: Icon(Icons.search),
+        ),
+        body: FutureBuilder(
+          future:
+              Provider.of<FaqProvider>(context, listen: false).fetchQuestions(),
+          builder: (ctx, data) {
+            if (data.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            if (data.error != null) {
+              print(data.error);
+              return Center(child: Text('Sorry something gone wrong'));
+            }
+            return Consumer<FaqProvider>(builder: (ctx, que, child) {
+              return que.answeredQuestions.length == 0
+                  ? Center(child: Text('No questions available'))
+                  : ListView.builder(
+                      itemCount: que.answeredQuestions.length,
+                      itemBuilder: (ctx, index) {
+                        return Card(
+                          elevation: 3,
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.all(8),
+                                      child: Text(
+                                        que.answeredQuestions[index].question,
+                                        textAlign: TextAlign.start,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                  ),
+                                  FlatButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pushNamed(
+                                          AnswerScreen.routeName,
+                                          arguments:
+                                              que.answeredQuestions[index].id);
+                                    },
+                                    child: Text('Check'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+            });
+          },
+        ));
   }
 }

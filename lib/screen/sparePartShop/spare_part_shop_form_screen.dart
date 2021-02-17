@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
@@ -24,7 +25,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
   final _form = GlobalKey<FormState>();
 
   SparePartShop sparePartShop = SparePartShop();
-  var id;
+  var me;
 
   Future<void> getLocation() async {
     try {
@@ -57,7 +58,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
       return;
     }
 
-    sparePartShop.id = id;
+    sparePartShop.id = me['_id'];
     print(sparePartShop.id);
 
     await Provider.of<SpareShopProvider>(context, listen: false)
@@ -75,8 +76,8 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
       sparePartShop = editablrSpareShop;
     }
 
-    id = ModalRoute.of(context).settings.arguments;
-    print(id);
+    me = Provider.of<UserProvider>(context, listen: false).me;
+    print(me['_id']);
 
     return Scaffold(
       appBar: AppBar(

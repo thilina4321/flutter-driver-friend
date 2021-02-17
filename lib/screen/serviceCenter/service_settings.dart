@@ -1,10 +1,17 @@
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/service_center_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ServiceCenterSettignScreen extends StatelessWidget {
   static String routeName = 'service-setting';
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserProvider>(context, listen: false).me;
+    var id = user['_id'];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Service Center Settings Page'),
@@ -111,7 +118,11 @@ class ServiceCenterSettignScreen extends StatelessWidget {
                                 Container(
                                   alignment: Alignment.center,
                                   child: FlatButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await Provider.of<ServiceCenterProvider>(
+                                              context,
+                                              listen: false)
+                                          .deleteServiceCenter(id);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

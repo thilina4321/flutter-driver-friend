@@ -1,4 +1,5 @@
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/faq_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/add_question.dart';
 import 'package:driver_friend/screen/faq/default_quiz_screen.dart';
@@ -9,14 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FAQ extends StatelessWidget {
-  static String routeName = '/faq';
+  static String routeName = 'faq-screen';
   @override
   Widget build(BuildContext context) {
+    var me = Provider.of<UserProvider>(context, listen: false).me;
+
     return Scaffold(
-      drawer: Provider.of<UserProvider>(context, listen: false).user ==
-              UserType.driver
-          ? DriverDrawer()
-          : MechanicDrawer(),
+      drawer: me['role'] == 'driver' ? DriverDrawer() : MechanicDrawer(),
       appBar: AppBar(
         title: Text('FAQ'),
         backgroundColor: Colors.purple,
@@ -49,24 +49,27 @@ class FAQ extends StatelessWidget {
               SizedBox(
                 height: 15,
               ),
-              CustomFaqCard(
-                icon: Icons.message,
-                route: AddNewQuestionPageScreen.routeName,
-                title: 'New Question',
-              ),
-              CustomFaqCard(
-                icon: Icons.thumb_up_sharp,
-                route: DefaultQuestionScreen.routeName,
-                title: 'Find Answers',
-              ),
+              if (me['role'] == 'driver')
+                CustomFaqCard(
+                  icon: Icons.message,
+                  route: AddNewQuestionPageScreen.routeName,
+                  title: 'New Question',
+                ),
+              if (me['role'] == 'driver')
+                CustomFaqCard(
+                  icon: Icons.thumb_up_sharp,
+                  route: DefaultQuestionScreen.routeName,
+                  title: 'Find Answers',
+                ),
               SizedBox(
                 height: 20,
               ),
-              CustomFaqCard(
-                icon: Icons.not_listed_location,
-                route: NotAnswerdYetQuizScreen.routeName,
-                title: 'Not Answered yet',
-              ),
+              if (me['role'] == 'mechanic')
+                CustomFaqCard(
+                  icon: Icons.not_listed_location,
+                  route: NotAnswerdYetQuizScreen.routeName,
+                  title: 'Not Answered yet',
+                ),
             ],
           ),
         ),
@@ -79,8 +82,9 @@ class CustomFaqCard extends StatelessWidget {
   final String route;
   final String title;
   final IconData icon;
+  final String args;
 
-  CustomFaqCard({this.icon, this.route, this.title});
+  CustomFaqCard({this.icon, this.route, this.title, this.args});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +92,7 @@ class CustomFaqCard extends StatelessWidget {
       elevation: 5,
       child: FlatButton(
         onPressed: () {
-          Navigator.of(context).pushNamed(route);
+          Navigator.of(context).pushNamed(route, arguments: args);
         },
         child: Padding(
           padding: const EdgeInsets.all(20.0),

@@ -1,11 +1,17 @@
-import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/mechanic_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MechanicSettignScreen extends StatelessWidget {
   static String routeName = 'mechanic-setting';
+
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserProvider>(context, listen: false).me;
+    var id = user['_id'];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Mechanic Settings Page'),
@@ -112,7 +118,11 @@ class MechanicSettignScreen extends StatelessWidget {
                                 Container(
                                   alignment: Alignment.center,
                                   child: FlatButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await Provider.of<MechanicProvider>(
+                                              context,
+                                              listen: false)
+                                          .deleteMechanic(id);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

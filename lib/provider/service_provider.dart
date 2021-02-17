@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class ServiceCenterProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://driver-friend.herokuapp.com/api/service-centers';
-  final List<ServiceCenter> _serviceCenters = [
+  List<ServiceCenter> _serviceCenters = [
     // ServiceCenter(
     //     id: '2',
     //     rating: 5.0,
@@ -52,7 +52,7 @@ class ServiceCenterProvider with ChangeNotifier {
       // _serviceCenter = serviceCenter.data;
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
@@ -81,11 +81,7 @@ class ServiceCenterProvider with ChangeNotifier {
           latitude: ser['latitude'],
           city: ser['city']);
 
-      print(_serviceCenter);
       notifyListeners();
-
-      // print(newServiceCenter.data);
-
     } catch (e) {
       print(e);
     }
@@ -93,7 +89,7 @@ class ServiceCenterProvider with ChangeNotifier {
 
   Future<void> deleteServiceCenter(String id) async {
     try {
-      var center = await dio.delete('$url/delete-service-center');
+      var center = await dio.delete('$url/delete-service-center/$id');
       print(center);
     } catch (e) {
       print(e);
@@ -130,5 +126,11 @@ class ServiceCenterProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  nearServiceCenters(String city) {
+    _serviceCenters =
+        _serviceCenters.where((mechanic) => mechanic.city == city);
+    notifyListeners();
   }
 }

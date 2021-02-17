@@ -41,9 +41,9 @@ class DriverProvider with ChangeNotifier {
       'latitude': driver.latitude,
       'city': driver.city
     };
-    print(data);
     try {
       var newDriver = await dio.post('$url/add-data', data: data);
+      print(newDriver.data);
       var driver = newDriver.data['driver'];
 
       _driver = Driver(
@@ -64,7 +64,7 @@ class DriverProvider with ChangeNotifier {
   Future<void> fetchDriver(id) async {
     try {
       var fetchedDriver = await dio.get('$url/driver/$id');
-      print(fetchedDriver.data);
+
       var driver = fetchedDriver.data['driver'];
       _driver = Driver(
         id: driver['_id'],
@@ -78,22 +78,28 @@ class DriverProvider with ChangeNotifier {
       );
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
-
-    notifyListeners();
   }
 
   Future<void> editDriver(Driver driver) async {
-    var newDriver = await dio.patch('/update/${driver.id}', data: driver);
-    _driver = newDriver.data;
-    notifyListeners();
+    try {
+      var newDriver = await dio.patch('/update/${driver.id}', data: driver);
+      _driver = newDriver.data;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> deleteDriver(String id) async {
-    var driver = await dio.delete('/delete-driver');
-    print(driver.data);
-    notifyListeners();
+    print(id);
+    try {
+      var driver = await dio.delete('/delete-driver/$id');
+      print(driver.data);
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<void> mechanicRating(int rating) async {
@@ -108,22 +114,40 @@ class DriverProvider with ChangeNotifier {
     await dio.post('/service-rating', data: {'rating': rating});
   }
 
-  Future<void> nearMechanic() async {
-    var mechanics = await dio.get('$url/near-mechanic');
-    _nearMechanics = mechanics.data;
-    notifyListeners();
-  }
+  // Future<void> nearMechanic() async {
+  //   try {
+  //     var mechanics = await dio.get('$url/near-mechanic');
+  //     print(_nearMechanics);
+  //     _nearMechanics = mechanics.data;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     throw e;
+  //     // print(e);
+  //   }
+  // }
+
+  nearMechanic() {}
 
   Future<void> nearService() async {
-    var service = await dio.get('$url/near-service');
-    _nearService = service.data;
-
-    notifyListeners();
+    try {
+      var service = await dio.get('$url/near-servicer');
+      _nearService = service.data;
+      print(_nearService);
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<void> nearSpare() async {
-    var spare = await dio.get('$url/near-spare');
-    _nearSpare = spare.data;
-    notifyListeners();
+    try {
+      var spare = await dio.get('$url/near-spare');
+
+      _nearSpare = spare.data;
+      print(_nearSpare);
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
   }
 }

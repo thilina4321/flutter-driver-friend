@@ -1,10 +1,16 @@
+import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SparePartShopSettignScreen extends StatelessWidget {
   static String routeName = 'spare-setting';
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserProvider>(context, listen: false).me;
+    var id = user['_id'];
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Spare Shop Settings Page'),
@@ -111,7 +117,11 @@ class SparePartShopSettignScreen extends StatelessWidget {
                                 Container(
                                   alignment: Alignment.center,
                                   child: FlatButton(
-                                    onPressed: () {
+                                    onPressed: () async {
+                                      await Provider.of<SpareShopProvider>(
+                                              context,
+                                              listen: false)
+                                          .deleteShop(id);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

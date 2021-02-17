@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
@@ -23,7 +24,8 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   final _form = GlobalKey<FormState>();
 
   final picker = ImagePicker();
-  var id;
+  ServiceCenter serviceCenter = ServiceCenter();
+  var me;
 
   Future saveImage(context) async {
     var pickedFile;
@@ -64,30 +66,21 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     }
   }
 
-  ServiceCenter serviceCenter = ServiceCenter();
-
   Future<void> _saveServiceCenter() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
     if (!isValid) {
       return;
     }
-    serviceCenter.id = id;
+    serviceCenter.id = me["_id"];
     await Provider.of<ServiceCenterProvider>(context, listen: false)
         .createServiceCenter(serviceCenter);
-    // Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
+    Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    id = ModalRoute.of(context).settings.arguments;
-
-    // ServiceCenter editableServiceCenter =
-    //     Provider.of<ServiceCenterProvider>(context, listen: false).service;
-
-    // if (editableServiceCenter != null) {
-    //   serviceCenter = editableServiceCenter;
-    // }
+    me = Provider.of<UserProvider>(context, listen: false).me;
 
     return Scaffold(
       appBar: AppBar(

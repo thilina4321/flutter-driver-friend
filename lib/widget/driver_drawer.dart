@@ -1,3 +1,4 @@
+import 'package:driver_friend/screen/auth/signup_screen.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
@@ -70,7 +71,10 @@ class DriverDrawer extends StatelessWidget {
               label: 'FAQ',
               routeName: FAQ.routeName,
             ),
-            DrawerIcons(icon: Icons.logout, label: 'Log Out'),
+            DrawerIcons(
+              icon: Icons.logout,
+              label: 'Log Out',
+            ),
             DrawerIcons(
               icon: Icons.settings,
               label: 'Settings & Accounts',

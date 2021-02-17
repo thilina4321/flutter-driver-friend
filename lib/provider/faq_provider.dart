@@ -8,16 +8,14 @@ class Question {
   String question;
   File questionImage;
   String driverId;
+  List<Answer> answers;
 
-  Question({this.question, this.questionImage, this.id, this.driverId});
-}
-
-class Comment {
-  File profileImage;
-  String name;
-  String answer;
-
-  Comment({this.name, this.profileImage, this.answer});
+  Question(
+      {this.question,
+      this.questionImage,
+      this.id,
+      this.driverId,
+      this.answers});
 }
 
 class Answer {
@@ -25,10 +23,11 @@ class Answer {
   String questionId;
   String authorId;
   String authorImageUrl;
-  String question;
+  String authorName;
+  String answer;
 
   Answer(
-      {this.question,
+      {this.answer,
       this.authorId,
       this.authorImageUrl,
       this.questionId,
@@ -38,33 +37,28 @@ class Answer {
 class FaqProvider with ChangeNotifier {
   Question _question;
   Answer _answer;
-  List<Question> _questions = [];
-  List<Answer> _answers = [];
-  var url = 'https://driver-friend.herokuapp.com/api';
+  List<Question> _answeredQuestions = [];
+  List<Question> _notAnsweredQuestions = [];
+  List _answers = [];
+
+  var url = 'https://driver-friend.herokuapp.com/api/faq';
   Dio dio = new Dio();
 
-  List<Question> get questions {
-    return [..._questions];
+  List<Question> get answeredQuestions {
+    return [..._answeredQuestions];
   }
 
-  Question get question {
-    return _question;
+  List<Question> get notAnsweredquestions {
+    return [..._notAnsweredQuestions];
   }
 
   List<Answer> get answers {
     return [..._answers];
   }
 
-  Answer get answer {
-    return _answer;
-  }
-
   Future<void> addQuestion(Question question) async {
-    var data = {
-      'driverId': question.driverId,
-      'imageUrl': question.questionImage,
-      'question': question.question
-    };
+    var data = {'driverId': question.driverId, 'question': question.question};
+
     try {
       var question = await dio.post('$url/create', data: data);
       var quiz = question.data['savedQuestion'];
@@ -79,25 +73,87 @@ class FaqProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchNotAnsweredQuestions() async {
-    var questions = [];
-    var fetchedQuestions = await dio.get('$url/not-answered');
+  Future<void> fetchQuestions() async {
+    _answeredQuestions = [];
+    _notAnsweredQuestions = [];
+    try {
+      var fetchedQuestions = await dio.get('$url/all');
+      var questions = fetchedQuestions.data;
+
+      questions.forEach((que) {
+        if (que['answers'].length > 0) {
+          List<Answer> fetchedAnswers = [];
+          que['answers'].forEach((ans) {
+            fetchedAnswers.add(Answer(
+                id: ans['_id'],
+                questionId: que['_id'],
+                authorId: ans['authorId'],
+                answer: ans['answer']));
+          });
+
+          _answeredQuestions.add(
+            Question(
+              id: que['_id'],
+              driverId: que['driverId'],
+              question: que['question'],
+              answers: fetchedAnswers,
+            ),
+          );
+        } else {
+          _notAnsweredQuestions.add(Question(
+              id: que['_id'],
+              driverId: que['driverId'],
+              question: que['question']));
+        }
+        // _answers.forEach((element) {
+        //   print(element.answer);
+        //   print('=================');
+        // });
+        notifyListeners();
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
-  Future<void> fetchAnsweredQuestions() async {
-    var questions = [];
-    var fetchedQuestions = await dio.get('$url/answered');
+  Future<void> deleteQuestion(String id) async {
+    try {
+      var fetchedQuestions = await dio.delete('$url/delete/$id');
+      print(fetchedQuestions.data);
+      notifyListeners();
+      _answeredQuestions.removeWhere((question) => question.id == id);
+    } catch (e) {
+      print(e);
+    }
   }
 
-  deleteQuestion(String id) {
-    _questions.removeWhere((question) => question.id == id);
+  Future<void> addAnswer(Answer answer) async {
+    var data = {
+      'authorId': answer.authorId,
+      'answer': answer.answer,
+      'questionId': answer.questionId
+    };
+
+    try {
+      await dio.post('$url/give-answer', data: data);
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
   }
 
-  addAnswer(Answer answer) {
-    _answers.add(answer);
+  Future<void> deleteAnswer(String id) async {
+    try {
+      var answer = await dio.delete('$url/delete/$id');
+      print(answer.data);
+    } catch (e) {
+      print(e);
+    }
   }
 
-  deleteAnswer(String id) {
-    _answers.removeWhere((answer) => answer.id == id);
+  selectAnswersForQuestion(String questionId) {
+    Question selectQuestion =
+        _answeredQuestions.firstWhere((que) => que.id == questionId);
+    _answers = selectQuestion.answers;
   }
 }

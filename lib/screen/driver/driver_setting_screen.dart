@@ -1,13 +1,23 @@
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DriverSettignScreen extends StatelessWidget {
+class DriverSettignScreen extends StatefulWidget {
   static String routeName = 'driver-setting';
+
+  @override
+  _DriverSettignScreenState createState() => _DriverSettignScreenState();
+}
+
+class _DriverSettignScreenState extends State<DriverSettignScreen> {
   @override
   Widget build(BuildContext context) {
-    var id = ModalRoute.of(context).settings.arguments;
+    var user = Provider.of<UserProvider>(context, listen: false).me;
+    var id = user['_id'];
+    bool isLoading = false;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Driver Settings Page'),
@@ -15,6 +25,7 @@ class DriverSettignScreen extends StatelessWidget {
       drawer: DriverDrawer(),
       body: Column(
         children: [
+          if (isLoading) Center(child: CircularProgressIndicator()),
           SizedBox(
             height: 20,
           ),
@@ -115,11 +126,42 @@ class DriverSettignScreen extends StatelessWidget {
                                   alignment: Alignment.center,
                                   child: FlatButton(
                                     onPressed: () async {
-                                      await Provider.of<DriverProvider>(context,
-                                              listen: false)
-                                          .deleteDriver(id);
-                                      Navigator.of(context)
-                                          .pushReplacementNamed('/');
+                                      try {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await Provider.of<DriverProvider>(
+                                                context,
+                                                listen: false)
+                                            .deleteDriver(id);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/');
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        return showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                content: Text(
+                                                  e.toString(),
+                                                ),
+                                                actions: [
+                                                  FlatButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('Ok'),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      }
                                     },
                                     child: Text(
                                       'Delete',

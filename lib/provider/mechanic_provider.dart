@@ -28,10 +28,13 @@ class MechanicProvider with ChangeNotifier {
   }
 
   Future<void> fetchMechanic(id) async {
-    try {
-      var fetchedMechanic = await dio.get('$url/mechanics');
-      var mechanic = fetchedMechanic.data['mechanic'];
+    print(id);
 
+    try {
+      var fetchedMechanic = await dio.get(
+          'https://driver-friend.herokuapp.com/api/mechanics/mechanic/$id');
+      print(fetchedMechanic.data);
+      var mechanic = fetchedMechanic.data['mechanic'];
       _mechanic = Mechanic(
         id: mechanic['_id'],
         nic: mechanic['nic'],
@@ -43,7 +46,32 @@ class MechanicProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
+    }
+  }
+
+  Future<void> fetchMechanics() async {
+    try {
+      var fetchedMechanic = await dio
+          .get('https://driver-friend.herokuapp.com/api/mechanics/mechanics');
+      print(fetchedMechanic.data);
+      var mechanics = fetchedMechanic.data['mechanics'];
+      mechanics.forEach((mechanic) {
+        _mechanics.add(
+          Mechanic(
+            id: mechanics['_id'],
+            nic: mechanics['nic'],
+            mobile: mechanics['mobile'],
+            city: mechanics['city'],
+            latitude: mechanics['latitude'],
+            longitude: mechanics['longitude'],
+          ),
+        );
+      });
+
+      notifyListeners();
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -92,7 +120,7 @@ class MechanicProvider with ChangeNotifier {
 
   Future<void> deleteMechanic(String id) async {
     try {
-      var mechanic = await dio.post('$url/delete-mechanic');
+      var mechanic = await dio.post('$url/delete-mechanic/$id');
       print(mechanic.data);
       notifyListeners();
     } catch (e) {
@@ -107,5 +135,10 @@ class MechanicProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  nearMechanics(String city) {
+    _mechanics = _mechanics.where((mechanic) => mechanic.city.contains(city));
+    notifyListeners();
   }
 }

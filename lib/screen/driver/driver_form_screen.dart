@@ -1,5 +1,6 @@
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 import 'package:flutter/material.dart';
@@ -45,42 +46,28 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     }
   }
 
-  Future simpleImage(BuildContext context) async {
-    // Provider.of<DriverProvider>(context, listen: false)
-    //     .simple('pickedFile.path');
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+  var me;
 
-    setState(() {
-      if (pickedFile != null) {
-        print(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+  Future<void> _saveDriver() async {
+    _form.currentState.save();
+    final isValid = _form.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+    driver.id = me['_id'];
+    await Provider.of<DriverProvider>(context, listen: false)
+        .createDriver(driver);
+    Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    // Driver editableDriver =
-    //     Provider.of<DriverProvider>(context, listen: false).driver;
-    // if (editableDriver.nic != null) {
-    //   print(editableDriver.nic);
-    //   driver = editableDriver;
-    // }
-
-    var id = ModalRoute.of(context).settings.arguments;
-    driver.id = id;
-
-    Future<void> _saveDriver() async {
-      _form.currentState.save();
-      final isValid = _form.currentState.validate();
-      if (!isValid) {
-        return;
-      }
-      await Provider.of<DriverProvider>(context, listen: false)
-          .createDriver(driver);
-      Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
+    Driver edit = ModalRoute.of(context).settings.arguments;
+    if (edit != null) {
+      driver = edit;
     }
+
+    me = Provider.of<UserProvider>(context).me;
 
     return Scaffold(
       appBar: AppBar(

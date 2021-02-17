@@ -13,23 +13,49 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   var initialUser = UserType.driver;
   final _form = GlobalKey<FormState>();
+  bool isLoading = false;
   User user = User();
 
   var confirmPassword = '';
 
-  Future<void> _saveTempararyUser() async {
-    print(initialUser);
+  Future<void> _signup() async {
     _form.currentState.save();
     bool isValid = _form.currentState.validate();
     user.userType = initialUser;
-    print(user.email);
-    print(isValid);
     if (!isValid) {
       return;
     }
-
-    await Provider.of<UserProvider>(context, listen: false).signup(user);
-    Navigator.of(context).pushReplacementNamed('/');
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await Provider.of<UserProvider>(context, listen: false).signup(user);
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context).pushReplacementNamed('/');
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                e.toString(),
+              ),
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
+    }
   }
 
   @override
@@ -205,18 +231,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(30),
                                 child: RaisedButton(
-                                  onPressed: _saveTempararyUser,
+                                  onPressed: _signup,
                                   color: Colors.purple,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         vertical: 11),
-                                    child: Text(
-                                      'CREATE',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                    child: isLoading
+                                        ? Center(
+                                            child: CircularProgressIndicator())
+                                        : Text(
+                                            'CREATE',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),

@@ -1,4 +1,5 @@
 import 'package:driver_friend/provider/faq_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -34,8 +35,8 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var id = ModalRoute.of(context).settings.arguments;
-    question.driverId = id;
+    var me = Provider.of<UserProvider>(context, listen: false).me;
+    question.driverId = me['_id'];
 
     Future<void> _saveQuestion() async {
       _form.currentState.save();
@@ -43,7 +44,8 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
       if (!isValid) {
         return;
       }
-
+      print(question.driverId);
+      print(question.question);
       await Provider.of<FaqProvider>(context, listen: false)
           .addQuestion(question);
       Navigator.of(context).pushReplacementNamed(FAQ.routeName);

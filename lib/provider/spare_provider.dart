@@ -74,10 +74,13 @@ class SpareShopProvider with ChangeNotifier {
   }
 
   Future<void> fetchSpareShop(id) async {
+    print(id);
     try {
-      var fetchedShops = await dio.get('$url/spare-shop/$id');
-      var shops = fetchedShops.data['sparePartShop'];
-
+      var fetchedShops = await dio.get(
+          'https://driver-friend.herokuapp.com/api/sparepart-shops/spare-shop/$id');
+      // print(fetchedShops.data);
+      var shops = fetchedShops.data['spareshop'];
+      // print(shops);
       _spareShop = SparePartShop(
         id: shops['_id'],
         mobile: shops['mobile'],
@@ -85,11 +88,11 @@ class SpareShopProvider with ChangeNotifier {
         latitude: shops['latitude'],
         longitude: shops['longitude'],
       );
-
-      print(_spareShop);
+      print(_spareShop.city);
       notifyListeners();
     } catch (e) {
       print(e);
+      throw e;
     }
   }
 
@@ -140,5 +143,10 @@ class SpareShopProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
+  }
+
+  nearSpareShops(String city) {
+    _spareShops = _spareShops.where((mechanic) => mechanic.city == city);
+    notifyListeners();
   }
 }

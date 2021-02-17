@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
@@ -21,7 +22,7 @@ class MechanicFormScreen extends StatefulWidget {
 
 class _MechanicFormScreenState extends State<MechanicFormScreen> {
   final _form = GlobalKey<FormState>();
-  var id;
+  var me;
 
   Mechanic mechanic = Mechanic();
 
@@ -31,7 +32,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (!isValid) {
       return;
     }
-    mechanic.id = id;
+    mechanic.id = me['_id'];
     await Provider.of<MechanicProvider>(context, listen: false)
         .createMechanic(mechanic);
     Navigator.of(context).pushReplacementNamed(MechanicProfileScreen.routeName);
@@ -59,24 +60,24 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     }
   }
 
-  final picker = ImagePicker();
+  // final picker = ImagePicker();
 
-  Future saveImage(context) async {
-    var pickedFile;
-    try {
-      pickedFile =
-          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
-      setState(() {
-        if (pickedFile != null) {
-          mechanic.profileImageUrl = File(pickedFile.path);
-        } else {
-          print('No image selected.');
-        }
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
+  // Future saveImage(context) async {
+  //   var pickedFile;
+  //   try {
+  //     pickedFile =
+  //         await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
+  //     setState(() {
+  //       if (pickedFile != null) {
+  //         mechanic.profileImageUrl = File(pickedFile.path);
+  //       } else {
+  //         print('No image selected.');
+  //       }
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (editableMechanic != null) {
       mechanic = editableMechanic;
     }
-    id = ModalRoute.of(context).settings.arguments;
+    me = Provider.of<UserProvider>(context, listen: false).me;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
