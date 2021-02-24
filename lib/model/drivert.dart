@@ -4,6 +4,7 @@ import 'package:driver_friend/model/userType.dart';
 
 class Driver {
   String id;
+  String userId;
   String email;
   String password;
   String name;
@@ -22,6 +23,7 @@ class Driver {
   Driver(
       {this.id,
       this.name,
+      this.userId,
       this.city,
       this.mapImagePreview,
       this.latitude,

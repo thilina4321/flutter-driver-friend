@@ -119,8 +119,12 @@ class DefaultQuestionScreen extends StatelessWidget {
                                     onPressed: () {
                                       Navigator.of(context).pushNamed(
                                           AnswerScreen.routeName,
-                                          arguments:
-                                              que.answeredQuestions[index].id);
+                                          arguments: {
+                                            'id':
+                                                que.answeredQuestions[index].id,
+                                            'que': que.answeredQuestions[index]
+                                                .question
+                                          });
                                     },
                                     child: Text('Check'),
                                   ),

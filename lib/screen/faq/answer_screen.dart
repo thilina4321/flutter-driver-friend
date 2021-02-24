@@ -20,10 +20,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    String id = ModalRoute.of(context).settings.arguments;
-    print(id);
+    Map data = ModalRoute.of(context).settings.arguments as Map;
+    print(data['id']);
     Provider.of<FaqProvider>(context, listen: false)
-        .selectAnswersForQuestion(id);
+        .selectAnswersForQuestion(data['id']);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,8 +45,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                       ),
                       title: Text('Thlina'),
                     ),
-                    Text(
-                        'This is thr questio that dhd kdhd hdkd dld d dhdld dhd kdd dhdkdd'),
+                    Text(data['que']),
                   ],
                 ),
               ),

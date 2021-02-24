@@ -6,37 +6,31 @@ import 'package:flutter/material.dart';
 class SpareShopProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://dirver-friend.herokuapp.com/api/sparepart-shops';
-  List<SparePartShop> _spareShops = [
-    // SparePartShop(
-    //     id: '2',
-    //     rating: 5.0,
-    //     name: 'Liyo Spare shop ',
-    //     mobile: 077777777,
-    //     address: 'Alpitiya')
-  ];
+
+  List<SparePartShop> _spareShops = [];
   SparePartShop _spareShop;
-  List<SparePart> _spareParts;
+  List<SparePart> _spareParts = [];
 
   SparePartShop get spareShop {
     return _spareShop;
   }
 
-  List<SparePart> get spareParts {
-    return [..._spareParts];
-  }
-
-  // SparePartShop get spare {
-  //   return _spareShops[0];
-  // }
-
   List<SparePartShop> get spareShops {
     return _spareShops;
+  }
+
+  List<SparePart> get spareParts {
+    if (_spareParts.length == 0) {
+      return [];
+    }
+    return [..._spareParts];
   }
 
   Future<void> login(data) async {
     try {
       var spareShop = await dio.post('$url/login',
           data: {'email': data.email, 'password': data.password});
+
       _spareShop = spareShop.data;
       notifyListeners();
     } catch (e) {
@@ -46,54 +40,51 @@ class SpareShopProvider with ChangeNotifier {
 
   Future<void> createSpareShop(SparePartShop spareShop) async {
     var data = {
-      'shopId': spareShop.id,
+      'userId': spareShop.userId,
       'address': spareShop.address,
-      'mapImageUrl': spareShop.mapImagePreview,
+      'openTime': spareShop.openingTime,
+      'closeTime': spareShop.closingTime,
+      'mobile': spareShop.mobile,
+      'about': spareShop.about,
       'longitude': spareShop.longitude,
       'latitude': spareShop.latitude,
       'city': spareShop.city,
-      'userType': spareShop.userType
     };
+
     try {
       Dio dio = new Dio();
-      var newSpareShop = await dio.post(
+
+      await dio.post(
           'https://driver-friend.herokuapp.com/api/sparepart-shops/add-data',
           data: data);
 
-      print(newSpareShop.data);
-      var ser = newSpareShop.data['spareshop'];
-
-      _spareShop = SparePartShop(
-          id: ser['shopId'],
-          mobile: ser['mobile'],
-          about: ser['about'],
-          longitude: ser['longitude'],
-          latitude: ser['latitude'],
-          address: ser['address'],
-          city: ser['city']);
-
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
   Future<void> fetchSpareShop(id) async {
-    print(id);
     try {
       var fetchedShops = await dio.get(
           'https://driver-friend.herokuapp.com/api/sparepart-shops/spare-shop/$id');
-      // print(fetchedShops.data);
+
       var shops = fetchedShops.data['spareshop'];
-      // print(shops);
+
       _spareShop = SparePartShop(
         id: shops['_id'],
+        userId: shops['userId'],
         mobile: shops['mobile'],
         city: shops['city'],
+        rating: double.parse(shops['totalRating'].toString()),
         latitude: shops['latitude'],
         longitude: shops['longitude'],
+        openingTime: shops['openTime'].toString(),
+        closingTime: shops['closeTime'].toString(),
+        about: shops['about'],
+        address: shops['address'],
       );
-      print(_spareShop.city);
+      print(_spareShop.id);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -103,70 +94,53 @@ class SpareShopProvider with ChangeNotifier {
 
   Future<void> editSpareShop(String id, SparePartShop spare) async {
     try {
-      var shop = await dio.patch('$url/delete-spare/$id', data: spare);
+      var shop = await dio.patch('$url/edit-spare/$id', data: spare);
+
       int shopIndex = _spareShops.indexWhere((shop) => shop.id == id);
       _spareShops[shopIndex] = shop.data;
       notifyListeners();
-      print(shop.data);
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
-  Future<void> deleteShop(String id) async {
+  Future<void> deleteShop(String id, String userId) async {
+    print(id);
+    print(userId);
     try {
-      var shop = await dio.delete('$url/delete-spare/$id');
-      print(shop.data);
+      await dio.delete(
+          'https://dirver-friend.herokuapp.com/api/sparepart-shops/delete-spareshop/$id/$userId');
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
   Future<void> addParts(SparePart service) async {
-    // FormData data = new FormData.fromMap({
-    //   'name': part.name,
-    //   'description': part.description,
-    //   'price': part.price
-    // });
-    print(service.description);
-
     var data = {
       'name': service.name,
       'description': service.description,
       'price': service.price
     };
     try {
-      var newService = await dio.post(
+      await dio.post(
           'https://driver-friend.herokuapp.com/api/sparepart-shops/create-spare',
           data: data);
-      var fetchedService = newService.data['spareParts'];
-      print(fetchedService);
-      // _spareParts.add(
-      //   SparePart(
-      //       id: fetchedService['_id'],
-      //       name: service.name,
-      //       description: service.description,
-      //       price: service.price),
-      // );
 
-      print(fetchedService);
       notifyListeners();
-      // print(fetchedParts);
-      // notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
 
   Future<void> fetchParts() async {
-    print('object');
     List<SparePart> parts = [];
+
     try {
       var fetchedParts = await dio.get(
           'https://driver-friend.herokuapp.com/api/sparepart-shops/spares');
-      // print(fetchedParts.data);
+
       var getParts = fetchedParts.data['spareParts'];
+
       getParts.forEach((part) {
         parts.add(
           SparePart(
@@ -179,21 +153,18 @@ class SpareShopProvider with ChangeNotifier {
       _spareParts = parts;
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
 
   Future<void> deleteParts(String id) async {
-    print(id);
     try {
-      var s = await dio.delete(
-          'https://driver-friend.herokuapp.com/api/sparepart-shops/delete-service/$id');
+      await dio.delete(
+          'https://driver-friend.herokuapp.com/api/sparepart-shops/delete-spare/$id');
+
       _spareParts.removeWhere((part) => part.id == id);
-      print(s);
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -201,5 +172,16 @@ class SpareShopProvider with ChangeNotifier {
   nearSpareShops(String city) {
     _spareShops = _spareShops.where((mechanic) => mechanic.city == city);
     notifyListeners();
+  }
+
+  Future<void> spareRating(String id, double rating) async {
+    try {
+      var rating = await dio
+          .post('https://dirver-friend.herokuapp.com/api/drivers/spare-rating');
+      print(rating);
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
   }
 }

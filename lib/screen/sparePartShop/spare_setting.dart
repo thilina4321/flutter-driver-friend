@@ -1,21 +1,31 @@
+import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
-import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/spare_part_shop_drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SparePartShopSettignScreen extends StatelessWidget {
+class SparePartShopSettignScreen extends StatefulWidget {
   static String routeName = 'spare-setting';
+
+  @override
+  _SparePartShopSettignScreenState createState() =>
+      _SparePartShopSettignScreenState();
+}
+
+class _SparePartShopSettignScreenState
+    extends State<SparePartShopSettignScreen> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context, listen: false).me;
-    var id = user['_id'];
+    SparePartShop user =
+        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Spare Shop Settings Page'),
       ),
-      drawer: DriverDrawer(),
+      drawer: SparePartShopDrawer(),
       body: Column(
         children: [
           SizedBox(
@@ -118,12 +128,35 @@ class SparePartShopSettignScreen extends StatelessWidget {
                                   alignment: Alignment.center,
                                   child: FlatButton(
                                     onPressed: () async {
-                                      await Provider.of<SpareShopProvider>(
-                                              context,
-                                              listen: false)
-                                          .deleteShop(id);
-                                      Navigator.of(context)
-                                          .pushReplacementNamed('/');
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      try {
+                                        await Provider.of<SpareShopProvider>(
+                                                context,
+                                                listen: false)
+                                            .deleteShop(user.id, user.userId);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        Navigator.of(context)
+                                            .pushReplacementNamed('/');
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        return showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                content: Container(
+                                                  child: Text(
+                                                    e.toString(),
+                                                  ),
+                                                ),
+                                              );
+                                            });
+                                      }
                                     },
                                     child: Text(
                                       'Delete',

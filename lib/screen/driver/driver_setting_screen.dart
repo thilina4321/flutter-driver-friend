@@ -14,8 +14,7 @@ class DriverSettignScreen extends StatefulWidget {
 class _DriverSettignScreenState extends State<DriverSettignScreen> {
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context, listen: false).me;
-    var id = user['_id'];
+    var user = Provider.of<DriverProvider>(context, listen: false).driver;
     bool isLoading = false;
 
     return Scaffold(
@@ -133,7 +132,7 @@ class _DriverSettignScreenState extends State<DriverSettignScreen> {
                                         await Provider.of<DriverProvider>(
                                                 context,
                                                 listen: false)
-                                            .deleteDriver(id);
+                                            .deleteDriver(user.id, user.userId);
                                         setState(() {
                                           isLoading = false;
                                         });

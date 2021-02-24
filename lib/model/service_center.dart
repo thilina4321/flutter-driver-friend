@@ -4,6 +4,7 @@ import 'package:driver_friend/model/userType.dart';
 
 class ServiceCenter {
   String id;
+  String userId;
   String address;
   String mobile;
   String about;
@@ -24,6 +25,7 @@ class ServiceCenter {
 
   ServiceCenter(
       {this.id,
+      this.userId,
       this.city,
       this.mapImagePreview,
       this.about,

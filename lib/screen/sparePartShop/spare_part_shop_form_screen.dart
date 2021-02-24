@@ -50,6 +50,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
   }
 
   final picker = ImagePicker();
+  bool isLoading = false;
 
   Future<void> _saveSpareShop() async {
     _form.currentState.save();
@@ -58,23 +59,45 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
       return;
     }
 
-    sparePartShop.id = me['_id'];
-    print(sparePartShop.id);
+    sparePartShop.userId = me['_id'];
+    setState(() {
+      isLoading = true;
+    });
 
-    await Provider.of<SpareShopProvider>(context, listen: false)
-        .createSpareShop(sparePartShop);
-    Navigator.of(context)
-        .pushReplacementNamed(SparePartShopProfileScreen.routeName);
+    try {
+      await Provider.of<SpareShopProvider>(context, listen: false)
+          .createSpareShop(sparePartShop);
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context)
+          .pushReplacementNamed(SparePartShopProfileScreen.routeName);
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Container(
+                  child: Text(
+                e.toString(),
+              )),
+            );
+          });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    SparePartShop editablrSpareShop =
-        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
+    // SparePartShop editablrSpareShop =
+    //     Provider.of<SpareShopProvider>(context, listen: false).spareShop;
+    // // print(editablrSpareShop.address);
 
-    if (editablrSpareShop != null) {
-      sparePartShop = editablrSpareShop;
-    }
+    // if (editablrSpareShop != null) {
+    //   sparePartShop = editablrSpareShop;
+    // }
 
     me = Provider.of<UserProvider>(context, listen: false).me;
     print(me['_id']);
@@ -110,7 +133,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                 ),
                 TextFormField(
                   onSaved: (value) {
-                    sparePartShop.mobile = int.parse(value);
+                    sparePartShop.mobile = value;
                   },
                   validator: (value) {
                     if (value == null) {
@@ -124,7 +147,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
 
                     return null;
                   },
-                  initialValue: sparePartShop.mobile.toString(),
+                  initialValue: sparePartShop.mobile,
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
                   maxLines: null,
@@ -224,13 +247,15 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                              'Save',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 )

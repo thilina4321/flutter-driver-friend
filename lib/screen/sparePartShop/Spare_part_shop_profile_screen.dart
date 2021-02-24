@@ -33,7 +33,6 @@ class _SparePartShopProfileScreenState
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
-    print(me['_id']);
 
     return Scaffold(
         appBar: AppBar(
@@ -87,9 +86,7 @@ class _SparePartShopProfileScreenState
               return Consumer<SpareShopProvider>(builder: (ctx, spare, child) {
                 spareShop = spare.spareShop;
                 spareShop.name = me['userName'];
-                spareShop.id = me['_id'];
 
-                print(spareShop.mobile);
                 return SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,7 +178,8 @@ class _SparePartShopProfileScreenState
                                   IconButton(
                                     onPressed: () {
                                       Navigator.of(context).pushNamed(
-                                          SparePartShopFormScreen.routeName);
+                                          SparePartShopFormScreen.routeName,
+                                          arguments: spareShop);
                                     },
                                     icon: Icon(
                                       Icons.edit,

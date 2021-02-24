@@ -25,6 +25,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
   var me;
 
   Mechanic mechanic = Mechanic();
+  bool isLoading = false;
 
   Future<void> _saveMechanic() async {
     _form.currentState.save();
@@ -32,10 +33,33 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (!isValid) {
       return;
     }
-    mechanic.id = me['_id'];
-    await Provider.of<MechanicProvider>(context, listen: false)
-        .createMechanic(mechanic);
-    Navigator.of(context).pushReplacementNamed(MechanicProfileScreen.routeName);
+    mechanic.userId = me['_id'];
+    print(mechanic.userId);
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await Provider.of<MechanicProvider>(context, listen: false)
+          .createMechanic(mechanic);
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context)
+          .pushReplacementNamed(MechanicProfileScreen.routeName);
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return Container(
+              child: Text(
+                e.toString(),
+              ),
+            );
+          });
+    }
   }
 
   Future<void> getLocation() async {
@@ -81,11 +105,11 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Mechanic editableMechanic =
-        Provider.of<MechanicProvider>(context, listen: false).mechanic;
-    if (editableMechanic != null) {
-      mechanic = editableMechanic;
-    }
+    // Mechanic editableMechanic =
+    //     Provider.of<MechanicProvider>(context, listen: false).mechanic;
+    // if (editableMechanic != null) {
+    //   mechanic = editableMechanic;
+    // }
     me = Provider.of<UserProvider>(context, listen: false).me;
     return Scaffold(
       appBar: AppBar(
@@ -221,13 +245,15 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                              'Save',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 )

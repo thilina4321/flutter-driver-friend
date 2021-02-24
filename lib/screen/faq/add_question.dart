@@ -20,6 +20,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
   Question question = Question();
 
   final picker = ImagePicker();
+  bool isLoading = false;
 
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
@@ -46,9 +47,40 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
       }
       print(question.driverId);
       print(question.question);
-      await Provider.of<FaqProvider>(context, listen: false)
-          .addQuestion(question);
-      Navigator.of(context).pushReplacementNamed(FAQ.routeName);
+      setState(() {
+        isLoading = true;
+      });
+      try {
+        await Provider.of<FaqProvider>(context, listen: false)
+            .addQuestion(question);
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.of(context).pushReplacementNamed(FAQ.routeName);
+      } catch (e) {
+        setState(() {
+          isLoading = false;
+        });
+        return showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                actions: [
+                  FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text('Ok'),
+                  )
+                ],
+                content: Container(
+                  child: Text(
+                    e.toString(),
+                  ),
+                ),
+              );
+            });
+      }
     }
 
     return Scaffold(
@@ -118,12 +150,16 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
                   color: Colors.purple,
                   child: FlatButton(
                     onPressed: _saveQuestion,
-                    child: Text(
-                      'Post Question',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: isLoading
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text(
+                            'Post Question',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ],

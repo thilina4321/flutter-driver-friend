@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:flutter/material.dart';
@@ -12,33 +14,52 @@ class ServiceCenterServices extends StatefulWidget {
 
 class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   bool isLoading = false;
+
+  Future<void> fetchServices() async {
+    try {
+      await Provider.of<ServiceCenterProvider>(context, listen: false)
+          .fetchServices();
+    } catch (e) {
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Text(
+                e.toString(),
+              ),
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          });
+    }
+  }
+
+  @override
+  void initState() {
+    fetchServices();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Services'),
+        title: isLoading ? CircularProgressIndicator() : Text('Services'),
       ),
-      body: FutureBuilder(
-        future: Provider.of<ServiceCenterProvider>(context, listen: false)
-            .fetchServices(),
-        builder: (context, data) {
-          if (data.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (data.error != null) {
-            if (data.error.toString().contains('404')) {
-              return Center(child: Text('No service have yet'));
-            }
-            return Center(
-              child: Text(
-                'Something went wrong, please try again later',
-              ),
-            );
-          }
-          return Consumer<ServiceCenterProvider>(
-            builder: (context, service, child) {
-              List<SparePart> services = service.services;
-              return ListView.builder(
+      body: Consumer<ServiceCenterProvider>(
+        builder: (context, service, child) {
+          List<Service> services = service.services;
+          return services.length == 0
+              ? Center(
+                  child: Text('No services have yet, '),
+                )
+              : ListView.builder(
                   itemCount: services.length,
                   itemBuilder: (ctx, index) {
                     return ClipRRect(
@@ -72,13 +93,12 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                               padding: const EdgeInsets.all(8.0),
                               child: Text(services[index].description),
                             ),
-                            if (isLoading) CircularProgressIndicator(),
                             Row(
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    services[index].price.toString(),
+                                    'Rs.' + services[index].price.toString(),
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -136,8 +156,6 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                       ),
                     );
                   });
-            },
-          );
         },
       ),
     );

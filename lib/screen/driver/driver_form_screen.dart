@@ -23,6 +23,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
   Driver driver = Driver();
 
   final picker = ImagePicker();
+  bool isLoading = false;
 
   Future<void> getLocation() async {
     try {
@@ -35,7 +36,6 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
       List<geoCoding.Placemark> placemarks = await geoCoding
           .placemarkFromCoordinates(driver.latitude, driver.longitude);
-      print(placemarks[0].name);
       driver.city = placemarks[0].name;
 
       setState(() {
@@ -54,18 +54,49 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     if (!isValid) {
       return;
     }
-    driver.id = me['_id'];
-    await Provider.of<DriverProvider>(context, listen: false)
-        .createDriver(driver);
-    Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
+    driver.userId = me['_id'];
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await Provider.of<DriverProvider>(context, listen: false)
+          .createDriver(driver);
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context).pushReplacementNamed(DriverProfileScreen.routeName);
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Ok'),
+                )
+              ],
+              content: Container(
+                child: Text(
+                  e.toString(),
+                ),
+              ),
+            );
+          });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Driver edit = ModalRoute.of(context).settings.arguments;
-    if (edit != null) {
-      driver = edit;
-    }
+    // Driver edit = ModalRoute.of(context).settings.arguments;
+    // if (edit != null) {
+    //   driver = edit;
+    // }
 
     me = Provider.of<UserProvider>(context).me;
 
@@ -259,13 +290,15 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                              'Save',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 )

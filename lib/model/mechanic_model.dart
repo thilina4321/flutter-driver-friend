@@ -4,6 +4,7 @@ import 'package:driver_friend/model/userType.dart';
 
 class Mechanic {
   String id;
+  String userId;
   String email;
   String password;
   String mapImagePreview;
@@ -23,6 +24,7 @@ class Mechanic {
 
   Mechanic(
       {this.nic,
+      this.userId,
       this.city,
       this.latitude,
       this.longitude,

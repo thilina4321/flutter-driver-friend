@@ -32,7 +32,7 @@ class DriverProvider with ChangeNotifier {
 
   Future<void> createDriver(Driver driver) async {
     var data = {
-      'driverId': driver.id,
+      'userId': driver.userId,
       'nic': driver.nic,
       'mobile': driver.mobile,
       'vehicleNumber': driver.vehicleNumber,
@@ -42,22 +42,9 @@ class DriverProvider with ChangeNotifier {
       'city': driver.city
     };
     try {
-      var newDriver = await dio.post('$url/add-data', data: data);
-      print(newDriver.data);
-      var driver = newDriver.data['driver'];
-
-      _driver = Driver(
-          id: driver['driverId'],
-          nic: driver['nic'],
-          mobile: driver['mobile'],
-          vehicleNumber: driver['vehicleNumber'],
-          vehicleColor: driver['vehicleColor'],
-          longitude: driver['longitude'],
-          latitude: driver['latitude']);
-      print(_driver.latitude);
-      notifyListeners();
+      await dio.post('$url/add-data', data: data);
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
@@ -69,6 +56,7 @@ class DriverProvider with ChangeNotifier {
       _driver = Driver(
         id: driver['_id'],
         nic: driver['nic'],
+        userId: driver['userId'],
         mobile: driver['mobile'],
         vehicleColor: driver['vehicleColor'],
         vehicleNumber: driver['vehicleNumber'],
@@ -92,10 +80,10 @@ class DriverProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteDriver(String id) async {
+  Future<void> deleteDriver(String id, String userId) async {
     print(id);
     try {
-      var driver = await dio.delete('/delete-driver/$id');
+      var driver = await dio.delete('$url/delete-driver/$id/$userId');
       print(driver.data);
     } catch (e) {
       throw e;

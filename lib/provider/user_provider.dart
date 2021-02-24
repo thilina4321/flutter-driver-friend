@@ -36,12 +36,7 @@ class UserProvider with ChangeNotifier {
       mobile: '0777777777',
       address: 'Alpitiya');
 
-  final SparePartShop _spareShop = SparePartShop(
-      id: '2',
-      rating: 3.0,
-      name: 'Tharuka Spare shop ',
-      mobile: 077777777,
-      address: 'Dehiattakandiya');
+  SparePartShop _spareShop;
 
   SparePartShop get spareShop {
     return _spareShop;

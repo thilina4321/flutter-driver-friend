@@ -9,8 +9,8 @@ class ServiceCenterSettignScreen extends StatelessWidget {
   static String routeName = 'service-setting';
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context, listen: false).me;
-    var id = user['_id'];
+    var user = Provider.of<ServiceCenterProvider>(context, listen: false)
+        .serviceCenter;
 
     return Scaffold(
       appBar: AppBar(
@@ -122,7 +122,8 @@ class ServiceCenterSettignScreen extends StatelessWidget {
                                       await Provider.of<ServiceCenterProvider>(
                                               context,
                                               listen: false)
-                                          .deleteServiceCenter(id);
+                                          .deleteServiceCenter(
+                                              user.id, user.userId);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

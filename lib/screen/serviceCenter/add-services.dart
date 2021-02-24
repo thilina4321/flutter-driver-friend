@@ -1,6 +1,6 @@
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
-import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
+import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,7 +14,7 @@ class CreateNewServiceScreen extends StatefulWidget {
 class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
   final _form = GlobalKey<FormState>();
 
-  SparePart _service = SparePart();
+  Service _service = Service();
   bool isLoading = false;
 
   Future<void> _createService(context) async {
@@ -32,7 +32,8 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
       setState(() {
         isLoading = false;
       });
-      Navigator.of(context).pushReplacementNamed(ServiceCenterList.routeName);
+      Navigator.of(context)
+          .pushReplacementNamed(ServiceCenterServices.routeName);
     } catch (e) {
       setState(() {
         isLoading = false;

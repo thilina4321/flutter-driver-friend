@@ -9,8 +9,7 @@ class MechanicSettignScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<UserProvider>(context, listen: false).me;
-    var id = user['_id'];
+    var user = Provider.of<MechanicProvider>(context, listen: false).mechanic;
 
     return Scaffold(
       appBar: AppBar(
@@ -122,7 +121,7 @@ class MechanicSettignScreen extends StatelessWidget {
                                       await Provider.of<MechanicProvider>(
                                               context,
                                               listen: false)
-                                          .deleteMechanic(id);
+                                          .deleteMechanic(user.id, user.userId);
                                       Navigator.of(context)
                                           .pushReplacementNamed('/');
                                     },

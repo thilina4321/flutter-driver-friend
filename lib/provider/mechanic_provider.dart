@@ -42,6 +42,8 @@ class MechanicProvider with ChangeNotifier {
         city: mechanic['city'],
         latitude: mechanic['latitude'],
         longitude: mechanic['longitude'],
+        about: mechanic['about'],
+        address: mechanic['address'],
       );
 
       notifyListeners();
@@ -59,13 +61,14 @@ class MechanicProvider with ChangeNotifier {
       mechanics.forEach((mechanic) {
         _mechanics.add(
           Mechanic(
-            id: mechanics['_id'],
-            nic: mechanics['nic'],
-            mobile: mechanics['mobile'],
-            city: mechanics['city'],
-            latitude: mechanics['latitude'],
-            longitude: mechanics['longitude'],
-          ),
+              id: mechanics['_id'],
+              nic: mechanics['nic'],
+              mobile: mechanics['mobile'],
+              city: mechanics['city'],
+              latitude: mechanics['latitude'],
+              longitude: mechanics['longitude'],
+              about: mechanics['about'],
+              address: mechanics['address']),
         );
       });
 
@@ -77,7 +80,7 @@ class MechanicProvider with ChangeNotifier {
 
   Future<void> createMechanic(Mechanic mechanic) async {
     var data = {
-      'mechanicId': mechanic.id,
+      'userId': mechanic.userId,
       'nic': mechanic.nic,
       'address': mechanic.address,
       'mobile': mechanic.mobile,
@@ -87,24 +90,11 @@ class MechanicProvider with ChangeNotifier {
       'about': mechanic.about
     };
     try {
-      var newMechanic = await dio.post(
+      await dio.post(
           'https://driver-friend.herokuapp.com/api/mechanics/add-data',
           data: data);
-      var mec = newMechanic.data['mechanic'];
-      _mechanic = Mechanic(
-          id: mec['mechanicId'],
-          nic: mec['nic'],
-          mobile: mec['mobile'],
-          about: mec['about'],
-          longitude: mec['longitude'],
-          latitude: mec['latitude'],
-          city: mec['city']);
-      print(mec);
-
-      notifyListeners();
     } catch (e) {
-      print(e);
-      print('hello');
+      throw e;
     }
   }
 
@@ -114,17 +104,17 @@ class MechanicProvider with ChangeNotifier {
       _mechanic = updatedMechanic.data;
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
-  Future<void> deleteMechanic(String id) async {
+  Future<void> deleteMechanic(String id, String userId) async {
     try {
-      var mechanic = await dio.post('$url/delete-mechanic/$id');
+      var mechanic = await dio.post('$url/delete-mechanic/$id/$userId');
       print(mechanic.data);
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
@@ -140,5 +130,16 @@ class MechanicProvider with ChangeNotifier {
   nearMechanics(String city) {
     _mechanics = _mechanics.where((mechanic) => mechanic.city.contains(city));
     notifyListeners();
+  }
+
+  Future<void> mechanicRating(String id, double rating) async {
+    try {
+      var rating = await dio.post(
+          'https://dirver-friend.herokuapp.com/api/drivers/mechanic-rating');
+      print(rating);
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
   }
 }

@@ -1,5 +1,11 @@
+import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:provider/provider.dart';
 
 class CustomRatingWidget extends StatefulWidget {
   static String routeName = 'rating';
@@ -9,10 +15,12 @@ class CustomRatingWidget extends StatefulWidget {
 
 class _CustomRatingWidgetState extends State<CustomRatingWidget> {
   final _form = GlobalKey<FormState>();
-  String initialValue = '0';
+  int initialValue = 0;
   double rating;
+  String id;
+  String role;
 
-  _saveRating() {
+  Future<void> _saveRating() async {
     final isValid = _form.currentState.validate();
 
     if (!isValid) {
@@ -20,13 +28,49 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
     }
 
     _form.currentState.save();
-    print(initialValue);
-    Navigator.of(context).pop();
+    try {
+      if (role == 'driver') {
+        await Provider.of<MechanicProvider>(context, listen: false)
+            .mechanicRating(id, rating);
+      }
+      if (role == 'spare') {
+        await Provider.of<SpareShopProvider>(context, listen: false)
+            .spareRating(id, rating);
+      }
+      if (role == 'service') {
+        await Provider.of<ServiceCenterProvider>(context, listen: false)
+            .serviceRating(id, rating);
+      }
+      Navigator.of(context).pop();
+    } catch (e) {
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Container(
+                child: Text(
+                  e.toString(),
+                ),
+              ),
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Ok'),
+                ),
+              ],
+            );
+          });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    rating = ModalRoute.of(context).settings.arguments;
+    Map data = ModalRoute.of(context).settings.arguments as Map;
+    rating = data['rating'];
+    id = data['id'];
+
     return Scaffold(
       appBar: AppBar(),
       body: Container(
@@ -65,7 +109,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
                       if (value == '') {
                         value = '0';
                       }
-                      initialValue = value;
+                      initialValue = int.parse(value);
                     },
                     validator: (value) {
                       if (value == '') {

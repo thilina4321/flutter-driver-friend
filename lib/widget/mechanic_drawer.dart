@@ -56,7 +56,11 @@ class MechanicDrawer extends StatelessWidget {
               label: 'FAQ',
               routeName: FAQ.routeName,
             ),
-            DrawerIcons(icon: Icons.logout, label: 'Log Out'),
+            DrawerIcons(
+              icon: Icons.logout,
+              label: 'Log Out',
+              routeName: '/',
+            ),
             DrawerIcons(
               icon: Icons.settings,
               label: 'Settings & Accounts',
@@ -97,9 +101,7 @@ class DrawerIcons extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              routeName == null
-                  ? Navigator.of(context).pushReplacementNamed('/')
-                  : Navigator.of(context).pushNamed(routeName);
+              Navigator.of(context).pushNamed(routeName);
             }),
         Divider(
           thickness: 2,

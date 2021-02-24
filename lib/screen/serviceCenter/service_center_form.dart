@@ -26,6 +26,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   final picker = ImagePicker();
   ServiceCenter serviceCenter = ServiceCenter();
   var me;
+  bool isLoading = false;
 
   Future saveImage(context) async {
     var pickedFile;
@@ -72,17 +73,43 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     if (!isValid) {
       return;
     }
-    serviceCenter.id = me["_id"];
-    await Provider.of<ServiceCenterProvider>(context, listen: false)
-        .createServiceCenter(serviceCenter);
-    Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
+    serviceCenter.userId = me["_id"];
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<ServiceCenterProvider>(context, listen: false)
+          .createServiceCenter(serviceCenter);
+      setState(() {
+        isLoading = false;
+      });
+      Navigator.of(context).pushNamed(ServiceCenterProfileScreen.routeName);
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      return showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              content: Container(
+                  child: Text(
+                e.toString(),
+              )),
+            );
+          });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
-    serviceCenter = Provider.of<ServiceCenterProvider>(context, listen: false)
-        .serviceCenter;
+    // ServiceCenter editableServiceCenter =
+    //     Provider.of<ServiceCenterProvider>(context, listen: false)
+    //         .serviceCenter;
+    // if (editableServiceCenter != null) {
+    //   serviceCenter = editableServiceCenter;
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -213,13 +240,15 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                     color: Colors.purple,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Save',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: isLoading
+                          ? CircularProgressIndicator()
+                          : Text(
+                              'Save',
+                              style: TextStyle(
+                                fontSize: 22,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 )

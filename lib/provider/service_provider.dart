@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/model/service_center.dart';
@@ -8,7 +10,7 @@ class ServiceCenterProvider with ChangeNotifier {
   final url = 'https://driver-friend.herokuapp.com/api/service-centers';
   List<ServiceCenter> _serviceCenters = [];
 
-  List<SparePart> _services;
+  List<Service> _services = [];
   ServiceCenter _serviceCenter;
 
   List<ServiceCenter> get serviceCenters {
@@ -19,14 +21,16 @@ class ServiceCenterProvider with ChangeNotifier {
     return _serviceCenter;
   }
 
-  List<SparePart> get services {
+  List<Service> get services {
+    if (_services.length == 0) {
+      return [];
+    }
     return [..._services];
   }
 
   Future<void> fetchServiceCenter(id) async {
     try {
       var fetchedCenter = await dio.get('$url/service-center/$id');
-      print(fetchedCenter.data);
 
       var serviceCenter = fetchedCenter.data['serviceCenter'];
 
@@ -49,9 +53,8 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> createServiceCenter(ServiceCenter serviceCenter) async {
-    print(serviceCenter.id);
     var data = {
-      'centerId': serviceCenter.id,
+      'userId': serviceCenter.userId,
       'address': serviceCenter.address,
       'mobile': serviceCenter.mobile,
       'longitude': serviceCenter.longitude,
@@ -62,36 +65,24 @@ class ServiceCenterProvider with ChangeNotifier {
       'closeTime': serviceCenter.closingTime,
     };
     try {
-      var newServiceCenter = await dio.post(
+      await dio.post(
           'https://driver-friend.herokuapp.com/api/service-centers/add-data',
           data: data);
-      var ser = newServiceCenter.data['serviceCenter'];
-      print(ser);
-      _serviceCenter = ServiceCenter(
-          id: ser['centerId'],
-          mobile: ser['mobile'],
-          about: ser['about'],
-          longitude: ser['longitude'],
-          latitude: ser['latitude'],
-          address: ser['address'],
-          city: ser['city']);
-
-      notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
-  Future<void> deleteServiceCenter(String id) async {
+  Future<void> deleteServiceCenter(String id, String userId) async {
     try {
-      var center = await dio.delete('$url/delete-service-center/$id');
+      var center = await dio.delete('$url/delete-service-center/$id/$userId');
       print(center);
     } catch (e) {
       print(e);
     }
   }
 
-  Future<void> addService(SparePart service) async {
+  Future<void> addService(Service service) async {
     // FormData data = new FormData.fromMap({
     //   'name': service.name,
     //   'description': service.description,
@@ -106,7 +97,7 @@ class ServiceCenterProvider with ChangeNotifier {
       var newService = await dio.post('$url/create-service', data: data);
       var fetchedService = newService.data['service'];
       _services.add(
-        SparePart(
+        Service(
             id: fetchedService['_id'],
             name: service.name,
             description: service.description,
@@ -122,13 +113,14 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> fetchServices() async {
-    List<SparePart> services = [];
+    List<Service> services = [];
     try {
       var fetchedServices = await dio.get('$url/services');
       var getServices = fetchedServices.data['services'];
+
       getServices.forEach((service) {
         services.add(
-          SparePart(
+          Service(
               id: service['_id'],
               name: service['name'],
               price: service['price'].toString(),
@@ -136,7 +128,6 @@ class ServiceCenterProvider with ChangeNotifier {
         );
       });
       _services = services;
-      print(getServices);
       notifyListeners();
     } catch (e) {
       throw e;
@@ -158,5 +149,16 @@ class ServiceCenterProvider with ChangeNotifier {
     _serviceCenters =
         _serviceCenters.where((mechanic) => mechanic.city == city);
     notifyListeners();
+  }
+
+  Future<void> serviceRating(String id, double rating) async {
+    try {
+      var rating = await dio.post(
+          'https://dirver-friend.herokuapp.com/api/drivers/service-rating');
+      print(rating);
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
   }
 }

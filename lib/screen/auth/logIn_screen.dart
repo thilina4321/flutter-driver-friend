@@ -24,11 +24,10 @@ class _LogInScreenState extends State<LogInScreen> {
 
   Map<String, String> user = {'email': '', 'password': ''};
 
-  Future<void> _saveTempararyUser() async {
+  Future<void> _login() async {
     _form.currentState.save();
     bool isValid = _form.currentState.validate();
 
-    print(isValid);
     if (!isValid) {
       return;
     }
@@ -43,6 +42,7 @@ class _LogInScreenState extends State<LogInScreen> {
       setState(() {
         isLoading = false;
       });
+      _form.currentState.reset();
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -92,171 +92,134 @@ class _LogInScreenState extends State<LogInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: (isLoading)
-            ? Center(
-                child: CircularProgressIndicator(),
-              )
-            : SingleChildScrollView(
-                child: Container(
-                  margin: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.car_rental,
+                      size: 80,
+                    ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        child: RaisedButton(
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushReplacementNamed(SignUpScreen.routeName);
+                          },
+                          color: Colors.black,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Text(
+                              'Create Account',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  'Welcome to Driver Freind',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'The system that help for drivers to overcome their issues.',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(
+                  height: 40,
+                ),
+                Form(
+                  key: _form,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.car_rental,
-                            size: 80,
-                          ),
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 20),
-                              child: RaisedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pushReplacementNamed(
-                                      SignUpScreen.routeName);
-                                },
-                                color: Colors.black,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
-                                    'Create Account',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                      Card(
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            onSaved: (value) {
+                              user['email'] = value;
+                            },
+                            textInputAction: TextInputAction.next,
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.email_outlined),
+                              labelText: 'Email',
+                              border: InputBorder.none,
                             ),
                           ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        'Welcome to Driver Freind',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        'The system that help for drivers to overcome their issues.',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                      Card(
+                        elevation: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: TextFormField(
+                            textInputAction: TextInputAction.done,
+                            obscureText: true,
+                            onSaved: (value) {
+                              user['password'] = value;
+                            },
+                            decoration: InputDecoration(
+                              icon: Icon(Icons.lock_outline),
+                              labelText: 'Password',
+                              border: InputBorder.none,
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Form(
-                        key: _form,
-                        child: Column(
-                          children: [
-                            Card(
-                              elevation: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                  onSaved: (value) {
-                                    user['email'] = value;
-                                  },
-                                  textInputAction: TextInputAction.next,
-                                  decoration: InputDecoration(
-                                    icon: Icon(Icons.email_outlined),
-                                    labelText: 'Email',
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            Card(
-                              elevation: 2,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: TextFormField(
-                                  textInputAction: TextInputAction.done,
-                                  obscureText: true,
-                                  onSaved: (value) {
-                                    user['password'] = value;
-                                  },
-                                  decoration: InputDecoration(
-                                    icon: Icon(Icons.lock_outline),
-                                    labelText: 'Password',
-                                    border: InputBorder.none,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Padding(
-                            //   padding: const EdgeInsets.all(8.0),
-                            //   child: DropdownButtonFormField(
-                            //     decoration: InputDecoration(
-                            //       labelText: 'User Type',
-                            //     ),
-                            //     items: [
-                            //       DropdownMenuItem(
-                            //         value: UserType.driver,
-                            //         child: Text('Driver'),
-                            //       ),
-                            //       DropdownMenuItem(
-                            //         value: UserType.mechanic,
-                            //         child: Text('Mechanic'),
-                            //       ),
-                            //       DropdownMenuItem(
-                            //         value: UserType.serviceCenter,
-                            //         child: Text('Service Center'),
-                            //       ),
-                            //       DropdownMenuItem(
-                            //         value: UserType.sparePartShop,
-                            //         child: Text('Spare Part Shop'),
-                            //       ),
-                            //     ],
-                            //     onChanged: (val) {
-                            //       setState(() {
-                            //         initialUser = val;
-                            //         Provider.of<UserProvider>(context, listen: false)
-                            //             .userType(initialUser);
-                            //       });
-                            //       Provider.of<UserProvider>(context, listen: false)
-                            //           .userType(initialUser);
-                            //     },
-                            //     value: initialUser,
-                            //   ),
-                            // ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 20),
-                              width: double.infinity,
-                              child: RaisedButton(
-                                onPressed: _saveTempararyUser,
-                                color: Colors.purple,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(20),
-                                  child: Text(
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        width: double.infinity,
+                        child: RaisedButton(
+                          onPressed: _login,
+                          color: Colors.purple,
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: isLoading
+                                ? Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Text(
                                     'Continue to log In',
                                     style: TextStyle(
                                       fontSize: 20,
                                       color: Colors.white,
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

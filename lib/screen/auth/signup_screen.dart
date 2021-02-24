@@ -35,6 +35,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
       Navigator.of(context).pushReplacementNamed('/');
     } catch (e) {
+      print(e);
       setState(() {
         isLoading = false;
       });
@@ -238,7 +239,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         vertical: 11),
                                     child: isLoading
                                         ? Center(
-                                            child: CircularProgressIndicator())
+                                            child: CircularProgressIndicator(),
+                                          )
                                         : Text(
                                             'CREATE',
                                             style: TextStyle(

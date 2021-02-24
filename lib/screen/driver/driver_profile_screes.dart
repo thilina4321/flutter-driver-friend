@@ -55,6 +55,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    print(me['_id']);
 
     return Scaffold(
       appBar: AppBar(

@@ -1,6 +1,7 @@
 import 'package:driver_friend/model/part.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
+import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -32,7 +33,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
       setState(() {
         isLoading = false;
       });
-      Navigator.of(context).pushReplacementNamed(ServiceCenterList.routeName);
+      Navigator.of(context).pushReplacementNamed(SpareShopItems.routeName);
     } catch (e) {
       setState(() {
         isLoading = false;

@@ -74,6 +74,7 @@ class DriverDrawer extends StatelessWidget {
             DrawerIcons(
               icon: Icons.logout,
               label: 'Log Out',
+              routeName: '/',
             ),
             DrawerIcons(
               icon: Icons.settings,
@@ -116,9 +117,7 @@ class DrawerIcons extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              routeName == null
-                  ? Navigator.of(context).pushReplacementNamed('/')
-                  : Navigator.of(context).pushNamed(routeName);
+              Navigator.of(context).pushNamed(routeName);
             }),
         Divider(
           thickness: 2,
