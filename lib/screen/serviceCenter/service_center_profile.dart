@@ -14,7 +14,6 @@ import 'package:driver_friend/widget/service_center_drawer.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 

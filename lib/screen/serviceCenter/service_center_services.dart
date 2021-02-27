@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:driver_friend/helper/bottom-sheet.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:flutter/material.dart';
@@ -94,6 +95,7 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                               child: Text(services[index].description),
                             ),
                             Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -105,7 +107,16 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                     ),
                                   ),
                                 ),
-                                Spacer(),
+                                FlatButton(
+                                  onPressed: () {
+                                    CustomBottomSheet.bottomSheet(
+                                        context, 'name');
+                                  },
+                                  child: Text(
+                                    'Appointment',
+                                    style: TextStyle(color: Colors.purple),
+                                  ),
+                                ),
                                 FlatButton(
                                   onPressed: () async {
                                     try {

@@ -138,4 +138,16 @@ class DriverProvider with ChangeNotifier {
       throw e;
     }
   }
+
+  makeAppointment() async {
+    try {} catch (e) {
+      throw e;
+    }
+  }
+
+  makeAnOrder() async {
+    try {} catch (e) {
+      throw e;
+    }
+  }
 }
