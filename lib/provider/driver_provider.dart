@@ -13,6 +13,8 @@ class DriverProvider with ChangeNotifier {
   List<Mechanic> _nearMechanics = [];
   List<ServiceCenter> _nearService = [];
   List<SparePartShop> _nearSpare = [];
+  List _appointments = [];
+  List _cartItems = [];
 
   Driver get driver {
     return _driver;
@@ -28,6 +30,14 @@ class DriverProvider with ChangeNotifier {
 
   List<SparePartShop> get nearSpares {
     return [..._nearSpare];
+  }
+
+  List get appointments {
+    return _appointments;
+  }
+
+  List get cart {
+    return _cartItems;
   }
 
   Future<void> createDriver(Driver driver) async {
@@ -150,4 +160,8 @@ class DriverProvider with ChangeNotifier {
       throw e;
     }
   }
+
+  fetchAppointments() async {}
+
+  fetchCart() async {}
 }

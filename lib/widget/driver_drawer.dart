@@ -1,10 +1,8 @@
-import 'package:driver_friend/screen/auth/signup_screen.dart';
+import 'package:driver_friend/screen/driver/appointments.dart';
+import 'package:driver_friend/screen/driver/cart.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
-import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
-import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:flutter/material.dart';
 
 class DriverDrawer extends StatelessWidget {
@@ -56,16 +54,12 @@ class DriverDrawer extends StatelessWidget {
                 label: 'My Profile'),
             DrawerIcons(
                 icon: Icons.supervised_user_circle,
-                routeName: MechanicListScreen.routeName,
-                label: 'Mechanics'),
+                routeName: Appointment.routeName,
+                label: 'Appointments'),
             DrawerIcons(
-                routeName: SparepartShopListScreen.routeName,
+                routeName: Cart.routeName,
                 icon: Icons.shopping_cart_outlined,
-                label: 'Spare Part Shops'),
-            DrawerIcons(
-                icon: Icons.car_repair,
-                routeName: ServiceCenterList.routeName,
-                label: 'Service Centers'),
+                label: 'My Cart'),
             DrawerIcons(
               icon: Icons.question_answer_outlined,
               label: 'FAQ',
