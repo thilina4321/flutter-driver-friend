@@ -1,8 +1,10 @@
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MechanicDrawer extends StatelessWidget {
   @override
@@ -59,7 +61,6 @@ class MechanicDrawer extends StatelessWidget {
             DrawerIcons(
               icon: Icons.logout,
               label: 'Log Out',
-              routeName: '/',
             ),
             DrawerIcons(
               icon: Icons.settings,
@@ -101,7 +102,12 @@ class DrawerIcons extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed(routeName);
+              if (routeName == null) {
+                Provider.of<UserProvider>(context, listen: false)
+                    .logout(context);
+              } else {
+                Navigator.of(context).pushNamed(routeName);
+              }
             }),
         Divider(
           thickness: 2,

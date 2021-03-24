@@ -1,7 +1,9 @@
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/add-part.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_setting.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SparePartShopDrawer extends StatelessWidget {
   @override
@@ -58,7 +60,6 @@ class SparePartShopDrawer extends StatelessWidget {
             DrawerIcons(
               icon: Icons.logout,
               label: 'Log Out',
-              routeName: '/',
             ),
             DrawerIcons(
               icon: Icons.settings,
@@ -100,7 +101,12 @@ class DrawerIcons extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed(routeName);
+              if (routeName == null) {
+                Provider.of<UserProvider>(context, listen: false)
+                    .logout(context);
+              } else {
+                Navigator.of(context).pushNamed(routeName);
+              }
             }),
         Divider(
           thickness: 2,

@@ -20,7 +20,7 @@ class DriverFormScreen extends StatefulWidget {
 
 class _DriverFormScreenState extends State<DriverFormScreen> {
   final _form = GlobalKey<FormState>();
-  Driver driver = Driver();
+  Driver driver;
 
   final picker = ImagePicker();
   bool isLoading = false;
@@ -93,12 +93,13 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Driver edit = ModalRoute.of(context).settings.arguments;
-    // if (edit != null) {
-    //   driver = edit;
-    // }
-
     me = Provider.of<UserProvider>(context).me;
+    Driver editable =
+        Provider.of<DriverProvider>(context, listen: false).driver;
+
+    if (editable != null) {
+      driver = editable;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -188,75 +189,6 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                 SizedBox(
                   height: 30,
                 ),
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: FlatButton.icon(
-                //         onPressed: () => saveImage(context),
-                //         icon: Icon(
-                //           Icons.photo_camera,
-                //           color: Colors.purple,
-                //         ),
-                //         label: Text('Profile Picture'),
-                //       ),
-                //     ),
-                //     Expanded(
-                //       child: FlatButton.icon(
-                //         onPressed: () => saveImage(context, 'vehicle'),
-                //         icon: Icon(
-                //           Icons.photo_camera,
-                //           color: Colors.purple,
-                //         ),
-                //         label: Text('Vehicle Picture'),
-                //       ),
-                //     ),
-                //   ],
-                // ),
-                // Row(
-                //   children: [
-                //     Expanded(
-                //       child: Container(
-                //         width: double.infinity,
-                //         height: 100,
-                //         alignment: Alignment.center,
-                //         child: driver.profileImageUrl == null
-                //             ? Text('Profile Image')
-                //             : Container(
-                //                 width: double.infinity,
-                //                 child: Image.file(
-                //                   driver.profileImageUrl,
-                //                   fit: BoxFit.cover,
-                //                 ),
-                //               ),
-                //         decoration: BoxDecoration(
-                //           border: Border.all(width: 1),
-                //         ),
-                //       ),
-                //     ),
-                //     SizedBox(
-                //       width: 2,
-                //     ),
-                //     Expanded(
-                //       child: Container(
-                //         width: double.infinity,
-                //         height: 100,
-                //         alignment: Alignment.center,
-                //         child: driver.vehicleImageUrl == null
-                //             ? Text('Vehicle Image')
-                //             : Container(
-                //                 width: double.infinity,
-                //                 child: Image.file(
-                //                   driver.vehicleImageUrl,
-                //                   fit: BoxFit.cover,
-                //                 ),
-                //               ),
-                //         decoration: BoxDecoration(
-                //           border: Border.all(width: 1),
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // ),
                 FlatButton.icon(
                   onPressed: getLocation,
                   icon: Icon(

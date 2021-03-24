@@ -1,10 +1,9 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
-import 'package:driver_friend/model/drivert.dart';
-import 'package:driver_friend/model/mechanic_model.dart';
-import 'package:driver_friend/model/service_center.dart';
-import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class User {
   String email;
@@ -16,59 +15,47 @@ class User {
 }
 
 class UserProvider with ChangeNotifier {
+  String _id;
+  String _userName;
+  String _role;
+  String _token;
+
   Dio dio = new Dio();
   final url = 'https://driver-friend.herokuapp.com/api/drivers';
   final signupurl = 'https://driver-friend.herokuapp.com/api';
   var _userType = UserType.driver;
 
-  final Mechanic _mechanic = Mechanic(
-      id: '3',
-      rating: 4.5,
-      userType: UserType.mechanic,
-      name: "Fernando",
-      address: '66 Homagama',
-      mobile: '0712345433');
-
-  final ServiceCenter _serviceCenter = ServiceCenter(
-      id: '1',
-      rating: 4.5,
-      name: 'Liyo Service Center',
-      mobile: '0777777777',
-      address: 'Alpitiya');
-
-  SparePartShop _spareShop;
-
-  SparePartShop get spareShop {
-    return _spareShop;
+  get token {
+    if (_token == null) {
+      return null;
+    }
+    return _token;
   }
 
-  ServiceCenter get serviceCenter {
-    return _serviceCenter;
-  }
-
-  Mechanic get mechanic {
-    return _mechanic;
+  get role {
+    return _role;
   }
 
   UserType get user {
     return _userType;
   }
 
-  Map<String, dynamic> _user;
-
   get me {
-    return _user;
+    return {
+      'id': _id,
+      'role': _role,
+      'token': _token,
+      'userName': _userName,
+    };
   }
 
   Future<void> signup(User user) async {
     var data = {
       'email': user.email,
       'password': user.password,
-      'userName': user.name,
     };
 
     var u;
-
     try {
       switch (user.userType) {
         case UserType.mechanic:
@@ -83,7 +70,6 @@ class UserProvider with ChangeNotifier {
         default:
           u = await dio.post('$signupurl/drivers/signup', data: data);
       }
-      print(u);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -95,11 +81,51 @@ class UserProvider with ChangeNotifier {
     try {
       var user = await dio
           .post('$url/login', data: {'email': email, 'password': password});
-      _user = user.data['user'];
+
+      var pref = await SharedPreferences.getInstance();
+
+      var userData = json.encode({
+        'id': user.data['user']['_id'],
+        'role': user.data['user']['role'],
+        'token': user.data['token'],
+        'userName': user.data['user']['userName']
+      });
+
+      _id = user.data['user']['_id'];
+      _token = user.data['token'];
+      _role = user.data['user']['role'];
+      _userName = user.data['user']['userName'];
+
+      pref.setString('userData', userData);
       notifyListeners();
     } catch (e) {
       throw e;
     }
+  }
+
+  tryAutoLogin() async {
+    var pref = await SharedPreferences.getInstance();
+    if (!pref.containsKey('userData')) {
+      return;
+    }
+    var extractUserData = json.decode(pref.getString('userData'));
+    _token = extractUserData['token'];
+    _role = extractUserData['role'];
+    _id = extractUserData['id'];
+    _userName = extractUserData['userName'];
+    notifyListeners();
+  }
+
+  logout(context) async {
+    Navigator.of(context).pushReplacementNamed('/');
+    var pref = await SharedPreferences.getInstance();
+
+    if (pref.containsKey('userData')) {
+      pref.clear();
+    }
+    _token = null;
+    _role = null;
+    notifyListeners();
   }
 
   userType(newUser) {

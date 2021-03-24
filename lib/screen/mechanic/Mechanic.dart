@@ -54,7 +54,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
       drawer: MechanicDrawer(),
       body: FutureBuilder(
         future: Provider.of<MechanicProvider>(context, listen: false)
-            .fetchMechanic(me['_id']),
+            .fetchMechanic(me['id']),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -71,7 +71,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                     fit: BoxFit.cover,
                   ),
                   Text(
-                    'Welcome to Driver Friend App ' + me['userName'],
+                    'Welcome to Driver Friend App ',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 25,
@@ -100,8 +100,8 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
 
           return Consumer<MechanicProvider>(builder: (ctx, mech, child) {
             mechanic = mech.mechanic;
-            mechanic.name = me['userName'];
-            mechanic.id = me['_id'];
+            mechanic.name = 'Prageesha';
+            mechanic.address = '30/1 Arachchikattuwa';
 
             return SingleChildScrollView(
               child: Column(
@@ -158,7 +158,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                                     color: Colors.white,
                                   ),
                                   label: Text(
-                                    'mechanic.address',
+                                    mechanic.address,
                                     style: TextStyle(
                                       color: Colors.white,
                                     ),

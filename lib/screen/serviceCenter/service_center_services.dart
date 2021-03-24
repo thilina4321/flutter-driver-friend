@@ -15,11 +15,12 @@ class ServiceCenterServices extends StatefulWidget {
 
 class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   bool isLoading = false;
+  String id;
 
   Future<void> fetchServices() async {
     try {
       await Provider.of<ServiceCenterProvider>(context, listen: false)
-          .fetchServices();
+          .fetchServices(id);
     } catch (e) {
       return showDialog(
           context: context,
@@ -49,6 +50,7 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
 
   @override
   Widget build(BuildContext context) {
+    id = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         title: isLoading ? CircularProgressIndicator() : Text('Services'),

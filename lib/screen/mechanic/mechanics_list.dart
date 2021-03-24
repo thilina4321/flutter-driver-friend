@@ -1,14 +1,20 @@
 import 'package:driver_friend/model/mechanic_model.dart';
-import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
-class MechanicListScreen extends StatelessWidget {
+class MechanicListScreen extends StatefulWidget {
   static String routeName = 'mechanic-list';
+
+  @override
+  _MechanicListScreenState createState() => _MechanicListScreenState();
+}
+
+class _MechanicListScreenState extends State<MechanicListScreen> {
   final _form = GlobalKey<FormState>();
+
   String place;
 
   filterMechanics(context) {
@@ -29,6 +35,7 @@ class MechanicListScreen extends StatelessWidget {
         leading: Form(
           key: _form,
           child: TextFormField(
+            decoration: InputDecoration(hintText: 'Search'),
             onSaved: (val) {
               place = val;
             },

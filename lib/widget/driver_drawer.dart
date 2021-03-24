@@ -1,9 +1,11 @@
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/driver/appointments.dart';
 import 'package:driver_friend/screen/driver/cart.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DriverDrawer extends StatelessWidget {
   @override
@@ -68,7 +70,6 @@ class DriverDrawer extends StatelessWidget {
             DrawerIcons(
               icon: Icons.logout,
               label: 'Log Out',
-              routeName: '/',
             ),
             DrawerIcons(
               icon: Icons.settings,
@@ -110,8 +111,13 @@ class DrawerIcons extends StatelessWidget {
               icon,
               size: 30,
             ),
-            onPressed: () {
-              Navigator.of(context).pushNamed(routeName);
+            onPressed: () async {
+              if (routeName == null) {
+                Provider.of<UserProvider>(context, listen: false)
+                    .logout(context);
+              } else {
+                Navigator.of(context).pushNamed(routeName);
+              }
             }),
         Divider(
           thickness: 2,

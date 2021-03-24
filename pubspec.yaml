@@ -39,6 +39,8 @@ dependencies:
   flutter_polyline_points: ^0.2.4
   geocoding: ^1.0.5
   dio: ^3.0.10
+  shared_preferences: ^0.5.3+1
+
 
 
 

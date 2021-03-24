@@ -55,7 +55,6 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
-    print(me['_id']);
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +63,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
       drawer: DriverDrawer(),
       body: FutureBuilder(
         future: Provider.of<DriverProvider>(context, listen: false)
-            .fetchDriver(me['_id']),
+            .fetchDriver(me['id']),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -81,7 +80,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       fit: BoxFit.cover,
                     ),
                     Text(
-                      'Welcome to Driver Friend App ' + me['userName'],
+                      'Welcome to Driver Friend App',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 25,
@@ -113,9 +112,8 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           return Consumer<DriverProvider>(builder: (ctx, dri, child) {
             user = dri.driver;
 
-            user.id = me['_id'];
+            user.userId = me['id'];
             user.name = me['userName'];
-            print(user.latitude);
 
             return SingleChildScrollView(
               child: Column(
@@ -245,9 +243,8 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                             Spacer(),
                             IconButton(
                               onPressed: () {
-                                Navigator.of(context).pushNamed(
-                                    DriverFormScreen.routeName,
-                                    arguments: user);
+                                Navigator.of(context)
+                                    .pushNamed(DriverFormScreen.routeName);
                               },
                               icon: Icon(
                                 Icons.edit,

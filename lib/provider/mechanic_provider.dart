@@ -28,15 +28,16 @@ class MechanicProvider with ChangeNotifier {
   }
 
   Future<void> fetchMechanic(id) async {
-    print(id);
-
     try {
       var fetchedMechanic = await dio.get(
           'https://driver-friend.herokuapp.com/api/mechanics/mechanic/$id');
-      print(fetchedMechanic.data);
+
       var mechanic = fetchedMechanic.data['mechanic'];
+      print(mechanic);
       _mechanic = Mechanic(
         id: mechanic['_id'],
+        name: mechanic['userName'],
+        userId: mechanic['userId'],
         nic: mechanic['nic'],
         mobile: mechanic['mobile'],
         city: mechanic['city'],
@@ -56,7 +57,6 @@ class MechanicProvider with ChangeNotifier {
     try {
       var fetchedMechanic = await dio
           .get('https://driver-friend.herokuapp.com/api/mechanics/mechanics');
-      print(fetchedMechanic.data);
       var mechanics = fetchedMechanic.data['mechanics'];
       mechanics.forEach((mechanic) {
         _mechanics.add(

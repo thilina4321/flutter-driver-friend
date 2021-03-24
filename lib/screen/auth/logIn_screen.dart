@@ -152,68 +152,67 @@ class _LogInScreenState extends State<LogInScreen> {
                 SizedBox(
                   height: 40,
                 ),
-                Form(
-                  key: _form,
-                  child: Column(
-                    children: [
-                      Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            onSaved: (value) {
-                              user['email'] = value;
-                            },
-                            textInputAction: TextInputAction.next,
-                            decoration: InputDecoration(
-                              icon: Icon(Icons.email_outlined),
-                              labelText: 'Email',
-                              border: InputBorder.none,
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Form(
+                    key: _form,
+                    child: Card(
+                      elevation: 1,
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              onSaved: (value) {
+                                user['email'] = value;
+                              },
+                              textInputAction: TextInputAction.next,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      Card(
-                        elevation: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: TextFormField(
-                            textInputAction: TextInputAction.done,
-                            obscureText: true,
-                            onSaved: (value) {
-                              user['password'] = value;
-                            },
-                            decoration: InputDecoration(
-                              icon: Icon(Icons.lock_outline),
-                              labelText: 'Password',
-                              border: InputBorder.none,
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextFormField(
+                              textInputAction: TextInputAction.done,
+                              obscureText: true,
+                              onSaved: (value) {
+                                user['password'] = value;
+                              },
+                              decoration: InputDecoration(
+                                labelText: 'Password',
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        width: double.infinity,
-                        child: RaisedButton(
-                          onPressed: _login,
-                          color: Colors.purple,
-                          child: Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: isLoading
-                                ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : Text(
-                                    'Continue to log In',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                          SizedBox(
+                            height: 20,
                           ),
-                        ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            width: double.infinity,
+                            child: RaisedButton(
+                              onPressed: _login,
+                              color: Colors.purple,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: isLoading
+                                    ? Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : Text(
+                                        'Continue to log In',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],

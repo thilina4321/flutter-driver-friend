@@ -1,7 +1,9 @@
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/add-services.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ServiceCenterDrawer extends StatelessWidget {
   @override
@@ -58,7 +60,6 @@ class ServiceCenterDrawer extends StatelessWidget {
             DrawerIcons(
               icon: Icons.logout,
               label: 'Log Out',
-              routeName: '/',
             ),
             DrawerIcons(
               icon: Icons.settings,
@@ -100,7 +101,12 @@ class DrawerIcons extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              Navigator.of(context).pushNamed(routeName);
+              if (routeName == null) {
+                Provider.of<UserProvider>(context, listen: false)
+                    .logout(context);
+              } else {
+                Navigator.of(context).pushNamed(routeName);
+              }
             }),
         Divider(
           thickness: 2,

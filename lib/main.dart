@@ -57,84 +57,104 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (ctx) => SpareShopProvider()),
         ChangeNotifierProvider(create: (ctx) => FaqProvider()),
       ],
-      child: MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Color(0xff2e1503),
-          accentColorBrightness: Brightness.dark,
-          textTheme: ThemeData.light().textTheme.copyWith(
-                headline1: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
+      child: Consumer<UserProvider>(
+        builder: (context, user, child) => MaterialApp(
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+            accentColor: Color(0xff2e1503),
+            accentColorBrightness: Brightness.dark,
+            textTheme: ThemeData.light().textTheme.copyWith(
+                  headline1: TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  headline2: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  button: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
-                headline2: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.bold,
-                ),
-                button: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+          ),
+          home: user.token != null
+              ? user.role == 'driver'
+                  ? DriverProfileScreen()
+                  : user.role == 'mechanic'
+                      ? MechanicProfileScreen()
+                      : user.role == 'sparePartShop'
+                          ? SparePartShopProfileScreen()
+                          : ServiceCenterProfileScreen()
+              : FutureBuilder(
+                  future: Provider.of<UserProvider>(context, listen: false)
+                      .tryAutoLogin(),
+                  builder: (context, data) =>
+                      data.connectionState == ConnectionState.waiting
+                          ? Center(child: CircularProgressIndicator())
+                          : LogInScreen()),
+          routes: {
+            SignUpScreen.routeName: (ctx) => SignUpScreen(),
+
+            // faq
+            FAQ.routeName: (ctx) => FAQ(),
+            AddNewQuestionPageScreen.routeName: (ctx) =>
+                AddNewQuestionPageScreen(),
+            AnswerScreen.routeName: (ctx) => AnswerScreen(),
+            NotAnswerdYetQuizScreen.routeName: (ctx) =>
+                NotAnswerdYetQuizScreen(),
+
+            //driver section
+            DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),
+            DriverSettignScreen.routeName: (ctx) => DriverSettignScreen(),
+            DriverFormScreen.routeName: (ctx) => DriverFormScreen(),
+            Appointment.routeName: (ctx) => Appointment(),
+            Cart.routeName: (ctx) => Cart(),
+
+            //mechanic section
+            MechanicListScreen.routeName: (ctx) => MechanicListScreen(),
+            MechanicProfileScreen.routeName: (ctx) => MechanicProfileScreen(),
+            MechanicFormScreen.routeName: (ctx) => MechanicFormScreen(),
+            MechanicSettignScreen.routeName: (ctx) => MechanicSettignScreen(),
+            MechanicContactScreen.routeName: (ctx) => MechanicContactScreen(),
+
+            //service center section
+            ServiceCenterProfileScreen.routeName: (ctx) =>
+                ServiceCenterProfileScreen(),
+            ServiceCenterFormScreen.routeName: (ctx) =>
+                ServiceCenterFormScreen(),
+            ServiceCenterList.routeName: (ctx) => ServiceCenterList(),
+            ServiceCenterSettignScreen.routeName: (ctx) =>
+                ServiceCenterSettignScreen(),
+            ServiceCenterContactScreen.routeName: (ctx) =>
+                ServiceCenterContactScreen(),
+            ServiceCenterServices.routeName: (ctx) => ServiceCenterServices(),
+            CreateNewServiceScreen.routeName: (ctx) => CreateNewServiceScreen(),
+
+            //spare part section
+            SparepartShopListScreen.routeName: (ctx) =>
+                SparepartShopListScreen(),
+            SparePartShopProfileScreen.routeName: (ctx) =>
+                SparePartShopProfileScreen(),
+            SparePartShopFormScreen.routeName: (ctx) =>
+                SparePartShopFormScreen(),
+            SparePartShopSettignScreen.routeName: (ctx) =>
+                SparePartShopSettignScreen(),
+            SpareShopContactScreen.routeName: (ctx) => SpareShopContactScreen(),
+            SpareShopItems.routeName: (ctx) => SpareShopItems(),
+            CreateNewPartScreen.routeName: (ctx) => CreateNewPartScreen(),
+
+            DefaultQuestionScreen.routeName: (ctx) => DefaultQuestionScreen(),
+
+            //ratings
+            CustomRatingWidget.routeName: (ctx) => CustomRatingWidget(),
+
+            //map
+            MapScreen.routeName: (ctx) => MapScreen(),
+            PolyLineScreen.routeName: (ctx) => PolyLineScreen(),
+          },
         ),
-        routes: {
-          '/': (ctx) => LogInScreen(),
-          SignUpScreen.routeName: (ctx) => SignUpScreen(),
-
-          // faq
-          FAQ.routeName: (ctx) => FAQ(),
-          AddNewQuestionPageScreen.routeName: (ctx) =>
-              AddNewQuestionPageScreen(),
-          AnswerScreen.routeName: (ctx) => AnswerScreen(),
-          NotAnswerdYetQuizScreen.routeName: (ctx) => NotAnswerdYetQuizScreen(),
-
-          //driver section
-          DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),
-          DriverSettignScreen.routeName: (ctx) => DriverSettignScreen(),
-          DriverFormScreen.routeName: (ctx) => DriverFormScreen(),
-          Appointment.routeName: (ctx) => Appointment(),
-          Cart.routeName: (ctx) => Cart(),
-
-          //mechanic section
-          MechanicListScreen.routeName: (ctx) => MechanicListScreen(),
-          MechanicProfileScreen.routeName: (ctx) => MechanicProfileScreen(),
-          MechanicFormScreen.routeName: (ctx) => MechanicFormScreen(),
-          MechanicSettignScreen.routeName: (ctx) => MechanicSettignScreen(),
-          MechanicContactScreen.routeName: (ctx) => MechanicContactScreen(),
-
-          //service center section
-          ServiceCenterProfileScreen.routeName: (ctx) =>
-              ServiceCenterProfileScreen(),
-          ServiceCenterFormScreen.routeName: (ctx) => ServiceCenterFormScreen(),
-          ServiceCenterList.routeName: (ctx) => ServiceCenterList(),
-          ServiceCenterSettignScreen.routeName: (ctx) =>
-              ServiceCenterSettignScreen(),
-          ServiceCenterContactScreen.routeName: (ctx) =>
-              ServiceCenterContactScreen(),
-          ServiceCenterServices.routeName: (ctx) => ServiceCenterServices(),
-          CreateNewServiceScreen.routeName: (ctx) => CreateNewServiceScreen(),
-
-          //spare part section
-          SparepartShopListScreen.routeName: (ctx) => SparepartShopListScreen(),
-          SparePartShopProfileScreen.routeName: (ctx) =>
-              SparePartShopProfileScreen(),
-          SparePartShopFormScreen.routeName: (ctx) => SparePartShopFormScreen(),
-          SparePartShopSettignScreen.routeName: (ctx) =>
-              SparePartShopSettignScreen(),
-          SpareShopContactScreen.routeName: (ctx) => SpareShopContactScreen(),
-          SpareShopItems.routeName: (ctx) => SpareShopItems(),
-          CreateNewPartScreen.routeName: (ctx) => CreateNewPartScreen(),
-
-          DefaultQuestionScreen.routeName: (ctx) => DefaultQuestionScreen(),
-
-          //ratings
-          CustomRatingWidget.routeName: (ctx) => CustomRatingWidget(),
-
-          //map
-          MapScreen.routeName: (ctx) => MapScreen(),
-          PolyLineScreen.routeName: (ctx) => PolyLineScreen(),
-        },
       ),
     );
   }

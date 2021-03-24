@@ -112,7 +112,7 @@ class ServiceCenterProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchServices() async {
+  Future<void> fetchServices(String centerId) async {
     List<Service> services = [];
     try {
       var fetchedServices = await dio.get('$url/services');

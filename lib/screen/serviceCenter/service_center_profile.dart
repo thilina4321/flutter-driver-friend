@@ -54,8 +54,11 @@ class _ServiceCenterProfileScreenState
       ),
       drawer: ServiceCenterDrawer(),
       body: FutureBuilder(
-        future: Provider.of<ServiceCenterProvider>(context, listen: false)
-            .fetchServiceCenter(me['_id']),
+        future: me['role'] == 'serviceCenter'
+            ? Provider.of<ServiceCenterProvider>(context, listen: false)
+                .fetchServiceCenter(me['id'])
+            : Provider.of<ServiceCenterProvider>(context, listen: false)
+                .fetchServiceCenter(serviceCenter.userId),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -70,14 +73,14 @@ class _ServiceCenterProfileScreenState
                     'assets/images/logo.jpg',
                     fit: BoxFit.cover,
                   ),
-                  Text(
-                    'Welcome to Driver Friend App ' + me['userName'],
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  // Text(
+                  //   'Welcome to Driver Friend App ' + me['userName'],
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(
+                  //     fontSize: 25,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 30,
                   ),
@@ -233,8 +236,9 @@ class _ServiceCenterProfileScreenState
                           elevation: 3,
                           child: FlatButton(
                             onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed(ServiceCenterServices.routeName);
+                              Navigator.of(context).pushNamed(
+                                  ServiceCenterServices.routeName,
+                                  arguments: serviceCenter.userId);
                             },
                             child: const Text(
                               'Services',

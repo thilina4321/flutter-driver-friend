@@ -3,8 +3,14 @@ import 'package:driver_friend/screen/faq/answer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DefaultQuestionScreen extends StatelessWidget {
+class DefaultQuestionScreen extends StatefulWidget {
   static String routeName = 'default-quiz';
+
+  @override
+  _DefaultQuestionScreenState createState() => _DefaultQuestionScreenState();
+}
+
+class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
   final List quiz = [
     'Why is my check engine light on',
     'How do i check my engine oil level',
@@ -16,12 +22,27 @@ class DefaultQuestionScreen extends StatelessWidget {
   ];
 
   List<Question> _questions = [];
+
   Future<void> fetchData(context) async {
     await Provider.of<FaqProvider>(context, listen: false).fetchQuestions();
   }
 
   var comment = TextEditingController();
+
   saveComment() {}
+
+  _filterQuestions(String city) {
+    var filtedQuestions = [];
+    _questions.forEach((question) {
+      if (question.question.contains(city)) {
+        filtedQuestions.add(question);
+      }
+    });
+
+    _questions = filtedQuestions;
+  }
+
+  var place;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +69,7 @@ class DefaultQuestionScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Welcome to the Search option in FAQ section',
+                          'Search for existing problem',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 20,
@@ -58,13 +79,18 @@ class DefaultQuestionScreen extends StatelessWidget {
                         SizedBox(
                           height: 20,
                         ),
-                        TextField(
+                        TextFormField(
+                          onChanged: (val) {
+                            setState(() {
+                              place = val;
+                            });
+                          },
                           decoration: InputDecoration(
                             labelText: 'Search',
                           ),
                         ),
                         FlatButton(
-                            onPressed: () {},
+                            onPressed: _filterQuestions(place),
                             child: Text(
                               'Serach',
                               style: TextStyle(
@@ -93,6 +119,7 @@ class DefaultQuestionScreen extends StatelessWidget {
               return Center(child: Text('Sorry something gone wrong'));
             }
             return Consumer<FaqProvider>(builder: (ctx, que, child) {
+              _questions = que.answeredQuestions;
               return que.answeredQuestions.length == 0
                   ? Center(child: Text('No questions available'))
                   : ListView.builder(
