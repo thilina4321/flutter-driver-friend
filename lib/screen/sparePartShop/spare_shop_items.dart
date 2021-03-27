@@ -1,6 +1,7 @@
 import 'package:driver_friend/model/part.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -43,8 +44,12 @@ class _SpareShopItemsState extends State<SpareShopItems> {
     super.initState();
   }
 
+  var me;
+
   @override
   Widget build(BuildContext context) {
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
     return Scaffold(
       appBar: AppBar(
         title: (isLoading) ? CircularProgressIndicator() : Text('Items'),
@@ -99,48 +104,50 @@ class _SpareShopItemsState extends State<SpareShopItems> {
                               ),
                             ),
                             Spacer(),
-                            FlatButton(
-                              onPressed: () async {
-                                try {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-                                  await Provider.of<SpareShopProvider>(context,
-                                          listen: false)
-                                      .deleteParts(parts[index].id);
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                } catch (e) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  return showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          content: Text(
-                                            e.toString(),
-                                          ),
-                                          actions: [
-                                            FlatButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: Text('OK'),
+                            if (me['role'] == 'sparePartShop')
+                              FlatButton(
+                                onPressed: () async {
+                                  try {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    await Provider.of<SpareShopProvider>(
+                                            context,
+                                            listen: false)
+                                        .deleteParts(parts[index].id);
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  } catch (e) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                    return showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Text(
+                                              e.toString(),
                                             ),
-                                          ],
-                                        );
-                                      });
-                                }
-                              },
-                              child: Text(
-                                'Delete',
-                                style: TextStyle(
-                                  color: Colors.red,
+                                            actions: [
+                                              FlatButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text('OK'),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  }
+                                },
+                                child: Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                  ),
                                 ),
-                              ),
-                            )
+                              )
                           ],
                         ),
                       ],

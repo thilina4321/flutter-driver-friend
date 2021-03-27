@@ -1,6 +1,5 @@
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
-import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -13,7 +12,7 @@ class ServiceCenterList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nearest Service Center'),
+        title: Text('Service Centers'),
       ),
       body: FutureBuilder(
         future:
@@ -29,47 +28,52 @@ class ServiceCenterList extends StatelessWidget {
           }
           return Consumer<DriverProvider>(builder: (ctx, ser, child) {
             List<ServiceCenter> serviceCenters = ser.nearServices;
-            return ListView.builder(
-                itemCount: serviceCenters.length,
-                itemBuilder: (ctx, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                          ServiceCenterProfileScreen.routeName,
-                          arguments: serviceCenters[index]);
-                    },
-                    child: Card(
-                      elevation: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundImage:
-                                AssetImage('assets/images/ser_cover.PNG'),
-                          ),
-                          title: Text(serviceCenters[index].name),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              RatingBarIndicator(
-                                rating: 2,
-                                itemBuilder: (context, index) => Icon(
-                                  Icons.star,
-                                  color: Colors.green,
-                                ),
-                                itemCount: 1,
-                                itemSize: 20.0,
-                                direction: Axis.horizontal,
+            return serviceCenters.length == 0
+                ? Center(
+                    child: Container(
+                    child: Text('No Service centers found'),
+                  ))
+                : ListView.builder(
+                    itemCount: serviceCenters.length,
+                    itemBuilder: (ctx, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              ServiceCenterProfileScreen.routeName,
+                              arguments: serviceCenters[index]);
+                        },
+                        child: Card(
+                          elevation: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    AssetImage('assets/images/ser_cover.PNG'),
                               ),
-                              Text(serviceCenters[index].rating.toString())
-                            ],
+                              title: Text(serviceCenters[index].name),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  RatingBarIndicator(
+                                    rating: 2,
+                                    itemBuilder: (context, index) => Icon(
+                                      Icons.star,
+                                      color: Colors.green,
+                                    ),
+                                    itemCount: 1,
+                                    itemSize: 20.0,
+                                    direction: Axis.horizontal,
+                                  ),
+                                  Text(serviceCenters[index].rating.toString())
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                });
+                      );
+                    });
           });
         },
       ),

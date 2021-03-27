@@ -109,7 +109,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
                       },
                       maxLines: null,
                       decoration: InputDecoration(
-                        labelText: 'Type Here',
+                        labelText: 'Question',
                       ),
                     ),
                   ),

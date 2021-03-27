@@ -1,3 +1,5 @@
+import 'package:driver_friend/model/drivert.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/driver/appointments.dart';
 import 'package:driver_friend/screen/driver/cart.dart';
@@ -10,6 +12,8 @@ import 'package:provider/provider.dart';
 class DriverDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Driver driver = Provider.of<DriverProvider>(context, listen: false).driver;
+
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -19,14 +23,16 @@ class DriverDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
+                backgroundImage: driver.profileImageUrl == null
+                    ? null
+                    : AssetImage('assets/images/dri_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
             Text(
-              'Janitha Perera',
+              driver.name,
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,

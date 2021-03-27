@@ -14,7 +14,7 @@ class SparepartShopListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Nearest Spare part shops'),
+        title: Text('Search shop'),
       ),
       body: FutureBuilder(
         future: Provider.of<DriverProvider>(context, listen: false).nearSpare(),
@@ -25,51 +25,53 @@ class SparepartShopListScreen extends StatelessWidget {
             if (data.error.toString().contains('404')) {
               return Center(child: Text('Sorry no spare part shops found'));
             }
-            return Center(child: Text("An error occured, try againg later"));
+            return Center(child: Text(data.error.toString()));
           }
           return Consumer<DriverProvider>(builder: (ctx, spare, child) {
             List<SparePartShop> spareShops = spare.nearSpares;
-            return ListView.builder(
-                itemCount: spareShops.length,
-                itemBuilder: (ctx, index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).pushNamed(
-                          SparePartShopProfileScreen.routeName,
-                          arguments: spareShops[index]);
-                    },
-                    child: Card(
-                      elevation: 3,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            radius: 30,
-                            backgroundImage:
-                                AssetImage('assets/images/ser_cover.PNG'),
-                          ),
-                          title: Text(spareShops[index].name),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              RatingBarIndicator(
-                                rating: 2,
-                                itemBuilder: (context, index) => Icon(
-                                  Icons.star,
-                                  color: Colors.green,
-                                ),
-                                itemCount: 1,
-                                itemSize: 20.0,
-                                direction: Axis.horizontal,
+            return spareShops.length == 0
+                ? Center(child: Text('No spare part shops found'))
+                : ListView.builder(
+                    itemCount: spareShops.length,
+                    itemBuilder: (ctx, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              SparePartShopProfileScreen.routeName,
+                              arguments: spareShops[index]);
+                        },
+                        child: Card(
+                          elevation: 3,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    AssetImage('assets/images/ser_cover.PNG'),
                               ),
-                              Text(spareShops[index].rating.toString())
-                            ],
+                              title: Text(spareShops[index].name),
+                              trailing: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  RatingBarIndicator(
+                                    rating: 2,
+                                    itemBuilder: (context, index) => Icon(
+                                      Icons.star,
+                                      color: Colors.green,
+                                    ),
+                                    itemCount: 1,
+                                    itemSize: 20.0,
+                                    direction: Axis.horizontal,
+                                  ),
+                                  Text(spareShops[index].rating.toString())
+                                ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                  );
-                });
+                      );
+                    });
           });
         },
       ),

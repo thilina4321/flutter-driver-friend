@@ -31,9 +31,11 @@ class _LogInScreenState extends State<LogInScreen> {
     if (!isValid) {
       return;
     }
+
     setState(() {
       isLoading = true;
     });
+
     try {
       await Provider.of<UserProvider>(context, listen: false)
           .login(user['email'], user['password']);
@@ -42,11 +44,13 @@ class _LogInScreenState extends State<LogInScreen> {
       setState(() {
         isLoading = false;
       });
+
       _form.currentState.reset();
     } catch (e) {
       setState(() {
         isLoading = false;
       });
+
       return showDialog(
           context: context,
           builder: (context) {
@@ -67,8 +71,6 @@ class _LogInScreenState extends State<LogInScreen> {
             );
           });
     }
-
-    // print(me);
 
     switch (me['role']) {
       case 'mechanic':

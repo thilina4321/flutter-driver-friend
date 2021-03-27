@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:driver_friend/helper/bottom-sheet.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class ServiceCenterServices extends StatefulWidget {
 class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   bool isLoading = false;
   String id;
+  var me;
 
   Future<void> fetchServices() async {
     try {
@@ -51,6 +53,8 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   @override
   Widget build(BuildContext context) {
     id = ModalRoute.of(context).settings.arguments;
+    me = Provider.of<UserProvider>(context, listen: false).me;
+
     return Scaffold(
       appBar: AppBar(
         title: isLoading ? CircularProgressIndicator() : Text('Services'),
@@ -119,49 +123,52 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                     style: TextStyle(color: Colors.purple),
                                   ),
                                 ),
-                                FlatButton(
-                                  onPressed: () async {
-                                    try {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      await Provider.of<ServiceCenterProvider>(
-                                              context,
-                                              listen: false)
-                                          .deleteService(services[index].id);
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    } catch (e) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      return showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return AlertDialog(
-                                              content: Text(
-                                                e.toString(),
-                                              ),
-                                              actions: [
-                                                FlatButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text('OK'),
+                                if (me['role'] == 'serviceCenter')
+                                  FlatButton(
+                                    onPressed: () async {
+                                      try {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await Provider.of<
+                                                    ServiceCenterProvider>(
+                                                context,
+                                                listen: false)
+                                            .deleteService(services[index].id);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      } catch (e) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                        return showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                content: Text(
+                                                  e.toString(),
                                                 ),
-                                              ],
-                                            );
-                                          });
-                                    }
-                                  },
-                                  child: Text(
-                                    'Delete',
-                                    style: TextStyle(
-                                      color: Colors.red,
+                                                actions: [
+                                                  FlatButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('OK'),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      }
+                                    },
+                                    child: Text(
+                                      'Delete',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                      ),
                                     ),
-                                  ),
-                                )
+                                  )
                               ],
                             ),
                           ],

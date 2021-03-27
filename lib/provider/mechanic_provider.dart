@@ -61,19 +61,21 @@ class MechanicProvider with ChangeNotifier {
       mechanics.forEach((mechanic) {
         _mechanics.add(
           Mechanic(
-              id: mechanics['_id'],
-              nic: mechanics['nic'],
-              mobile: mechanics['mobile'],
-              city: mechanics['city'],
-              latitude: mechanics['latitude'],
-              longitude: mechanics['longitude'],
-              about: mechanics['about'],
-              address: mechanics['address']),
+              // id: mechanics['_id'],
+              // nic: mechanics['nic'],
+              // mobile: mechanics['mobile'],
+              // city: mechanics['city'],
+              // latitude: mechanics['latitude'],
+              // longitude: mechanics['longitude'],
+              // about: mechanics['about'],
+              // address: mechanics['address']
+              ),
         );
       });
 
       notifyListeners();
     } catch (e) {
+      print(e.toString());
       throw e;
     }
   }

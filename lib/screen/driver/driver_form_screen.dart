@@ -20,7 +20,7 @@ class DriverFormScreen extends StatefulWidget {
 
 class _DriverFormScreenState extends State<DriverFormScreen> {
   final _form = GlobalKey<FormState>();
-  Driver driver;
+  Driver driver = Driver();
 
   final picker = ImagePicker();
   bool isLoading = false;
@@ -51,13 +51,16 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
   Future<void> _saveDriver() async {
     _form.currentState.save();
     final isValid = _form.currentState.validate();
+
     if (!isValid) {
       return;
     }
-    driver.userId = me['_id'];
+
+    driver.userId = me['id'];
     setState(() {
       isLoading = true;
     });
+
     try {
       await Provider.of<DriverProvider>(context, listen: false)
           .createDriver(driver);
@@ -69,6 +72,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       setState(() {
         isLoading = false;
       });
+
       return showDialog(
           context: context,
           builder: (context) {
@@ -94,6 +98,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context).me;
+
     Driver editable =
         Provider.of<DriverProvider>(context, listen: false).driver;
 
@@ -196,6 +201,17 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                     color: Colors.purple,
                   ),
                   label: Text('Your location'),
+                ),
+                Container(
+                  child: Text(
+                    'You should in the correct location',
+                    style: TextStyle(
+                      color: Colors.red,
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
                 ),
                 Container(
                   width: double.infinity,

@@ -51,9 +51,13 @@ class DriverProvider with ChangeNotifier {
       'latitude': driver.latitude,
       'city': driver.city
     };
+
+    print(data);
+
     try {
       await dio.post('$url/add-data', data: data);
     } catch (e) {
+      print(e.toString());
       throw e;
     }
   }
@@ -112,39 +116,90 @@ class DriverProvider with ChangeNotifier {
     await dio.post('/service-rating', data: {'rating': rating});
   }
 
-  // Future<void> nearMechanic() async {
-  //   try {
-  //     var mechanics = await dio.get('$url/near-mechanic');
-  //     print(_nearMechanics);
-  //     _nearMechanics = mechanics.data;
-  //     notifyListeners();
-  //   } catch (e) {
-  //     throw e;
-  //     // print(e);
-  //   }
-  // }
+  Future<void> nearMechanic() async {
+    try {
+      var fetchedMechanic = await dio
+          .get('https://driver-friend.herokuapp.com/api/drivers/near-mechanic');
 
-  nearMechanic() {}
+      var mechanics = fetchedMechanic.data;
+
+      mechanics.forEach((mechanic) {
+        _nearMechanics.add(
+          Mechanic(
+              id: mechanics['_id'],
+              nic: mechanics['nic'],
+              mobile: mechanics['mobile'],
+              city: mechanics['city'],
+              latitude: mechanics['latitude'],
+              longitude: mechanics['longitude'],
+              about: mechanics['about'],
+              address: mechanics['address']),
+        );
+      });
+
+      notifyListeners();
+    } catch (e) {
+      print(e.toString());
+      throw e;
+    }
+  }
 
   Future<void> nearService() async {
     try {
-      var service = await dio.get('$url/near-servicer');
-      _nearService = service.data;
+      var fetchedService = await dio
+          .get('https://driver-friend.herokuapp.com/api/drivers/near-service');
+
+      var services = fetchedService.data;
+
+      services.forEach((service) {
+        _nearService.add(
+          ServiceCenter(
+            id: services['_id'],
+            mobile: services['mobile'],
+            city: services['city'],
+            latitude: services['latitude'],
+            longitude: services['longitude'],
+            about: services['about'],
+            address: services['address'],
+          ),
+        );
+      });
+
       print(_nearService);
+
       notifyListeners();
     } catch (e) {
+      print(e.toString());
       throw e;
     }
   }
 
   Future<void> nearSpare() async {
     try {
-      var spare = await dio.get('$url/near-spare');
+      var fetchedSpare = await dio
+          .get('https://driver-friend.herokuapp.com/api/drivers/near-spare');
 
-      _nearSpare = spare.data;
-      print(_nearSpare);
+      var spares = fetchedSpare.data;
+
+      spares.forEach((spare) {
+        _nearSpare.add(
+          SparePartShop(
+            id: spares['_id'],
+            mobile: spares['mobile'],
+            city: spares['city'],
+            latitude: spares['latitude'],
+            longitude: spares['longitude'],
+            about: spares['about'],
+            address: spares['address'],
+          ),
+        );
+      });
+
+      print(_nearMechanics);
+
       notifyListeners();
     } catch (e) {
+      print(e.toString());
       throw e;
     }
   }
