@@ -36,16 +36,16 @@ class Answer {
 
 class FaqProvider with ChangeNotifier {
   Question _question;
-  Answer _answer;
   List<Question> _answeredQuestions = [];
   List<Question> _notAnsweredQuestions = [];
   List _answers = [];
+  List _questions = [];
 
   var url = 'https://driver-friend.herokuapp.com/api/faq';
   Dio dio = new Dio();
 
-  List<Question> get answeredQuestions {
-    return [..._answeredQuestions];
+  List get questions {
+    return _questions;
   }
 
   List<Question> get notAnsweredquestions {
@@ -74,43 +74,45 @@ class FaqProvider with ChangeNotifier {
   }
 
   Future<void> fetchQuestions() async {
-    _answeredQuestions = [];
-    _notAnsweredQuestions = [];
+    _questions = [];
     try {
-      var fetchedQuestions = await dio.get('$url/all');
+      var fetchedQuestions = await dio.get('$url/questions');
       var questions = fetchedQuestions.data;
 
-      questions.forEach((que) {
-        if (que['answers'].length > 0) {
-          List<Answer> fetchedAnswers = [];
-          que['answers'].forEach((ans) {
-            fetchedAnswers.add(Answer(
-                id: ans['_id'],
-                questionId: que['_id'],
-                authorId: ans['authorId'],
-                answer: ans['answer']));
-          });
-
-          _answeredQuestions.add(
-            Question(
-              id: que['_id'],
-              driverId: que['driverId'],
-              question: que['question'],
-              answers: fetchedAnswers,
-            ),
-          );
-        } else {
-          _notAnsweredQuestions.add(Question(
-              id: que['_id'],
-              driverId: que['driverId'],
-              question: que['question']));
-        }
-        // _answers.forEach((element) {
-        //   print(element.answer);
-        //   print('=================');
-        // });
-        notifyListeners();
+      questions['fetchquiz'].forEach((question) {
+        _questions.add(question);
       });
+
+      notifyListeners();
+
+      // questions.forEach((que) {
+      //   if (que['answers'].length > 0) {
+      //     List<Answer> fetchedAnswers = [];
+      //     que['answers'].forEach((ans) {
+      //       fetchedAnswers.add(Answer(
+      //           id: ans['_id'],
+      //           questionId: que['_id'],
+      //           authorId: ans['authorId'],
+      //           answer: ans['answer']));
+      //     });
+
+      //     _answeredQuestions.add(
+      //       Question(
+      //         id: que['_id'],
+      //         driverId: que['driverId'],
+      //         question: que['question'],
+      //         answers: fetchedAnswers,
+      //       ),
+      //     );
+      //   } else {
+      //     _notAnsweredQuestions.add(Question(
+      //         id: que['_id'],
+      //         driverId: que['driverId'],
+      //         question: que['question']));
+      //   }
+
+      //   notifyListeners();
+      // });
     } catch (e) {
       print(e);
     }

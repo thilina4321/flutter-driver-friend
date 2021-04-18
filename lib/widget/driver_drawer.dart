@@ -9,10 +9,20 @@ import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class DriverDrawer extends StatelessWidget {
+class DriverDrawer extends StatefulWidget {
+  @override
+  _DriverDrawerState createState() => _DriverDrawerState();
+}
+
+class _DriverDrawerState extends State<DriverDrawer> {
+  var user;
+
   @override
   Widget build(BuildContext context) {
     Driver driver = Provider.of<DriverProvider>(context, listen: false).driver;
+    if (driver == null) {
+      user = Provider.of<UserProvider>(context, listen: false).me;
+    }
 
     return Drawer(
       child: SafeArea(
@@ -23,21 +33,21 @@ class DriverDrawer extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: CircleAvatar(
                 radius: 40,
-                backgroundImage: driver.profileImageUrl == null
-                    ? null
-                    : AssetImage('assets/images/dri_pro.jpg'),
+                backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
               ),
             ),
             SizedBox(
               height: 8,
             ),
-            Text(
-              driver.name,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            driver == null
+                ? Text(user['userName'])
+                : Text(
+                    driver.name,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
             SizedBox(
               height: 8,
             ),

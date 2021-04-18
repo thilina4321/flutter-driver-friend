@@ -51,15 +51,15 @@ class FAQ extends StatelessWidget {
               ),
               if (me['role'] == 'driver')
                 CustomFaqCard(
-                  icon: Icons.message,
-                  route: AddNewQuestionPageScreen.routeName,
-                  title: 'New Question',
+                  icon: Icons.playlist_add_check_outlined,
+                  route: DefaultQuestionScreen.routeName,
+                  title: 'Looks For Solutions',
                 ),
               if (me['role'] == 'driver')
                 CustomFaqCard(
-                  icon: Icons.thumb_up_sharp,
-                  route: DefaultQuestionScreen.routeName,
-                  title: 'Find Answers',
+                  icon: Icons.question_answer_outlined,
+                  route: AddNewQuestionPageScreen.routeName,
+                  title: 'Ask New Question',
                 ),
               SizedBox(
                 height: 20,

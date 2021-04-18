@@ -21,9 +21,9 @@ class _AnswerScreenState extends State<AnswerScreen> {
   @override
   Widget build(BuildContext context) {
     Map data = ModalRoute.of(context).settings.arguments as Map;
-    print(data['id']);
-    Provider.of<FaqProvider>(context, listen: false)
-        .selectAnswersForQuestion(data['id']);
+    data['answers'].map((e) => print('el'));
+
+    print(data['answers']);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +45,46 @@ class _AnswerScreenState extends State<AnswerScreen> {
                       ),
                       title: Text('Mechanic'),
                     ),
-                    Text(data['que']),
+                    Text(data['question']),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      child: Image.asset(
+                        'assets/images/faq.jpg',
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                    Divider(
+                      thickness: 3,
+                    ),
+                    ...data['answers'].map((e) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListTile(
+                            title: Text(e['authorId']['userName']),
+                            leading: CircleAvatar(
+                              child: Text(e['authorId']['userName']
+                                  .toString()
+                                  .split('')[0]),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 20),
+                            child: Text(
+                              e['answer'],
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                          Divider(
+                            thickness: 3,
+                          ),
+                        ].toList(),
+                      );
+                    }),
                   ],
                 ),
               ),
