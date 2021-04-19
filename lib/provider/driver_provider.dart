@@ -70,6 +70,7 @@ class DriverProvider with ChangeNotifier {
       _driver = Driver(
         id: driver['_id'],
         nic: driver['nic'],
+        userName: driver['userName'],
         userId: driver['userId'],
         mobile: driver['mobile'],
         vehicleColor: driver['vehicleColor'],
@@ -116,6 +117,7 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> nearMechanic() async {
+    List<Mechanic> nearMechanics = [];
     try {
       var fetchedMechanic = await dio
           .get('https://driver-friend.herokuapp.com/api/drivers/near-mechanic');
@@ -123,18 +125,24 @@ class DriverProvider with ChangeNotifier {
       var mechanics = fetchedMechanic.data;
 
       mechanics.forEach((mechanic) {
-        _nearMechanics.add(
+        print(mechanic);
+        nearMechanics.add(
           Mechanic(
-              id: mechanics['_id'],
-              nic: mechanics['nic'],
-              mobile: mechanics['mobile'],
-              city: mechanics['city'],
-              latitude: mechanics['latitude'],
-              longitude: mechanics['longitude'],
-              about: mechanics['about'],
-              address: mechanics['address']),
+            id: mechanic['_id'],
+            nic: mechanic['nic'],
+            mobile: mechanic['mobile'],
+            city: mechanic['city'],
+            latitude: mechanic['latitude'],
+            longitude: mechanic['longitude'],
+            about: mechanic['about'],
+            address: mechanic['address'],
+          ),
         );
       });
+
+      _nearMechanics = nearMechanics;
+
+      print(_nearMechanics);
 
       notifyListeners();
     } catch (e) {
@@ -144,6 +152,7 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> nearService() async {
+    List<ServiceCenter> nearS = [];
     try {
       var fetchedService = await dio
           .get('https://driver-friend.herokuapp.com/api/drivers/near-service');
@@ -151,24 +160,22 @@ class DriverProvider with ChangeNotifier {
       var services = fetchedService.data;
 
       services.forEach((service) {
-        _nearService.add(
+        nearS.add(
           ServiceCenter(
-            id: services['_id'],
-            mobile: services['mobile'],
-            city: services['city'],
-            latitude: services['latitude'],
-            longitude: services['longitude'],
-            about: services['about'],
-            address: services['address'],
-          ),
+              id: service['_id'],
+              mobile: service['mobile'],
+              city: service['city'],
+              latitude: service['latitude'],
+              longitude: service['longitude'],
+              about: service['about'],
+              address: service['address'],
+              userId: service['userId']),
         );
       });
-
-      print(_nearService);
+      _nearService = nearS;
 
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }

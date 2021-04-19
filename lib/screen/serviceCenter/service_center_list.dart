@@ -28,6 +28,7 @@ class ServiceCenterList extends StatelessWidget {
           }
           return Consumer<DriverProvider>(builder: (ctx, ser, child) {
             List<ServiceCenter> serviceCenters = ser.nearServices;
+            print(serviceCenters[0].userId);
             return serviceCenters.length == 0
                 ? Center(
                     child: Container(
@@ -40,7 +41,7 @@ class ServiceCenterList extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).pushNamed(
                               ServiceCenterProfileScreen.routeName,
-                              arguments: serviceCenters[index]);
+                              arguments: serviceCenters[index].userId);
                         },
                         child: Card(
                           elevation: 3,
@@ -52,7 +53,7 @@ class ServiceCenterList extends StatelessWidget {
                                 backgroundImage:
                                     AssetImage('assets/images/ser_cover.PNG'),
                               ),
-                              title: Text(serviceCenters[index].name),
+                              title: Text('Name'),
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [

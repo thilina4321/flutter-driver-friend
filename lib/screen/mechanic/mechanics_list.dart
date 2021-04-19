@@ -82,7 +82,7 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
                                 backgroundImage:
                                     AssetImage('assets/images/ser_cover.PNG'),
                               ),
-                              title: Text(mechanics[index].name),
+                              title: Text(mechanics[index].name.toString()),
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [

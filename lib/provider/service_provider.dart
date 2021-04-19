@@ -27,7 +27,6 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> fetchServiceCenter(id) async {
-    print(id);
     try {
       var fetchedCenter = await dio.get('$url/service-center/$id');
 
@@ -35,6 +34,7 @@ class ServiceCenterProvider with ChangeNotifier {
 
       _serviceCenter = ServiceCenter(
         id: serviceCenter['_id'],
+        userId: serviceCenter['userId'],
         mobile: serviceCenter['mobile'],
         city: serviceCenter['city'],
         latitude: serviceCenter['latitude'],
@@ -98,16 +98,7 @@ class ServiceCenterProvider with ChangeNotifier {
     };
     try {
       await dio.post('$url/create-service', data: formData);
-      // var fetchedService = newService.data['service'];
-      // _services.add(
-      //   Service(
-      //       id: fetchedService['_id'],
-      //       name: service.name,
-      //       description: service.description,
-      //       price: service.price),
-      // );
 
-      // print(fetchedService);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -118,7 +109,8 @@ class ServiceCenterProvider with ChangeNotifier {
   Future<void> fetchServices(String centerId) async {
     List<Service> services = [];
     try {
-      var fetchedServices = await dio.get('$url/services');
+      var fetchedServices = await dio.get(
+          'https://driver-friend.herokuapp.com/api/service-centers/services/$centerId');
       var getServices = fetchedServices.data['services'];
 
       getServices.forEach((service) {

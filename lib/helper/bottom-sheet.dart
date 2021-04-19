@@ -23,33 +23,37 @@ class MybottomSheet extends StatefulWidget {
 }
 
 class _MybottomSheetState extends State<MybottomSheet> {
-  DateTime pickedDate;
-  TimeOfDay pickedTime;
+  var pickedDate;
+  var pickedTime;
   bool isLoading = false;
 
   pickDateMethod(date) {
     setState(() {
-      pickedDate = date;
+      pickedDate = date.year.toString() +
+          '-' +
+          date.month.toString() +
+          '-' +
+          date.day.toString();
     });
   }
 
   pickTimeMethod(time) {
+    var timePhrase = int.parse(time.hour.toString()) < 12 ? ' am' : ' pm';
     setState(() {
-      pickedTime = time;
+      pickedTime =
+          time.hour.toString() + ' : ' + time.minute.toString() + timePhrase;
     });
   }
 
   _appointment(context) async {
-    print(pickedDate.toString());
-    print(pickedTime.format(context));
-    isLoading = true;
+    // isLoading = true;
     // try {
     //   await Provider.of<DriverProvider>(context, listen: false)
     //       .makeAppointment();
     //   SuccessDialog.successDialog(context, 'Successfuly make an appointment');
-    // isLoading = false;
+    //   isLoading = false;
     // } catch (e) {
-    // isLoading = false;
+    //   isLoading = false;
     //   ErrorDialog.errorDialog(context, e.toString());
     // }
   }
@@ -68,17 +72,20 @@ class _MybottomSheetState extends State<MybottomSheet> {
           SizedBox(
             height: 50,
           ),
-          Text(widget.name),
+          Text(
+            'Welcome ' + widget.name,
+            style: TextStyle(fontSize: 20),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (pickedDate != null)
-                Text(pickedDate.year.toString() +
-                    '/' +
-                    pickedDate.month.toString() +
-                    '/' +
-                    pickedDate.day.toString()),
-              FlatButton(
+              if (pickedDate != null) Text(pickedDate),
+              FlatButton.icon(
+                icon: Icon(Icons.date_range),
+                label: pickedDate != null
+                    ? Text('Change Date')
+                    : Text('Select Date'),
+                hoverColor: Colors.green,
                 onPressed: () {
                   return showDatePicker(
                     context: context,
@@ -89,27 +96,22 @@ class _MybottomSheetState extends State<MybottomSheet> {
                     ),
                   ).then((date) => {pickDateMethod(date)});
                 },
-                child: pickedDate != null
-                    ? Text('Change Date')
-                    : Text('Select Date'),
               ),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (pickedTime != null)
-                Text(pickedTime.hour.toString() +
-                    ':' +
-                    pickedTime.minute.toString()),
-              FlatButton(
+              if (pickedTime != null) Text(pickedTime.toString()),
+              FlatButton.icon(
+                icon: Icon(Icons.timer_outlined),
                 onPressed: () {
                   return showTimePicker(
                     context: context,
                     initialTime: TimeOfDay(hour: 00, minute: 00),
                   ).then((time) => {pickTimeMethod(time)});
                 },
-                child: pickedTime != null
+                label: pickedTime != null
                     ? Text('Change Time')
                     : Text('Select Time'),
               ),

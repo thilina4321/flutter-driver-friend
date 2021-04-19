@@ -46,8 +46,8 @@ class _ServiceCenterProfileScreenState
 
   @override
   Widget build(BuildContext context) {
+    var id = ModalRoute.of(context).settings.arguments;
     me = Provider.of<UserProvider>(context, listen: false).me;
-    // print(me);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +59,7 @@ class _ServiceCenterProfileScreenState
             ? Provider.of<ServiceCenterProvider>(context, listen: false)
                 .fetchServiceCenter(me['id'])
             : Provider.of<ServiceCenterProvider>(context, listen: false)
-                .fetchServiceCenter(serviceCenter.userId),
+                .fetchServiceCenter(id),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -74,14 +74,6 @@ class _ServiceCenterProfileScreenState
                     'assets/images/logo.jpg',
                     fit: BoxFit.cover,
                   ),
-                  // Text(
-                  //   'Welcome to Driver Friend App ' + me['userName'],
-                  //   textAlign: TextAlign.center,
-                  //   style: TextStyle(
-                  //     fontSize: 25,
-                  //     fontWeight: FontWeight.bold,
-                  //   ),
-                  // ),
                   SizedBox(
                     height: 30,
                   ),

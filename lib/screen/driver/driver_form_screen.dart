@@ -57,6 +57,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
     }
 
     driver.userId = me['id'];
+    driver.userName = me['userName'];
     setState(() {
       isLoading = true;
     });

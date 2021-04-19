@@ -15,7 +15,6 @@ class Mechanic {
   String mobile;
   String address;
   String about;
-  int location;
   File profileImageUrl;
   double rating;
   UserType userType;
@@ -37,7 +36,6 @@ class Mechanic {
       this.about,
       this.address,
       this.profileImageUrl,
-      this.location,
       this.rating,
       this.mobile});
 }
