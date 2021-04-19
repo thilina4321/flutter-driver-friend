@@ -27,10 +27,10 @@ class FAQ extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Do you want any help ?',
-                textAlign: TextAlign.start,
+                'Frequently Ask Question',
+                textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -38,12 +38,10 @@ class FAQ extends StatelessWidget {
                 height: 20,
               ),
               Text(
-                'This is the area you can get help from the expert mechanics',
+                'Any Question? Here is the place',
                 textAlign: TextAlign.start,
                 style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  fontSize: 18,
                 ),
               ),
               SizedBox(

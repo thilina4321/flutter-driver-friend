@@ -95,7 +95,6 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> deleteDriver(String id, String userId) async {
-    print(id);
     try {
       var driver = await dio.delete('$url/delete-driver/$id/$userId');
       print(driver.data);

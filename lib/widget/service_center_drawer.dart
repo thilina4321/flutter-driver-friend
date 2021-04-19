@@ -5,7 +5,19 @@ import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ServiceCenterDrawer extends StatelessWidget {
+class ServiceCenterDrawer extends StatefulWidget {
+  @override
+  _ServiceCenterDrawerState createState() => _ServiceCenterDrawerState();
+}
+
+class _ServiceCenterDrawerState extends State<ServiceCenterDrawer> {
+  var me;
+  @override
+  void initState() {
+    me = Provider.of<UserProvider>(context, listen: false).me;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -24,7 +36,7 @@ class ServiceCenterDrawer extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'DMST Service Center',
+              me['userName'],
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
@@ -54,7 +66,7 @@ class ServiceCenterDrawer extends StatelessWidget {
                 label: 'My Profile'),
             DrawerIcons(
               icon: Icons.perm_data_setting,
-              label: 'Manage Services',
+              label: 'New Services',
               routeName: CreateNewServiceScreen.routeName,
             ),
             DrawerIcons(

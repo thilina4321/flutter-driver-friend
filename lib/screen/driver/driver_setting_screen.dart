@@ -1,3 +1,4 @@
+import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';

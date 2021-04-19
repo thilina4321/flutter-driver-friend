@@ -57,17 +57,15 @@ class FaqProvider with ChangeNotifier {
   }
 
   Future<void> addQuestion(Question question) async {
-    var data = {'driverId': question.driverId, 'question': question.question};
+    var formData = FormData.fromMap({
+      'driverId': question.driverId,
+      'question': question.question,
+      // 'file':
+      //     await MultipartFile.fromFile('./text.txt', filename: 'upload.txt')
+    });
 
     try {
-      var question = await dio.post('$url/create', data: data);
-      var quiz = question.data['savedQuestion'];
-      _question = Question(
-          id: quiz['_id'],
-          question: quiz['question'],
-          driverId: quiz['driverId'],
-          questionImage: quiz['questionImage']);
-      notifyListeners();
+      await dio.post('$url/create', data: formData);
     } catch (e) {
       print(e);
     }

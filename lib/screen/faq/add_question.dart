@@ -85,7 +85,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add New Question'),
+        title: Text('Ask Questions'),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -93,6 +93,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
           child: Form(
             key: _form,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   child: Padding(
@@ -114,36 +115,28 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  height: 100,
-                  child: Center(
-                    child: question.questionImage == null
-                        ? FlatButton.icon(
-                            icon: Icon(
-                              Icons.camera_alt,
-                              color: Colors.purple,
-                            ),
-                            onPressed: getImage,
-                            label: Text(
-                              'Add photo',
-                              style: TextStyle(
-                                color: Colors.purple,
-                              ),
-                            ),
-                          )
-                        : Container(
+                question.questionImage == null
+                    ? FlatButton.icon(
+                        onPressed: getImage,
+                        icon: Icon(Icons.camera_alt_outlined),
+                        label: Text('Include Image'),
+                      )
+                    : Container(
+                        height: 200,
+                        child: Center(
+                          child: Container(
                             width: double.infinity,
                             child: Image.file(
                               question.questionImage,
                               fit: BoxFit.cover,
                             ),
                           ),
-                  ),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1),
-                  ),
-                ),
+                        ),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1),
+                        ),
+                      ),
                 Container(
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   width: double.infinity,

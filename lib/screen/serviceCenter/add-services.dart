@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class CreateNewServiceScreen extends StatefulWidget {
@@ -16,6 +20,20 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
 
   Service _service = Service();
   bool isLoading = false;
+  final picker = ImagePicker();
+  var img;
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        img = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
 
   Future<void> _createService(context) async {
     bool isValid = _form.currentState.validate();
@@ -26,6 +44,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
     setState(() {
       isLoading = true;
     });
+    _service.shopId = me['id'];
     try {
       await Provider.of<ServiceCenterProvider>(context, listen: false)
           .addService(_service);
@@ -56,6 +75,13 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
             );
           });
     }
+  }
+
+  var me;
+  @override
+  void initState() {
+    me = Provider.of<UserProvider>(context, listen: false).me;
+    super.initState();
   }
 
   @override
@@ -125,20 +151,26 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                FlatButton(
-                  child: Text('Attach image'),
-                  onPressed: () {},
+                FlatButton.icon(
+                  icon: Icon(Icons.camera_alt_outlined),
+                  label: Text('Image'),
+                  onPressed: getImage,
                 ),
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1),
+                if (img != null)
+                  Container(
+                    height: 200,
+                    child: Image.file(
+                      img,
+                      fit: BoxFit.cover,
+                    ),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                    ),
                   ),
-                ),
                 Container(
                   margin: const EdgeInsets.only(top: 10),
                   width: double.infinity,

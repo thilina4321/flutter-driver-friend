@@ -19,6 +19,7 @@ class UserProvider with ChangeNotifier {
   String _userName;
   String _role;
   String _token;
+  var u;
 
   Dio dio = new Dio();
   final url = 'https://driver-friend.herokuapp.com/api/drivers';
@@ -53,9 +54,9 @@ class UserProvider with ChangeNotifier {
     var data = {
       'email': user.email,
       'password': user.password,
+      'userName': user.name
     };
 
-    var u;
     try {
       switch (user.userType) {
         case UserType.mechanic:
@@ -70,6 +71,7 @@ class UserProvider with ChangeNotifier {
         default:
           u = await dio.post('$signupurl/drivers/signup', data: data);
       }
+      // print(u);
       notifyListeners();
     } catch (e) {
       print(e);
@@ -117,7 +119,6 @@ class UserProvider with ChangeNotifier {
   }
 
   logout(context) async {
-    Navigator.of(context).pushReplacementNamed('/');
     var pref = await SharedPreferences.getInstance();
 
     if (pref.containsKey('userData')) {
@@ -126,6 +127,7 @@ class UserProvider with ChangeNotifier {
     _token = null;
     _role = null;
     notifyListeners();
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   userType(newUser) {

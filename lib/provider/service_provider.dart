@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/model/service_center.dart';
@@ -29,6 +27,7 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> fetchServiceCenter(id) async {
+    print(id);
     try {
       var fetchedCenter = await dio.get('$url/service-center/$id');
 
@@ -48,6 +47,7 @@ class ServiceCenterProvider with ChangeNotifier {
       // _serviceCenter = serviceCenter.data;
       notifyListeners();
     } catch (e) {
+      print(e);
       throw e;
     }
   }
@@ -83,28 +83,31 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> addService(Service service) async {
-    // FormData data = new FormData.fromMap({
+    // var formData = FormData.fromMap({
     //   'name': service.name,
     //   'description': service.description,
-    //   'price': service.price
+    //   'price': service.price,
+    //   'shopId': service.shopId
     // });
-    var data = {
+
+    var formData = {
       'name': service.name,
       'description': service.description,
-      'price': service.price
+      'price': service.price,
+      'shopId': service.shopId
     };
     try {
-      var newService = await dio.post('$url/create-service', data: data);
-      var fetchedService = newService.data['service'];
-      _services.add(
-        Service(
-            id: fetchedService['_id'],
-            name: service.name,
-            description: service.description,
-            price: service.price),
-      );
+      await dio.post('$url/create-service', data: formData);
+      // var fetchedService = newService.data['service'];
+      // _services.add(
+      //   Service(
+      //       id: fetchedService['_id'],
+      //       name: service.name,
+      //       description: service.description,
+      //       price: service.price),
+      // );
 
-      print(fetchedService);
+      // print(fetchedService);
       notifyListeners();
     } catch (e) {
       print(e);

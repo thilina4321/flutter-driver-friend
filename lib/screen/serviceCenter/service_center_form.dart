@@ -45,7 +45,10 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     }
   }
 
+  bool isLoadingMap = false;
+
   Future<void> getLocation() async {
+    isLoadingMap = true;
     try {
       final locData = await Location().getLocation();
       serviceCenter.latitude = locData.latitude;
@@ -56,13 +59,14 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
       List<geoCoding.Placemark> placemarks =
           await geoCoding.placemarkFromCoordinates(
               serviceCenter.latitude, serviceCenter.longitude);
-      print(placemarks[0].name);
       serviceCenter.city = placemarks[0].name;
 
+      isLoadingMap = false;
       setState(() {
         serviceCenter.mapImagePreview = img;
       });
     } catch (e) {
+      isLoadingMap = false;
       print('error');
     }
   }
@@ -73,7 +77,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     if (!isValid) {
       return;
     }
-    serviceCenter.userId = me["_id"];
+    serviceCenter.userId = me["id"];
     try {
       setState(() {
         isLoading = true;
@@ -122,6 +126,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
           child: Container(
             margin: const EdgeInsets.all(20),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TextFormField(
                   onSaved: (value) {
@@ -198,6 +203,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                   height: 30,
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Expanded(
                       child: FlatButton.icon(
@@ -210,28 +216,34 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        child: serviceCenter.mapImagePreview == null
-                            ? Center(
-                                child: Text('Your Location'),
-                              )
-                            : Container(
-                                child: Image.network(
+                Text(
+                  'Please notice when you add your location. We determine your location as current location',
+                  style: TextStyle(color: Colors.red),
+                  textAlign: TextAlign.center,
+                ),
+                if (isLoadingMap) Center(child: CircularProgressIndicator()),
+                serviceCenter.mapImagePreview == null
+                    ? SizedBox(
+                        height: 1,
+                      )
+                    : Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              child: Container(
+                                  child: Image.network(
                                 serviceCenter.mapImagePreview,
                                 fit: BoxFit.cover,
                               )),
-                        height: 150,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
-                        ),
+                              height: 150,
+                              decoration: BoxDecoration(
+                                border: Border.all(width: 1),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
                 Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),

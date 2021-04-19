@@ -15,10 +15,7 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
   var place;
   List questions = [];
   List dupQuestions = [];
-
-  Future<void> fetchData(context) async {
-    await Provider.of<FaqProvider>(context, listen: false).fetchQuestions();
-  }
+  bool isLoading = false;
 
   _filterQuestions(String city) {
     List fl = [];
@@ -32,19 +29,27 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
     setState(() {
       questions = fl;
     });
-    print(fl);
   }
 
   Future fetchQuestions() async {
+    isLoading = true;
     try {
       await Provider.of<FaqProvider>(context, listen: false).fetchQuestions();
+      isLoading = false;
       setState(() {
         questions = Provider.of<FaqProvider>(context, listen: false).questions;
         dupQuestions = questions;
       });
     } catch (e) {
+      isLoading = false;
       ErrorDialog.errorDialog(context, e);
     }
+  }
+
+  AllQuestions() {
+    setState(() {
+      questions = dupQuestions;
+    });
   }
 
   @override
@@ -57,8 +62,17 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          FlatButton(
+            onPressed: AllQuestions,
+            child: Icon(
+              Icons.refresh,
+              color: Colors.white,
+            ),
+          ),
+        ],
         title: Text(
-          'Frequently Ask Questions',
+          'Questions',
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -110,41 +124,45 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
         backgroundColor: Colors.purple,
         child: Icon(Icons.search),
       ),
-      body: ListView.builder(
-          itemCount: questions.length,
-          itemBuilder: (ctx, index) {
-            return Card(
-              elevation: 3,
-              child: Column(
-                children: [
-                  Row(
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : ListView.builder(
+              itemCount: questions.length,
+              itemBuilder: (ctx, index) {
+                return Card(
+                  elevation: 3,
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.all(8),
-                          child: Text(
-                            questions[index]['question'],
-                            // que.answeredQuestions[index].question,
-                            textAlign: TextAlign.start,
-                            style: TextStyle(fontSize: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              width: double.infinity,
+                              margin: const EdgeInsets.all(8),
+                              child: Text(
+                                questions[index]['question'],
+                                // que.answeredQuestions[index].question,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                              AnswerScreen.routeName,
-                              arguments: questions[index]);
-                        },
-                        child: Text('Check'),
+                          FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  AnswerScreen.routeName,
+                                  arguments: questions[index]);
+                            },
+                            child: Text('Check'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            );
-          }),
+                );
+              }),
     );
   }
 }

@@ -47,6 +47,7 @@ class _ServiceCenterProfileScreenState
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    // print(me);
 
     return Scaffold(
       appBar: AppBar(

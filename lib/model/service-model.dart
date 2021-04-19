@@ -4,6 +4,13 @@ class Service {
   String name;
   String description;
   String price;
+  String shopId;
 
-  Service({this.image, this.name, this.description, this.price, this.id});
+  Service(
+      {this.image,
+      this.name,
+      this.description,
+      this.price,
+      this.id,
+      this.shopId});
 }
