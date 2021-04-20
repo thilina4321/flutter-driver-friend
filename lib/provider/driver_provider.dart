@@ -10,6 +10,7 @@ class DriverProvider with ChangeNotifier {
   final url = 'https://driver-friend.herokuapp.com/api/drivers';
   Dio dio = new Dio();
   Driver _driver;
+  double _rating;
 
   List<Mechanic> _nearMechanics = [];
   List<ServiceCenter> _nearService = [];
@@ -19,6 +20,10 @@ class DriverProvider with ChangeNotifier {
 
   Driver get driver {
     return _driver;
+  }
+
+  double get rating {
+    return _rating;
   }
 
   List<Mechanic> get nearMechanics {
@@ -33,7 +38,7 @@ class DriverProvider with ChangeNotifier {
     return [..._nearSpare];
   }
 
-  List get appointments {
+  List<Appointment> get appointments {
     return _appointments;
   }
 
@@ -212,9 +217,21 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future makeAppointment(Appointment appointment) async {
+    var data = {
+      'centerId': appointment.centerId,
+      'date': appointment.date,
+      'time': appointment.time,
+      'status': appointment.status,
+      'driverId': appointment.driverId,
+      'centerMobile': appointment.centerMobile,
+      'centerName': appointment.centerName,
+      'serviceName': appointment.serviceName,
+    };
+    print(data);
     try {
-      await dio.post('$url/make-appointment', data: appointment);
+      await dio.post('$url/make-appointment', data: data);
     } catch (e) {
+      print(e.error);
       throw e;
     }
   }
@@ -232,11 +249,15 @@ class DriverProvider with ChangeNotifier {
       var response = await dio.get('$url/find-appointments/$id');
 
       var responseData = response.data['appointment'] as List;
+      print(responseData);
 
       responseData.forEach((app) {
         appoins.add(Appointment(
             centerId: app['centerId'],
             driverId: app['driverId'],
+            serviceName: app['serviceName'],
+            centerMobile: app['centerMobile'],
+            centerName: app['centerName'],
             status: app['status'],
             date: app['date'],
             time: app['time']));
@@ -244,10 +265,26 @@ class DriverProvider with ChangeNotifier {
       _appointments = appoins;
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
 
   fetchCart() async {}
+
+  Future findMyRatings(userType, id, driverId) async {
+    var rating;
+    try {
+      if (userType == 'serviceCenter') {
+        rating = await dio.get('$url/my-service-rating/$id/$driverId');
+      } else if (userType == 'spareshop') {
+        rating = await dio.get('$url/my-spare-rating/$id/$driverId');
+      } else if (userType == 'mechanic') {
+        rating = await dio.get('$url/my-mechanic-rating/$id/$driverId');
+      }
+      _rating = double.parse(rating.data['rating'].toString());
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 }

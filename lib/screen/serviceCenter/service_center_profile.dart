@@ -46,20 +46,22 @@ class _ServiceCenterProfileScreenState
 
   @override
   Widget build(BuildContext context) {
-    var idData = ModalRoute.of(context).settings.arguments as Map;
+    var idData = ModalRoute.of(context).settings.arguments;
     me = Provider.of<UserProvider>(context, listen: false).me;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
-      drawer: ServiceCenterDrawer(),
+      drawer: me['role'] == 'serviceCenter'
+          ? ServiceCenterDrawer()
+          : DriverDrawer(),
       body: FutureBuilder(
         future: me['role'] == 'serviceCenter'
             ? Provider.of<ServiceCenterProvider>(context, listen: false)
                 .fetchServiceCenter(me['id'])
             : Provider.of<ServiceCenterProvider>(context, listen: false)
-                .fetchServiceCenter(idData['userId']),
+                .fetchServiceCenter(idData),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -95,8 +97,9 @@ class _ServiceCenterProfileScreenState
           }
           return Consumer<ServiceCenterProvider>(builder: (ctx, ser, child) {
             serviceCenter = ser.serviceCenter;
-            serviceCenter.id = me['_id'];
-            serviceCenter.name = me['userName'];
+            if (me['role'] == 'serviceCenter') {
+              serviceCenter.name = me['userName'];
+            }
 
             return SingleChildScrollView(
               child: Column(
@@ -231,7 +234,11 @@ class _ServiceCenterProfileScreenState
                             onPressed: () {
                               Navigator.of(context).pushNamed(
                                   ServiceCenterServices.routeName,
-                                  arguments: serviceCenter.userId);
+                                  arguments: {
+                                    'userId': serviceCenter.userId,
+                                    'centerName': serviceCenter.name,
+                                    'centerMobile': serviceCenter.mobile
+                                  });
                             },
                             child: const Text(
                               'Services',
@@ -258,23 +265,28 @@ class _ServiceCenterProfileScreenState
                             ),
                           ),
                         ),
-                        Card(
-                          elevation: 3,
-                          child: FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  CustomRatingWidget.routeName,
-                                  arguments: serviceCenter.rating);
-                            },
-                            child: const Text(
-                              'Rate Me',
-                              style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.blue,
+                        if (me['role'] != 'serviceCenter')
+                          Card(
+                            elevation: 3,
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                    CustomRatingWidget.routeName,
+                                    arguments: {
+                                      'driverId': me['id'],
+                                      'centerId': serviceCenter.id,
+                                      'ratings': serviceCenter.rating,
+                                    });
+                              },
+                              child: const Text(
+                                'Rate Me',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.blue,
+                                ),
                               ),
                             ),
                           ),
-                        ),
                       ],
                     ),
                   ),

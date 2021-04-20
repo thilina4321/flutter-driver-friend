@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
@@ -48,7 +49,9 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   bool isLoadingMap = false;
 
   Future<void> getLocation() async {
-    isLoadingMap = true;
+    setState(() {
+      isLoadingMap = true;
+    });
     try {
       final locData = await Location().getLocation();
       serviceCenter.latitude = locData.latitude;
@@ -61,13 +64,17 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
               serviceCenter.latitude, serviceCenter.longitude);
       serviceCenter.city = placemarks[0].name;
 
-      isLoadingMap = false;
+      setState(() {
+        isLoadingMap = false;
+      });
       setState(() {
         serviceCenter.mapImagePreview = img;
       });
     } catch (e) {
-      isLoadingMap = false;
-      print('error');
+      setState(() {
+        isLoadingMap = false;
+      });
+      ErrorDialog.errorDialog(context, 'Some thing went wrong');
     }
   }
 
@@ -78,6 +85,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
       return;
     }
     serviceCenter.userId = me["id"];
+    serviceCenter.name = me['userName'];
     try {
       setState(() {
         isLoading = true;
@@ -108,12 +116,14 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
-    // ServiceCenter editableServiceCenter =
-    //     Provider.of<ServiceCenterProvider>(context, listen: false)
-    //         .serviceCenter;
-    // if (editableServiceCenter != null) {
-    //   serviceCenter = editableServiceCenter;
-    // }
+
+    ServiceCenter editableServiceCenter =
+        Provider.of<ServiceCenterProvider>(context, listen: false)
+            .serviceCenter;
+    print(editableServiceCenter.openingTime);
+    if (editableServiceCenter != null) {
+      serviceCenter = editableServiceCenter;
+    }
 
     return Scaffold(
       appBar: AppBar(

@@ -12,7 +12,7 @@ mixin CustomBottomSheet {
         context: data['context'],
         builder: (context) {
           return MybottomSheet(
-            name: data['name'],
+            name: data['driverName'],
             centerName: data['centerName'],
             serviceName: data['serviceName'],
             driverId: data['driverId'],
@@ -67,7 +67,9 @@ class _MybottomSheetState extends State<MybottomSheet> {
   }
 
   _appointment(context) async {
-    isLoading = true;
+    setState(() {
+      isLoading = true;
+    });
     Appointment appointment = Appointment(
         date: pickedDate,
         time: pickedTime,
@@ -80,6 +82,7 @@ class _MybottomSheetState extends State<MybottomSheet> {
     try {
       await Provider.of<DriverProvider>(context, listen: false)
           .makeAppointment(appointment);
+      Navigator.of(context).pop();
       Navigator.of(context).pushNamed(AppointmentScreen.routeName);
       SuccessDialog.successDialog(context, 'Successfuly make an appointment');
       isLoading = false;
@@ -91,77 +94,79 @@ class _MybottomSheetState extends State<MybottomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Appointment',
-            style: TextStyle(fontSize: 25, color: Colors.purple),
-          ),
-          SizedBox(
-            height: 50,
-          ),
-          Text(
-            'Welcome ' + widget.name,
-            style: TextStyle(fontSize: 20),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (pickedDate != null) Text(pickedDate),
-              FlatButton.icon(
-                icon: Icon(Icons.date_range),
-                label: pickedDate != null
-                    ? Text('Change Date')
-                    : Text('Select Date'),
-                hoverColor: Colors.green,
-                onPressed: () {
-                  return showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(
-                      Duration(days: 7),
+    return isLoading
+        ? Center(child: CircularProgressIndicator())
+        : Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Appointment',
+                  style: TextStyle(fontSize: 25, color: Colors.purple),
+                ),
+                SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  'Welcome ' + widget.name.toString(),
+                  style: TextStyle(fontSize: 20),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (pickedDate != null) Text(pickedDate),
+                    FlatButton.icon(
+                      icon: Icon(Icons.date_range),
+                      label: pickedDate != null
+                          ? Text('Change Date')
+                          : Text('Select Date'),
+                      hoverColor: Colors.green,
+                      onPressed: () {
+                        return showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            Duration(days: 7),
+                          ),
+                        ).then((date) => {pickDateMethod(date)});
+                      },
                     ),
-                  ).then((date) => {pickDateMethod(date)});
-                },
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (pickedTime != null) Text(pickedTime.toString()),
-              FlatButton.icon(
-                icon: Icon(Icons.timer_outlined),
-                onPressed: () {
-                  return showTimePicker(
-                    context: context,
-                    initialTime: TimeOfDay(hour: 00, minute: 00),
-                  ).then((time) => {pickTimeMethod(time)});
-                },
-                label: pickedTime != null
-                    ? Text('Change Time')
-                    : Text('Select Time'),
-              ),
-            ],
-          ),
-          RaisedButton(
-            color: Colors.purple,
-            onPressed: () => _appointment(context),
-            child: isLoading
-                ? CircularProgressIndicator()
-                : Text(
-                    'Make the Appointment',
-                    style: TextStyle(
-                      color: Colors.white,
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (pickedTime != null) Text(pickedTime.toString()),
+                    FlatButton.icon(
+                      icon: Icon(Icons.timer_outlined),
+                      onPressed: () {
+                        return showTimePicker(
+                          context: context,
+                          initialTime: TimeOfDay(hour: 00, minute: 00),
+                        ).then((time) => {pickTimeMethod(time)});
+                      },
+                      label: pickedTime != null
+                          ? Text('Change Time')
+                          : Text('Select Time'),
                     ),
-                  ),
-          ),
-        ],
-      ),
-    );
+                  ],
+                ),
+                RaisedButton(
+                  color: Colors.purple,
+                  onPressed: () => _appointment(context),
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : Text(
+                          'Make the Appointment',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ],
+            ),
+          );
   }
 }

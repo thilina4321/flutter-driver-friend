@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:driver_friend/helper/bottom-sheet.dart';
+import 'package:driver_friend/helper/is-perform.dart';
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/serviceCenter/add-services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,16 +20,16 @@ class ServiceCenterServices extends StatefulWidget {
 
 class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   bool isLoading = false;
-  var id;
+  var modalRouteData;
   var me;
   Driver driver;
 
   @override
   Widget build(BuildContext context) {
-    id = ModalRoute.of(context).settings.arguments;
     me = Provider.of<UserProvider>(context, listen: false).me;
 
     if (me['role'] != 'serviceCenter') {
+      modalRouteData = ModalRoute.of(context).settings.arguments as Map;
       driver = Provider.of<DriverProvider>(context, listen: false).driver;
     }
 
@@ -36,8 +38,11 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
           title: Text('Services'),
         ),
         body: FutureBuilder(
-          future: Provider.of<ServiceCenterProvider>(context, listen: false)
-              .fetchServices(id),
+          future: me['role'] == 'serviceCenter'
+              ? Provider.of<ServiceCenterProvider>(context, listen: false)
+                  .fetchServices(me['id'])
+              : Provider.of<ServiceCenterProvider>(context, listen: false)
+                  .fetchServices(modalRouteData['userId']),
           builder: (context, data) {
             if (data.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -46,7 +51,8 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
               if (data.error.toString().contains('404')) {
                 return Center(child: Text('Sorry no spare part shops found'));
               }
-              return Center(child: Text(data.error.toString()));
+              return Center(
+                  child: Text('Something went wrong. Try again later.'));
             }
 
             return isLoading
@@ -115,7 +121,15 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                             ),
                                             if (me['role'] == 'serviceCenter')
                                               FlatButton(
-                                                  onPressed: () {},
+                                                  onPressed: () {
+                                                    Navigator.of(context)
+                                                        .pushNamed(
+                                                            CreateNewServiceScreen
+                                                                .routeName,
+                                                            arguments:
+                                                                services[index]
+                                                                    .id);
+                                                  },
                                                   child: Text(
                                                     'Edit',
                                                     style: TextStyle(
@@ -129,12 +143,17 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                                     'context': context,
                                                     'driverName':
                                                         driver.userName,
-                                                    'driverId': driver.userId,
-                                                    'centerId': id,
-                                                    'centerName':
+                                                    'driverId': driver.id,
+                                                    'centerId': modalRouteData[
+                                                        'userId'],
+                                                    'serviceName':
                                                         services[index].name,
-                                                        'centerName':,
-                                                        'centerMobile':, 
+                                                    'centerName':
+                                                        modalRouteData[
+                                                            'centerName'],
+                                                    'centerMobile':
+                                                        modalRouteData[
+                                                            'centerMobile'],
                                                   });
                                                 },
                                                 child: Text(
@@ -147,15 +166,23 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                               FlatButton(
                                                 onPressed: () async {
                                                   try {
-                                                    setState(() {
-                                                      isLoading = true;
-                                                    });
-                                                    await Provider.of<
-                                                                ServiceCenterProvider>(
-                                                            context,
-                                                            listen: false)
-                                                        .deleteService(
-                                                            services[index].id);
+                                                    bool isPerform =
+                                                        await IsPerformDialog
+                                                            .performStatus(
+                                                                context);
+
+                                                    if (isPerform)
+                                                      setState(() {
+                                                        isLoading = true;
+                                                      });
+                                                    if (isPerform)
+                                                      await Provider.of<
+                                                                  ServiceCenterProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .deleteService(
+                                                              services[index]
+                                                                  .id);
                                                     setState(() {
                                                       isLoading = false;
                                                     });

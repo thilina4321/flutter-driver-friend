@@ -34,6 +34,7 @@ class ServiceCenterProvider with ChangeNotifier {
 
       _serviceCenter = ServiceCenter(
         id: serviceCenter['_id'],
+        name: serviceCenter['userName'],
         userId: serviceCenter['userId'],
         mobile: serviceCenter['mobile'],
         city: serviceCenter['city'],
@@ -42,6 +43,7 @@ class ServiceCenterProvider with ChangeNotifier {
         address: serviceCenter['address'],
         openingTime: serviceCenter['openTime'],
         closingTime: serviceCenter['closeTime'],
+        rating: double.parse(serviceCenter['totalRating'].toString()),
       );
 
       // _serviceCenter = serviceCenter.data;
@@ -130,14 +132,16 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future<void> deleteService(String id) async {
-    print(id);
     try {
       await dio.delete('$url/delete-service/$id');
-      _services.removeWhere((service) => service.id == id);
-      notifyListeners();
     } catch (e) {
       throw e;
     }
+  }
+
+  selectServiceForEdit(String id) async {
+    Service service = _services.firstWhere((element) => element.id == id);
+    return service;
   }
 
   nearServiceCenters(String city) {
@@ -146,13 +150,14 @@ class ServiceCenterProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> serviceRating(String id, double rating) async {
+  Future<void> serviceRating(rating, id, driverId) async {
+    var data = {'rating': rating, 'id': id, 'driverId': driverId};
+    print(data);
     try {
-      var rating = await dio.post(
-          'https://dirver-friend.herokuapp.com/api/drivers/service-rating');
-      print(rating);
+      await dio.post(
+          'https://driver-friend.herokuapp.com/api/drivers/service-rating',
+          data: data);
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }

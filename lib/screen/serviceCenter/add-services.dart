@@ -84,8 +84,17 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
     super.initState();
   }
 
+  Service service;
+
   @override
   Widget build(BuildContext context) {
+    String id = ModalRoute.of(context).settings.arguments;
+    Service editableService =
+        Provider.of<ServiceCenterProvider>(context).selectServiceForEdit(id);
+    if (editableService != null) {
+      service = editableService;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Create new Service'),
@@ -101,6 +110,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
                   onSaved: (val) {
                     _service.name = val;
                   },
+                  initialValue: service.name,
                   textInputAction: TextInputAction.next,
                   maxLines: null,
                   validator: (val) {
@@ -127,6 +137,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
 
                     return null;
                   },
+                  initialValue: service.description,
                   decoration: InputDecoration(
                     labelText: 'Service Description',
                   ),
@@ -144,6 +155,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
 
                     return null;
                   },
+                  initialValue: service.price,
                   decoration: InputDecoration(
                     labelText: 'Service Price',
                   ),

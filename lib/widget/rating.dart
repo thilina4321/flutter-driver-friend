@@ -15,10 +15,8 @@ class CustomRatingWidget extends StatefulWidget {
 
 class _CustomRatingWidgetState extends State<CustomRatingWidget> {
   final _form = GlobalKey<FormState>();
-  int initialValue = 0;
-  double rating;
-  String id;
-  String role;
+  double initialValue = 0;
+  bool isLoading = false;
 
   Future<void> _saveRating() async {
     final isValid = _form.currentState.validate();
@@ -28,21 +26,20 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
     }
 
     _form.currentState.save();
+    setState(() {
+      isLoading = true;
+    });
     try {
-      if (role == 'driver') {
-        await Provider.of<MechanicProvider>(context, listen: false)
-            .mechanicRating(id, rating);
-      }
-      if (role == 'spare') {
-        await Provider.of<SpareShopProvider>(context, listen: false)
-            .spareRating(id, rating);
-      }
-      if (role == 'service') {
-        await Provider.of<ServiceCenterProvider>(context, listen: false)
-            .serviceRating(id, rating);
-      }
-      Navigator.of(context).pop();
+      await Provider.of<ServiceCenterProvider>(context, listen: false)
+          .serviceRating(initialValue, modalRouteData['centerId'],
+              modalRouteData['driverId']);
+      setState(() {
+        isLoading = false;
+      });
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       return showDialog(
           context: context,
           builder: (context) {
@@ -65,76 +62,100 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
     }
   }
 
+  Map modalRouteData;
+
   @override
   Widget build(BuildContext context) {
-    Map data = ModalRoute.of(context).settings.arguments as Map;
-    rating = data['rating'];
-    id = data['id'];
+    modalRouteData = ModalRoute.of(context).settings.arguments as Map;
+    print(modalRouteData);
 
     return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        height: 500,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text(
-                'Rate Me',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              RatingBarIndicator(
-                rating: rating,
-                itemBuilder: (context, index) => Icon(
-                  Icons.star,
-                  color: Colors.green,
-                ),
-                itemCount: 5,
-                itemSize: 30.0,
-                direction: Axis.horizontal,
-              ),
-              Text(rating.toString()),
-              SizedBox(
-                height: 2,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _form,
-                  child: TextFormField(
-                    onSaved: (value) {
-                      if (value == '') {
-                        value = '0';
-                      }
-                      initialValue = int.parse(value);
-                    },
-                    validator: (value) {
-                      if (value == '') {
-                        value = '0';
-                      }
-                      if (double.parse(value) < 1 || double.parse(value) > 5) {
-                        return 'Rate should between 1-5';
-                      }
-                      return null;
-                    },
-                    keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                      hintText: 'Enter Rating',
-                      suffixIcon: FlatButton(
-                        onPressed: _saveRating,
-                        child: Text('Rate'),
+        appBar: AppBar(),
+        body: FutureBuilder(
+          future: Provider.of<DriverProvider>(context, listen: false)
+              .findMyRatings('serviceCenter', modalRouteData['centerId'],
+                  modalRouteData['driverId']),
+          builder: (context, rate) {
+            if (rate.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (rate.error != null) {
+              return Text('Sorry something went wrong');
+            }
+            return isLoading
+                ? Center(child: CircularProgressIndicator())
+                : Consumer<DriverProvider>(builder: (context, rate, child) {
+                    var myRate = rate.rating;
+                    return Container(
+                      height: 500,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Rate Me',
+                              style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            RatingBarIndicator(
+                              rating: modalRouteData['ratings'] == null
+                                  ? 0
+                                  : double.parse(
+                                      modalRouteData['ratings'].toString()),
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: Colors.green,
+                              ),
+                              itemCount: 5,
+                              itemSize: 30.0,
+                              direction: Axis.horizontal,
+                            ),
+                            Text(modalRouteData['ratings'].toString()),
+                            SizedBox(
+                              height: 2,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Form(
+                                key: _form,
+                                child: TextFormField(
+                                  onSaved: (value) {
+                                    if (value == '') {
+                                      value = '0';
+                                    }
+                                    initialValue = double.parse(value);
+                                    print(initialValue);
+                                  },
+                                  initialValue: myRate.toString(),
+                                  validator: (value) {
+                                    if (value == '') {
+                                      value = '0';
+                                    }
+                                    if (double.parse(value) < 1 ||
+                                        double.parse(value) > 5) {
+                                      return 'Rate should between 1-5';
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                    hintText: 'Enter Rating',
+                                    suffixIcon: FlatButton(
+                                      onPressed: _saveRating,
+                                      child: Text('Rate'),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+                    );
+                  });
+          },
+        ));
   }
 }

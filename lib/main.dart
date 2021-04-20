@@ -5,7 +5,6 @@ import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/driver/appointments.dart';
-import 'package:driver_friend/screen/driver/cart.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/faq/add_question.dart';
 import 'package:driver_friend/screen/faq/answer_screen.dart';
@@ -110,7 +109,6 @@ class MyApp extends StatelessWidget {
             DriverSettignScreen.routeName: (ctx) => DriverSettignScreen(),
             DriverFormScreen.routeName: (ctx) => DriverFormScreen(),
             AppointmentScreen.routeName: (ctx) => AppointmentScreen(),
-            Cart.routeName: (ctx) => Cart(),
 
             //mechanic section
             MechanicListScreen.routeName: (ctx) => MechanicListScreen(),
