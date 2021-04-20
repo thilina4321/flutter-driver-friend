@@ -1,22 +1,43 @@
 import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/helper/success-dialog.dart';
+import 'package:driver_friend/model/appointment.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/screen/driver/appointments.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 mixin CustomBottomSheet {
-  static Future bottomSheet(BuildContext context, String name) async {
+  static Future bottomSheet(data) async {
     return showModalBottomSheet(
-        context: context,
+        context: data['context'],
         builder: (context) {
-          return MybottomSheet(name);
+          return MybottomSheet(
+            name: data['name'],
+            centerName: data['centerName'],
+            serviceName: data['serviceName'],
+            driverId: data['driverId'],
+            centerId: data['centerId'],
+            centerMobile: data['centerMobile'],
+          );
         });
   }
 }
 
 class MybottomSheet extends StatefulWidget {
   final String name;
-  const MybottomSheet(this.name);
+  final String centerId;
+  final String driverId;
+  final String centerName;
+  final String serviceName;
+  final String centerMobile;
+
+  const MybottomSheet(
+      {this.name,
+      this.driverId,
+      this.centerId,
+      this.centerName,
+      this.serviceName,
+      this.centerMobile});
 
   @override
   _MybottomSheetState createState() => _MybottomSheetState();
@@ -46,16 +67,26 @@ class _MybottomSheetState extends State<MybottomSheet> {
   }
 
   _appointment(context) async {
-    // isLoading = true;
-    // try {
-    //   await Provider.of<DriverProvider>(context, listen: false)
-    //       .makeAppointment();
-    //   SuccessDialog.successDialog(context, 'Successfuly make an appointment');
-    //   isLoading = false;
-    // } catch (e) {
-    //   isLoading = false;
-    //   ErrorDialog.errorDialog(context, e.toString());
-    // }
+    isLoading = true;
+    Appointment appointment = Appointment(
+        date: pickedDate,
+        time: pickedTime,
+        status: "pending",
+        driverId: widget.driverId,
+        centerId: widget.centerId,
+        centerName: widget.centerName,
+        centerMobile: widget.centerMobile,
+        serviceName: widget.serviceName);
+    try {
+      await Provider.of<DriverProvider>(context, listen: false)
+          .makeAppointment(appointment);
+      Navigator.of(context).pushNamed(AppointmentScreen.routeName);
+      SuccessDialog.successDialog(context, 'Successfuly make an appointment');
+      isLoading = false;
+    } catch (e) {
+      isLoading = false;
+      ErrorDialog.errorDialog(context, e.toString());
+    }
   }
 
   @override

@@ -72,7 +72,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
                 label: 'My Profile'),
             DrawerIcons(
                 icon: Icons.supervised_user_circle,
-                routeName: Appointment.routeName,
+                routeName: AppointmentScreen.routeName,
                 label: 'Appointments'),
             DrawerIcons(
                 routeName: Cart.routeName,

@@ -1,18 +1,32 @@
+import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Appointment extends StatelessWidget {
+class AppointmentScreen extends StatefulWidget {
   static String routeName = 'appointment-driver';
+
+  @override
+  _AppointmentScreenState createState() => _AppointmentScreenState();
+}
+
+class _AppointmentScreenState extends State<AppointmentScreen> {
+  Driver driver;
+  @override
+  void initState() {
+    driver = Provider.of<DriverProvider>(context, listen: false).driver;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Confirmed Appointments'),
+        title: Text('Your Appointments'),
       ),
       body: FutureBuilder(
           future: Provider.of<DriverProvider>(context, listen: false)
-              .fetchAppointments(),
+              .fetchAppointments(driver.id),
           builder: (context, data) {
             if (data.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -27,12 +41,15 @@ class Appointment extends StatelessWidget {
 
             return Consumer<DriverProvider>(builder: (context, data, child) {
               var appoinments = data.appointments;
+              print(appoinments);
               return ListView.builder(
                   itemCount: appoinments.length,
                   itemBuilder: (context, index) {
                     return Container(
                       child: Column(
-                        children: [Text('Name')],
+                        children: [
+                          Text(driver.name.toString()),
+                        ],
                       ),
                     );
                   });

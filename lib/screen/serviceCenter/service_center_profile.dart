@@ -46,7 +46,7 @@ class _ServiceCenterProfileScreenState
 
   @override
   Widget build(BuildContext context) {
-    var id = ModalRoute.of(context).settings.arguments;
+    var idData = ModalRoute.of(context).settings.arguments as Map;
     me = Provider.of<UserProvider>(context, listen: false).me;
 
     return Scaffold(
@@ -59,7 +59,7 @@ class _ServiceCenterProfileScreenState
             ? Provider.of<ServiceCenterProvider>(context, listen: false)
                 .fetchServiceCenter(me['id'])
             : Provider.of<ServiceCenterProvider>(context, listen: false)
-                .fetchServiceCenter(id),
+                .fetchServiceCenter(idData['userId']),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());

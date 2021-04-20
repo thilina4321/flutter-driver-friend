@@ -18,7 +18,7 @@ class ServiceCenterServices extends StatefulWidget {
 
 class _ServiceCenterServicesState extends State<ServiceCenterServices> {
   bool isLoading = false;
-  String id;
+  var id;
   var me;
   Driver driver;
 
@@ -124,8 +124,18 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                             if (me['role'] != 'serviceCenter')
                                               FlatButton(
                                                 onPressed: () {
-                                                  CustomBottomSheet.bottomSheet(
-                                                      context, driver.userName);
+                                                  CustomBottomSheet
+                                                      .bottomSheet({
+                                                    'context': context,
+                                                    'driverName':
+                                                        driver.userName,
+                                                    'driverId': driver.userId,
+                                                    'centerId': id,
+                                                    'centerName':
+                                                        services[index].name,
+                                                        'centerName':,
+                                                        'centerMobile':, 
+                                                  });
                                                 },
                                                 child: Text(
                                                   'Appointment',

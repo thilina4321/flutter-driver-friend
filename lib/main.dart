@@ -109,7 +109,7 @@ class MyApp extends StatelessWidget {
             DriverProfileScreen.routeName: (ctx) => DriverProfileScreen(),
             DriverSettignScreen.routeName: (ctx) => DriverSettignScreen(),
             DriverFormScreen.routeName: (ctx) => DriverFormScreen(),
-            Appointment.routeName: (ctx) => Appointment(),
+            AppointmentScreen.routeName: (ctx) => AppointmentScreen(),
             Cart.routeName: (ctx) => Cart(),
 
             //mechanic section

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:driver_friend/model/appointment.dart';
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/service_center.dart';
@@ -13,7 +14,7 @@ class DriverProvider with ChangeNotifier {
   List<Mechanic> _nearMechanics = [];
   List<ServiceCenter> _nearService = [];
   List<SparePartShop> _nearSpare = [];
-  List _appointments = [];
+  List<Appointment> _appointments = [];
   List _cartItems = [];
 
   Driver get driver {
@@ -210,8 +211,10 @@ class DriverProvider with ChangeNotifier {
     }
   }
 
-  makeAppointment() async {
-    try {} catch (e) {
+  Future makeAppointment(Appointment appointment) async {
+    try {
+      await dio.post('$url/make-appointment', data: appointment);
+    } catch (e) {
       throw e;
     }
   }
@@ -222,7 +225,29 @@ class DriverProvider with ChangeNotifier {
     }
   }
 
-  fetchAppointments() async {}
+  fetchAppointments(String id) async {
+    List<Appointment> appoins = [];
+
+    try {
+      var response = await dio.get('$url/find-appointments/$id');
+
+      var responseData = response.data['appointment'] as List;
+
+      responseData.forEach((app) {
+        appoins.add(Appointment(
+            centerId: app['centerId'],
+            driverId: app['driverId'],
+            status: app['status'],
+            date: app['date'],
+            time: app['time']));
+      });
+      _appointments = appoins;
+      notifyListeners();
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
 
   fetchCart() async {}
 }

@@ -41,7 +41,7 @@ class ServiceCenterList extends StatelessWidget {
                         onTap: () {
                           Navigator.of(context).pushNamed(
                               ServiceCenterProfileScreen.routeName,
-                              arguments: serviceCenters[index].userId);
+                              arguments: serviceCenters[index].id);
                         },
                         child: Card(
                           elevation: 3,
