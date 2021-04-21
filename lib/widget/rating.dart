@@ -1,3 +1,5 @@
+import 'package:driver_friend/helper/error-helper.dart';
+import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/service_provider.dart';
@@ -17,6 +19,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
   final _form = GlobalKey<FormState>();
   double initialValue = 0;
   bool isLoading = false;
+  var myRate;
 
   Future<void> _saveRating() async {
     final isValid = _form.currentState.validate();
@@ -30,9 +33,21 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
       isLoading = true;
     });
     try {
-      await Provider.of<ServiceCenterProvider>(context, listen: false)
-          .serviceRating(initialValue, modalRouteData['centerId'],
-              modalRouteData['driverId']);
+      if (modalRouteData['type'] == 'mechanic') {
+        await Provider.of<MechanicProvider>(context, listen: false)
+            .serviceRating(initialValue, modalRouteData['id'],
+                modalRouteData['driverId'], myRate);
+      } else if (modalRouteData['type'] == 'service') {
+        await Provider.of<ServiceCenterProvider>(context, listen: false)
+            .serviceRating(initialValue, modalRouteData['id'],
+                modalRouteData['driverId'], myRate);
+      } else if (modalRouteData['type'] == 'spare') {
+        await Provider.of<SpareShopProvider>(context, listen: false)
+            .serviceRating(initialValue, modalRouteData['id'],
+                modalRouteData['driverId'], myRate);
+      }
+
+      Navigator.of(context).pop(true);
       setState(() {
         isLoading = false;
       });
@@ -40,25 +55,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
       setState(() {
         isLoading = false;
       });
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Container(
-                child: Text(
-                  e.toString(),
-                ),
-              ),
-              actions: [
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Ok'),
-                ),
-              ],
-            );
-          });
+      ErrorDialog.errorDialog(context, 'Sorry something went wrong');
     }
   }
 
@@ -67,13 +64,12 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
   @override
   Widget build(BuildContext context) {
     modalRouteData = ModalRoute.of(context).settings.arguments as Map;
-    print(modalRouteData);
 
     return Scaffold(
         appBar: AppBar(),
         body: FutureBuilder(
           future: Provider.of<DriverProvider>(context, listen: false)
-              .findMyRatings('serviceCenter', modalRouteData['centerId'],
+              .findMyRatings(modalRouteData['type'], modalRouteData['id'],
                   modalRouteData['driverId']),
           builder: (context, rate) {
             if (rate.connectionState == ConnectionState.waiting) {
@@ -85,7 +81,7 @@ class _CustomRatingWidgetState extends State<CustomRatingWidget> {
             return isLoading
                 ? Center(child: CircularProgressIndicator())
                 : Consumer<DriverProvider>(builder: (context, rate, child) {
-                    var myRate = rate.rating;
+                    myRate = rate.rating;
                     return Container(
                       height: 500,
                       child: SingleChildScrollView(

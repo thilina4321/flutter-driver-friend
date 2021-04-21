@@ -43,6 +43,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
           lat: locData.latitude, long: locData.longitude);
       setState(() {
         sparePartShop.mapImagePreview = img;
+        print(sparePartShop.mapImagePreview);
       });
     } catch (e) {
       print('error');
@@ -59,7 +60,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
       return;
     }
 
-    sparePartShop.userId = me['_id'];
+    sparePartShop.userId = me['id'];
     setState(() {
       isLoading = true;
     });
@@ -91,16 +92,14 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // SparePartShop editablrSpareShop =
-    //     Provider.of<SpareShopProvider>(context, listen: false).spareShop;
-    // // print(editablrSpareShop.address);
+    SparePartShop editablrSpareShop =
+        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
 
-    // if (editablrSpareShop != null) {
-    //   sparePartShop = editablrSpareShop;
-    // }
+    if (editablrSpareShop != null) {
+      sparePartShop = editablrSpareShop;
+    }
 
     me = Provider.of<UserProvider>(context, listen: false).me;
-    print(me['_id']);
 
     return Scaffold(
       appBar: AppBar(
@@ -219,26 +218,27 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                           Icons.photo_camera,
                           color: Colors.purple,
                         ),
-                        label: Text('Location'),
+                        label: sparePartShop.mapImagePreview != null
+                            ? Text('Change Location')
+                            : Text('Add Location'),
                       ),
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 150,
-                        child: sparePartShop.mapImagePreview == null
-                            ? Center(child: Text('Location'))
-                            : Image.network(sparePartShop.mapImagePreview),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 1),
+                if (sparePartShop.mapImagePreview != null)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 150,
+                          child: Image.network(sparePartShop.mapImagePreview),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 1),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),

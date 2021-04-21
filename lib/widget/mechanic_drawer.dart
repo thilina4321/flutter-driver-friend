@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 class MechanicDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var me = Provider.of<UserProvider>(context, listen: false).me;
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -25,7 +26,7 @@ class MechanicDrawer extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'Prageesha Perera',
+              me['userName'].toString(),
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,

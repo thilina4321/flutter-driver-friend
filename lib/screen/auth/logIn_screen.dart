@@ -168,6 +168,12 @@ class _LogInScreenState extends State<LogInScreen> {
                               onSaved: (value) {
                                 user['email'] = value;
                               },
+                              validator: (value) {
+                                if (value == '') {
+                                  return 'Email is required';
+                                }
+                                return null;
+                              },
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 labelText: 'Email',
@@ -181,6 +187,12 @@ class _LogInScreenState extends State<LogInScreen> {
                               obscureText: true,
                               onSaved: (value) {
                                 user['password'] = value;
+                              },
+                              validator: (value) {
+                                if (value == '') {
+                                  return 'Password is required';
+                                }
+                                return null;
                               },
                               decoration: InputDecoration(
                                 labelText: 'Password',

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
@@ -33,14 +34,13 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
     if (!isValid) {
       return;
     }
-    mechanic.userId = me['_id'];
-    print(mechanic.userId);
+    mechanic.userId = me['id'];
     setState(() {
       isLoading = true;
     });
     try {
       await Provider.of<MechanicProvider>(context, listen: false)
-          .createMechanic(mechanic);
+          .createMechanic(mechanic, mechanic.id);
       setState(() {
         isLoading = false;
       });
@@ -50,17 +50,11 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
       setState(() {
         isLoading = false;
       });
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return Container(
-              child: Text(
-                e.toString(),
-              ),
-            );
-          });
+      ErrorDialog.errorDialog(context, 'Something went wrong');
     }
   }
+
+  bool isMapLoading = false;
 
   Future<void> getLocation() async {
     try {
@@ -73,44 +67,23 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
 
       List<geoCoding.Placemark> placemarks = await geoCoding
           .placemarkFromCoordinates(mechanic.latitude, mechanic.longitude);
-      print(placemarks[0].name);
       mechanic.city = placemarks[0].name;
 
       setState(() {
         mechanic.mapImagePreview = img;
       });
-    } catch (e) {
-      print('error');
-    }
+    } catch (e) {}
   }
-
-  // final picker = ImagePicker();
-
-  // Future saveImage(context) async {
-  //   var pickedFile;
-  //   try {
-  //     pickedFile =
-  //         await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
-  //     setState(() {
-  //       if (pickedFile != null) {
-  //         mechanic.profileImageUrl = File(pickedFile.path);
-  //       } else {
-  //         print('No image selected.');
-  //       }
-  //     });
-  //   } catch (e) {
-  //     print(e);
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // Mechanic editableMechanic =
-    //     Provider.of<MechanicProvider>(context, listen: false).mechanic;
-    // if (editableMechanic != null) {
-    //   mechanic = editableMechanic;
-    // }
+    Mechanic editableMechanic =
+        Provider.of<MechanicProvider>(context, listen: false).mechanic;
+    if (editableMechanic != null) {
+      mechanic = editableMechanic;
+    }
     me = Provider.of<UserProvider>(context, listen: false).me;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
@@ -207,36 +180,38 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                             Icons.location_on,
                             color: Colors.purple,
                           ),
-                          label: Text('Location')),
+                          label: mechanic.mapImagePreview == null
+                              ? Text('Location')
+                              : Text('Change Location')),
                     ),
                   ],
                 ),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 2,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 200,
-                        child: Center(
-                          child: mechanic.mapImagePreview == null
-                              ? Text('Your Location')
-                              : Container(
-                                  width: double.infinity,
-                                  child: Image.network(
-                                    mechanic.mapImagePreview,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 2),
+                if (isMapLoading) CircularProgressIndicator(),
+                if (mechanic.mapImagePreview != null)
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 2,
+                      ),
+                      Expanded(
+                        child: Container(
+                          height: 200,
+                          child: Center(
+                            child: Container(
+                              width: double.infinity,
+                              child: Image.network(
+                                mechanic.mapImagePreview,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(width: 2),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
                 Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
@@ -248,7 +223,7 @@ class _MechanicFormScreenState extends State<MechanicFormScreen> {
                       child: isLoading
                           ? CircularProgressIndicator()
                           : Text(
-                              'Save',
+                              mechanic.id == null ? 'Save' : 'Update',
                               style: TextStyle(
                                 fontSize: 22,
                                 color: Colors.white,

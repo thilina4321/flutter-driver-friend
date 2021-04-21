@@ -64,7 +64,7 @@ class _SpareShopContactScreenState extends State<SpareShopContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'I am ${spareShop.name}',
+                    'Our brand name is ${spareShop.name}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -74,7 +74,7 @@ class _SpareShopContactScreenState extends State<SpareShopContactScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'I am a ${spareShop.rating} start rated spare part shop in Driver Friend App',
+                    'I am a ${spareShop.rating} start rated spare part shop in Spare part shop in Driver Friend App',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

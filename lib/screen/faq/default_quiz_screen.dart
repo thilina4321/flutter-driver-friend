@@ -32,21 +32,11 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
   }
 
   Future fetchQuestions() async {
-    isLoading = true;
-    try {
-      await Provider.of<FaqProvider>(context, listen: false).fetchQuestions();
-      isLoading = false;
-      setState(() {
-        questions = Provider.of<FaqProvider>(context, listen: false).questions;
-        dupQuestions = questions;
-      });
-    } catch (e) {
-      isLoading = false;
-      ErrorDialog.errorDialog(context, e);
-    }
+    questions = Provider.of<FaqProvider>(context, listen: false).questions;
+    dupQuestions = questions;
   }
 
-  AllQuestions() {
+  allQuestions() {
     setState(() {
       questions = dupQuestions;
     });
@@ -64,7 +54,7 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
       appBar: AppBar(
         actions: [
           FlatButton(
-            onPressed: AllQuestions,
+            onPressed: allQuestions,
             child: Icon(
               Icons.refresh,
               color: Colors.white,
@@ -124,45 +114,41 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
         backgroundColor: Colors.purple,
         child: Icon(Icons.search),
       ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView.builder(
-              itemCount: questions.length,
-              itemBuilder: (ctx, index) {
-                return Card(
-                  elevation: 3,
-                  child: Column(
+      body: ListView.builder(
+          itemCount: questions.length,
+          itemBuilder: (ctx, index) {
+            return Card(
+              elevation: 3,
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              margin: const EdgeInsets.all(8),
-                              child: Text(
-                                questions[index]['question'],
-                                // que.answeredQuestions[index].question,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.all(8),
+                          child: Text(
+                            questions[index]['question'],
+                            // que.answeredQuestions[index].question,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(fontSize: 16),
                           ),
-                          FlatButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  AnswerScreen.routeName,
-                                  arguments: questions[index]);
-                            },
-                            child: Text('Check'),
-                          ),
-                        ],
+                        ),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pushNamed(
+                              AnswerScreen.routeName,
+                              arguments: questions[index]['_id']);
+                        },
+                        child: Text('Check'),
                       ),
                     ],
                   ),
-                );
-              }),
+                ],
+              ),
+            );
+          }),
     );
   }
 }

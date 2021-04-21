@@ -1,4 +1,6 @@
+import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/provider/faq_provider.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +35,7 @@ class _NotAnswerdYetQuizScreenState extends State<NotAnswerdYetQuizScreen> {
       isLoading = true;
     });
     try {
-      await Provider.of<FaqProvider>(context, listen: false).addAnswer(answer);
+      // await Provider.of<FaqProvider>(context, listen: false).addAnswer(answer);
       setState(() {
         isLoading = false;
       });
@@ -61,14 +63,20 @@ class _NotAnswerdYetQuizScreenState extends State<NotAnswerdYetQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var me = Provider.of<UserProvider>(context, listen: false).me;
-    userId = me["_id"];
+    Mechanic mechanic =
+        Provider.of<MechanicProvider>(context, listen: false).mechanic;
+    print(mechanic.id);
+
+    var a = Provider.of<FaqProvider>(context, listen: false)
+        .selectAnswersOfSpecificMechanic('607c349709ef3d00154e9a24');
+    print(a);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Not Answered'),
+        title: Text('Answered Questions'),
       ),
       body: isLoading
+          // 607c344609ef3d00154e9a21
           ? Center(
               child: CircularProgressIndicator(),
             )

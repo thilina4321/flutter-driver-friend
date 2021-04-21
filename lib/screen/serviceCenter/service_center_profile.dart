@@ -274,8 +274,9 @@ class _ServiceCenterProfileScreenState
                                     CustomRatingWidget.routeName,
                                     arguments: {
                                       'driverId': me['id'],
-                                      'centerId': serviceCenter.id,
+                                      'id': serviceCenter.id,
                                       'ratings': serviceCenter.rating,
+                                      'type': 'service'
                                     });
                               },
                               child: const Text(

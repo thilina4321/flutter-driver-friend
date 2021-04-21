@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
@@ -42,19 +44,27 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
   }
 
   var me;
+  var id;
 
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
 
+    if (me['role'] != 'mechanic') {
+      id = ModalRoute.of(context).settings.arguments;
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.purple,
       ),
-      drawer: MechanicDrawer(),
+      drawer: me['role'] == 'mechanic' ? MechanicDrawer() : DriverDrawer(),
       body: FutureBuilder(
-        future: Provider.of<MechanicProvider>(context, listen: false)
-            .fetchMechanic(me['id']),
+        future: me['role'] != 'mechanic'
+            ? Provider.of<MechanicProvider>(context, listen: false)
+                .fetchMechanic(id)
+            : Provider.of<MechanicProvider>(context, listen: false)
+                .fetchMechanic(me['id']),
         builder: (ctx, data) {
           if (data.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -100,8 +110,9 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
 
           return Consumer<MechanicProvider>(builder: (ctx, mech, child) {
             mechanic = mech.mechanic;
-            mechanic.name = 'Prageesha';
-            mechanic.address = '30/1 Arachchikattuwa';
+            if (me['role'] == 'mechanic') {
+              mechanic.name = me['userName'];
+            }
 
             return SingleChildScrollView(
               child: Column(
@@ -116,8 +127,8 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                             ? Container(
                                 color: Colors.black,
                               )
-                            : Image.network(
-                                'mechanic.profileImageUrl',
+                            : Image.file(
+                                mechanic.profileImageUrl,
                                 fit: BoxFit.cover,
                               ),
                       ),
@@ -125,7 +136,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                         top: 20,
                         left: 20,
                         child: FlatButton.icon(
-                          onPressed: () {},
+                          onPressed: getImage,
                           icon: Icon(
                             Icons.camera_alt,
                             color: Colors.white,
@@ -136,100 +147,174 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                           ),
                         ),
                       ),
-                      Positioned(
-                        top: 150,
-                        left: MediaQuery.of(context).size.width / 4,
-                        child: Container(
-                          color: Colors.black45,
-                          child: Column(
+                    ],
+                  ),
+                  Container(
+                    color: Colors.black45,
+                    child: Column(
+                      children: [
+                        Text(
+                          mechanic.name,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                          ),
+                        ),
+                        if (mechanic.address != null)
+                          FlatButton.icon(
+                            onPressed: () {},
+                            icon: Icon(
+                              Icons.location_on,
+                              color: Colors.white,
+                            ),
+                            label: Text(
+                              mechanic.address,
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        if (mechanic.rating != null)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              RatingBarIndicator(
+                                rating: mechanic.rating,
+                                itemBuilder: (context, index) => Icon(
+                                  Icons.star,
+                                  color: Colors.green,
+                                ),
+                                unratedColor: Colors.white,
+                                itemCount: 5,
+                                itemSize: 20.0,
+                                direction: Axis.horizontal,
+                              ),
                               Text(
-                                mechanic.name,
+                                mechanic.rating.toString(),
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 25,
                                 ),
                               ),
-                              if (mechanic.address != null)
-                                FlatButton.icon(
-                                  onPressed: () {},
-                                  icon: Icon(
-                                    Icons.location_on,
-                                    color: Colors.white,
-                                  ),
-                                  label: Text(
-                                    mechanic.address,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ),
+                  if (me['role'] == 'mechanic')
+                    Container(
+                      margin: const EdgeInsets.all(3),
+                      child: Card(
+                        elevation: 3,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Change Details',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              if (mechanic.rating != null)
-                                Row(
-                                  children: [
-                                    RatingBarIndicator(
-                                      rating: mechanic.rating,
-                                      itemBuilder: (context, index) => Icon(
-                                        Icons.star,
-                                        color: Colors.green,
-                                      ),
-                                      unratedColor: Colors.white,
-                                      itemCount: 5,
-                                      itemSize: 20.0,
-                                      direction: Axis.horizontal,
-                                    ),
-                                    Text(
-                                      mechanic.rating.toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                              ),
+                              SizedBox(
+                                width: 50,
+                              ),
+                              Spacer(),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pushNamed(MechanicFormScreen.routeName);
+                                },
+                                icon: Icon(
+                                  Icons.edit,
+                                  color: Colors.purple,
                                 ),
+                              ),
                             ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Card(
-                      elevation: 3,
-                      child: Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        height: 100,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            if (me['role'] == 'mechanic')
-                              CustomeMechanicCard(
-                                title: 'Edit',
-                                icon: Icons.edit,
-                                route: MechanicFormScreen.routeName,
+                    ),
+                  Container(
+                    height: 50,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                        Card(
+                          elevation: 3,
+                          child: FlatButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  MechanicContactScreen.routeName,
+                                  arguments: mechanic);
+                            },
+                            child: const Text(
+                              'Contacts',
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 15,
                               ),
-                            CustomeMechanicCard(
-                                title: 'Contact',
-                                args: mechanic,
-                                icon: Icons.contact_page,
-                                route: MechanicContactScreen.routeName),
-                            CustomeMechanicCard(
-                              title: 'Location',
-                              icon: Icons.location_on,
-                              route: MapScreen.routeName,
                             ),
-                            CustomeMechanicCard(
-                                title: 'Rate',
-                                icon: Icons.star_rate,
-                                route: CustomRatingWidget.routeName,
-                                args: mechanic.rating),
-                          ],
+                          ),
                         ),
-                      ),
+                        Card(
+                          elevation: 3,
+                          child: FlatButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed(MapScreen.routeName);
+                            },
+                            child: const Text(
+                              'Location',
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.blue,
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (me['role'] == 'mechanic')
+                          Card(
+                            elevation: 3,
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(FAQ.routeName);
+                              },
+                              child: const Text(
+                                'FAQ',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          ),
+                        if (me['role'] != 'mechanic')
+                          Card(
+                            elevation: 3,
+                            child: FlatButton(
+                              onPressed: () {
+                                Navigator.of(context).pushNamed(
+                                    CustomRatingWidget.routeName,
+                                    arguments: {
+                                      'driverId': me['id'],
+                                      'id': mechanic.id,
+                                      'ratings': mechanic.rating,
+                                      'type': 'mechanic'
+                                    });
+                              },
+                              child: const Text(
+                                'Rate Me',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   if (mechanic.latitude != null || mechanic.longitude != null)

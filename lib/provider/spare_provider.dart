@@ -20,10 +20,20 @@ class SpareShopProvider with ChangeNotifier {
   }
 
   List<SparePart> get spareParts {
-    if (_spareParts.length == 0) {
-      return [];
-    }
     return [..._spareParts];
+  }
+
+  Future<void> serviceRating(rating, id, driverId, currentValue) async {
+    var data = {'rating': rating, 'id': id, 'driverId': driverId};
+    try {
+      await dio.post(
+          'https://driver-friend.herokuapp.com/api/drivers/spare-rating',
+          data: data);
+
+      _spareShop.rating += rating - currentValue;
+    } catch (e) {
+      throw e;
+    }
   }
 
   Future<void> login(data) async {
@@ -43,6 +53,7 @@ class SpareShopProvider with ChangeNotifier {
       'userId': spareShop.userId,
       'address': spareShop.address,
       'openTime': spareShop.openingTime,
+      'mapImagePreview': spareShop.mapImagePreview,
       'closeTime': spareShop.closingTime,
       'mobile': spareShop.mobile,
       'about': spareShop.about,
@@ -57,8 +68,6 @@ class SpareShopProvider with ChangeNotifier {
       await dio.post(
           'https://driver-friend.herokuapp.com/api/sparepart-shops/add-data',
           data: data);
-
-      notifyListeners();
     } catch (e) {
       throw e;
     }
@@ -76,6 +85,7 @@ class SpareShopProvider with ChangeNotifier {
         userId: shops['userId'],
         mobile: shops['mobile'],
         city: shops['city'],
+        mapImagePreview: shops['mapImagePreview'],
         rating: double.parse(shops['totalRating'].toString()),
         latitude: shops['latitude'],
         longitude: shops['longitude'],
@@ -84,10 +94,8 @@ class SpareShopProvider with ChangeNotifier {
         about: shops['about'],
         address: shops['address'],
       );
-      print(_spareShop.id);
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -115,29 +123,36 @@ class SpareShopProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addParts(SparePart service) async {
+  Future<void> addParts([SparePart part, id]) async {
     var data = {
-      'name': service.name,
-      'description': service.description,
-      'price': service.price
+      'shopId': part.shopId,
+      'name': part.name,
+      'description': part.description,
+      'price': part.price
     };
+    print(data);
+    print(id);
     try {
-      await dio.post(
-          'https://driver-friend.herokuapp.com/api/sparepart-shops/create-spare',
-          data: data);
-
-      notifyListeners();
+      if (id == null) {
+        await dio.post(
+            'https://driver-friend.herokuapp.com/api/sparepart-shops/create-spare',
+            data: data);
+      } else {
+        await dio.patch(
+            'https://driver-friend.herokuapp.com/api/sparepart-shops/edit-spares/$id',
+            data: data);
+      }
     } catch (e) {
       throw e;
     }
   }
 
-  Future<void> fetchParts() async {
+  Future<void> fetchParts(id) async {
     List<SparePart> parts = [];
 
     try {
       var fetchedParts = await dio.get(
-          'https://driver-friend.herokuapp.com/api/sparepart-shops/spares');
+          'https://driver-friend.herokuapp.com/api/sparepart-shops/spares/$id');
 
       var getParts = fetchedParts.data['spareParts'];
 
@@ -147,6 +162,7 @@ class SpareShopProvider with ChangeNotifier {
               id: part['_id'],
               name: part['name'],
               price: part['price'].toString(),
+              shopId: part['shopId'],
               description: part['description']),
         );
       });
@@ -174,13 +190,18 @@ class SpareShopProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> spareRating(String id, double rating) async {
+  selectSpareForEdit(String id) {
+    SparePart spare = _spareParts.firstWhere((element) => element.id == id);
+    return spare;
+  }
+
+  Future<void> spareShopRating(rating, id, driverId) async {
+    var data = {'rating': rating, 'id': id, 'driverId': driverId};
     try {
-      var rating = await dio
-          .post('https://dirver-friend.herokuapp.com/api/drivers/spare-rating');
-      print(rating);
+      await dio.post(
+          'https://driver-friend.herokuapp.com/api/drivers/spare-rating',
+          data: data);
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }

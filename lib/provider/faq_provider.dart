@@ -40,6 +40,7 @@ class FaqProvider with ChangeNotifier {
   List<Question> _notAnsweredQuestions = [];
   List _answers = [];
   List _questions = [];
+  List _specificMechanicQuestions = [];
 
   var url = 'https://driver-friend.herokuapp.com/api/faq';
   Dio dio = new Dio();
@@ -82,38 +83,14 @@ class FaqProvider with ChangeNotifier {
       });
 
       notifyListeners();
-
-      // questions.forEach((que) {
-      //   if (que['answers'].length > 0) {
-      //     List<Answer> fetchedAnswers = [];
-      //     que['answers'].forEach((ans) {
-      //       fetchedAnswers.add(Answer(
-      //           id: ans['_id'],
-      //           questionId: que['_id'],
-      //           authorId: ans['authorId'],
-      //           answer: ans['answer']));
-      //     });
-
-      //     _answeredQuestions.add(
-      //       Question(
-      //         id: que['_id'],
-      //         driverId: que['driverId'],
-      //         question: que['question'],
-      //         answers: fetchedAnswers,
-      //       ),
-      //     );
-      //   } else {
-      //     _notAnsweredQuestions.add(Question(
-      //         id: que['_id'],
-      //         driverId: que['driverId'],
-      //         question: que['question']));
-      //   }
-
-      //   notifyListeners();
-      // });
     } catch (e) {
       print(e);
     }
+  }
+
+  findQuestion(String id) {
+    var que = _questions.firstWhere((element) => element['_id'] == id);
+    return que;
   }
 
   Future<void> deleteQuestion(String id) async {
@@ -127,25 +104,40 @@ class FaqProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addAnswer(Answer answer) async {
+  Future<void> addAnswer(answer, questionId, authorId) async {
     var data = {
-      'authorId': answer.authorId,
-      'answer': answer.answer,
-      'questionId': answer.questionId
+      'authorId': authorId,
+      'answer': answer,
+      'questionId': questionId
     };
 
     try {
       await dio.post('$url/give-answer', data: data);
+      await fetchQuestions();
+
+      notifyListeners();
+
       notifyListeners();
     } catch (e) {
       throw e;
     }
   }
 
-  Future<void> deleteAnswer(String id) async {
+  Future editComment(comment, commentId, questionId) async {
+    var data = {'answer': comment};
+
     try {
-      var answer = await dio.delete('$url/delete/$id');
-      print(answer.data);
+      await dio.patch('$url/edit-answer/$questionId/$commentId', data: data);
+      await fetchQuestions();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<void> deleteAnswer(String questionId, String answerId) async {
+    try {
+      await dio.delete('$url/delete-answer/$questionId/$answerId');
+      await fetchQuestions();
     } catch (e) {
       print(e);
     }
@@ -155,5 +147,22 @@ class FaqProvider with ChangeNotifier {
     Question selectQuestion =
         _answeredQuestions.firstWhere((que) => que.id == questionId);
     _answers = selectQuestion.answers;
+  }
+
+  selectAnswersOfSpecificMechanic(id) {
+    List specificQuestions = [];
+
+    _questions.forEach((element) {
+      element['answers'].forEach((ele) {
+        if (ele['authorId'] != null) {
+          if (ele['authorId']['_id'] == id) {
+            specificQuestions.add(element);
+          }
+        }
+      });
+    });
+
+    _specificMechanicQuestions = specificQuestions;
+    return _specificMechanicQuestions;
   }
 }

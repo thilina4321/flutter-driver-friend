@@ -1,4 +1,7 @@
+import 'package:driver_friend/helper/error-helper.dart';
+import 'package:driver_friend/helper/is-perform.dart';
 import 'package:driver_friend/provider/faq_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,20 +13,80 @@ class AnswerScreen extends StatefulWidget {
 }
 
 class _AnswerScreenState extends State<AnswerScreen> {
-  var comment = TextEditingController();
+  bool a = true;
+  final formKey = GlobalKey<FormState>();
+  String _answer;
+  String _questionId;
+  String _authorId;
 
-  saveComment() {
-    print(comment.text);
+  _saveComment() async {
+    formKey.currentState.save();
+    bool isValid = formKey.currentState.validate();
+
+    if (!isValid) {
+      return;
+    }
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      await Provider.of<FaqProvider>(context, listen: false)
+          .addAnswer(_answer, _questionId, _authorId);
+      setState(() {
+        isLoading = false;
+      });
+      formKey.currentState.reset();
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ErrorDialog.errorDialog(context, 'Sorry activity failed');
+    }
   }
 
-  bool a = true;
+  bool isLoading = false;
+  final key = GlobalKey<FormState>();
+
+  editComment(answerId) async {
+    key.currentState.save();
+    var isValid = key.currentState.validate();
+    if (!isValid) {
+      return;
+    }
+
+    Navigator.of(context).pop();
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      await Provider.of<FaqProvider>(context, listen: false)
+          .editComment(editedComment, answerId, _questionId);
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ErrorDialog.errorDialog(context, e.toString());
+    }
+  }
+
+  String editedComment;
 
   @override
   Widget build(BuildContext context) {
-    Map data = ModalRoute.of(context).settings.arguments as Map;
-    data['answers'].map((e) => print('el'));
+    var id = ModalRoute.of(context).settings.arguments;
+    var me = Provider.of<UserProvider>(context, listen: false).me;
+    var data =
+        Provider.of<FaqProvider>(context, listen: false).findQuestion(id);
 
-    print(data['answers']);
+    _questionId = id;
+
+    if (me['role'] == 'mechanic') {
+      _authorId = me['id'];
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +123,47 @@ class _AnswerScreenState extends State<AnswerScreen> {
                     Divider(
                       thickness: 3,
                     ),
+                    if (me['role'] == 'mechanic')
+                      Card(
+                        elevation: 5,
+                        child: Form(
+                          key: formKey,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    onSaved: (val) {
+                                      _answer = val;
+                                    },
+                                    validator: (val) {
+                                      if (val == '') {
+                                        return 'Nothing to comment';
+                                      }
+                                      return null;
+                                    },
+                                    maxLines: null,
+                                    decoration: InputDecoration(
+                                      labelText: 'write here',
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              FlatButton(
+                                onPressed: _saveComment,
+                                child: isLoading
+                                    ? CircularProgressIndicator()
+                                    : Icon(Icons.send),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    Divider(
+                      thickness: 3,
+                    ),
                     ...data['answers'].map((e) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +183,106 @@ class _AnswerScreenState extends State<AnswerScreen> {
                               textAlign: TextAlign.start,
                             ),
                           ),
+                          if (e['authorId']['_id'] == me['id'])
+                            Row(
+                              children: [
+                                Spacer(),
+                                FlatButton(
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            content: Form(
+                                              key: key,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                margin: const EdgeInsets.all(0),
+                                                height: 300,
+                                                width: double.infinity,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Text('Edit your comment'),
+                                                    TextFormField(
+                                                      initialValue: e['answer'],
+                                                      onSaved: (val) {
+                                                        editedComment = val;
+                                                      },
+                                                      validator: (val) {
+                                                        if (val == '') {
+                                                          return 'Enter comment';
+                                                        }
+                                                        return null;
+                                                      },
+                                                      maxLines: null,
+                                                      decoration:
+                                                          InputDecoration(),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Spacer(),
+                                                        FlatButton(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(0),
+                                                            onPressed: () =>
+                                                                editComment(
+                                                                    e['_id']),
+                                                            child: Text(
+                                                              'Ok',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .purple),
+                                                            )),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        });
+                                  },
+                                  child: Icon(
+                                    Icons.edit,
+                                    color: Colors.purple,
+                                  ),
+                                ),
+                                FlatButton(
+                                  onPressed: () async {
+                                    try {
+                                      var isPerform =
+                                          await IsPerformDialog.performStatus(
+                                              context);
+                                      if (isPerform) {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        await Provider.of<FaqProvider>(context,
+                                                listen: false)
+                                            .deleteAnswer(
+                                                _questionId, e['_id']);
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    } catch (e) {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      ErrorDialog.errorDialog(context,
+                                          'Sorry something went wrong');
+                                    }
+                                  },
+                                  child: Icon(Icons.delete, color: Colors.red),
+                                ),
+                              ],
+                            ),
                           Divider(
                             thickness: 3,
                           ),

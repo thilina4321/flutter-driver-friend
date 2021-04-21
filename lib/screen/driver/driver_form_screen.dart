@@ -1,3 +1,4 @@
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
@@ -27,6 +28,9 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
   Future<void> getLocation() async {
     try {
+      setState(() {
+        isLoading = true;
+      });
       final locData = await Location().getLocation();
       driver.latitude = locData.latitude;
       driver.longitude = locData.longitude;
@@ -39,9 +43,11 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
       driver.city = placemarks[0].name;
 
       setState(() {
+        isLoading = false;
         driver.mapImagePreview = img;
       });
     } catch (e) {
+      isLoading = false;
       print('error');
     }
   }
@@ -64,7 +70,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
     try {
       await Provider.of<DriverProvider>(context, listen: false)
-          .createDriver(driver);
+          .createDriver(driver, driverId);
       setState(() {
         isLoading = false;
       });
@@ -74,27 +80,11 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
         isLoading = false;
       });
 
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              actions: [
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Ok'),
-                )
-              ],
-              content: Container(
-                child: Text(
-                  e.toString(),
-                ),
-              ),
-            );
-          });
+      ErrorDialog.errorDialog(context, 'Something went wrong');
     }
   }
+
+  String driverId;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +95,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
 
     if (editable != null) {
       driver = editable;
+      driverId = driver.id;
     }
 
     return Scaffold(
@@ -195,17 +186,18 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                 SizedBox(
                   height: 30,
                 ),
+                if (isLoading) CircularProgressIndicator(),
                 FlatButton.icon(
                   onPressed: getLocation,
                   icon: Icon(
                     Icons.map,
                     color: Colors.purple,
                   ),
-                  label: Text('Your location'),
+                  label: Text('Location'),
                 ),
                 Container(
                   child: Text(
-                    'You should in the correct location',
+                    'Please notice we consider your location as current location. How ever you can set location later or you can change it later',
                     style: TextStyle(
                       color: Colors.red,
                     ),
@@ -214,23 +206,22 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  width: double.infinity,
-                  height: 200,
-                  alignment: Alignment.center,
-                  child: driver.mapImagePreview == null
-                      ? Text('Location not select yet')
-                      : Container(
-                          width: double.infinity,
-                          child: Image.network(
-                            driver.mapImagePreview,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1),
+                if (driver.mapImagePreview != null)
+                  Container(
+                    width: double.infinity,
+                    height: 200,
+                    alignment: Alignment.center,
+                    child: Container(
+                      width: double.infinity,
+                      child: Image.network(
+                        driver.mapImagePreview,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                    ),
                   ),
-                ),
                 Container(
                   width: double.infinity,
                   margin: const EdgeInsets.symmetric(vertical: 20),
@@ -242,7 +233,7 @@ class _DriverFormScreenState extends State<DriverFormScreen> {
                       child: isLoading
                           ? CircularProgressIndicator()
                           : Text(
-                              'Save',
+                              driverId != null ? 'Update' : 'Save',
                               style: TextStyle(
                                 fontSize: 22,
                                 color: Colors.white,

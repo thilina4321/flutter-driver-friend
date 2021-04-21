@@ -6,16 +6,7 @@ import 'package:dio/dio.dart';
 class MechanicProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://dirver-friend.herokuapp.com/api/mechanics';
-  List<Mechanic> _mechanics = [
-    Mechanic(
-      id: '1',
-      rating: 4.0,
-      name: "Minol",
-      address: '64/1 Aracchnikattuwa',
-      userType: UserType.mechanic,
-      mobile: '0776543322',
-    )
-  ];
+  List<Mechanic> _mechanics = [];
 
   Mechanic _mechanic;
 
@@ -27,16 +18,30 @@ class MechanicProvider with ChangeNotifier {
     return _mechanic;
   }
 
+  Future<void> serviceRating(rating, id, driverId, currentValue) async {
+    var data = {'rating': rating, 'id': id, 'driverId': driverId};
+    try {
+      await dio.post(
+          'https://driver-friend.herokuapp.com/api/drivers/mechanic-rating',
+          data: data);
+      _mechanic.rating += rating - currentValue;
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> fetchMechanic(id) async {
+    print(id);
     try {
       var fetchedMechanic = await dio.get(
           'https://driver-friend.herokuapp.com/api/mechanics/mechanic/$id');
 
       var mechanic = fetchedMechanic.data['mechanic'];
-      print(mechanic);
       _mechanic = Mechanic(
         id: mechanic['_id'],
         name: mechanic['userName'],
+        mapImagePreview: mechanic['mapImagePreview'],
         userId: mechanic['userId'],
         nic: mechanic['nic'],
         mobile: mechanic['mobile'],
@@ -44,6 +49,7 @@ class MechanicProvider with ChangeNotifier {
         latitude: mechanic['latitude'],
         longitude: mechanic['longitude'],
         about: mechanic['about'],
+        rating: double.parse(mechanic['totalRating'].toString()),
         address: mechanic['address'],
       );
 
@@ -80,7 +86,7 @@ class MechanicProvider with ChangeNotifier {
     }
   }
 
-  Future<void> createMechanic(Mechanic mechanic) async {
+  Future<void> createMechanic([Mechanic mechanic, id]) async {
     var data = {
       'userId': mechanic.userId,
       'nic': mechanic.nic,
@@ -89,12 +95,19 @@ class MechanicProvider with ChangeNotifier {
       'longitude': mechanic.longitude,
       'latitude': mechanic.latitude,
       'city': mechanic.city,
-      'about': mechanic.about
+      'about': mechanic.about,
+      'mapImagePreview': mechanic.mapImagePreview,
     };
     try {
-      await dio.post(
-          'https://driver-friend.herokuapp.com/api/mechanics/add-data',
-          data: data);
+      if (id == null) {
+        await dio.post(
+            'https://driver-friend.herokuapp.com/api/mechanics/add-data',
+            data: data);
+      } else {
+        await dio.patch(
+            'https://driver-friend.herokuapp.com/api/mechanics/update/$id',
+            data: data);
+      }
     } catch (e) {
       throw e;
     }

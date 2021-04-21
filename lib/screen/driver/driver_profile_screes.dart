@@ -53,8 +53,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   Driver user;
 
   @override
-
-  Widget build(BuildContext context) { 
+  Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
 
     return Scaffold(
@@ -71,7 +70,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
           } else if (data.error != null) {
             if (data.error.toString().contains('404')) {
               return Container(
-                margin: const EdgeInsets.all(16), 
+                margin: const EdgeInsets.all(16),
                 width: double.infinity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,7 +106,9 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                 ),
               );
             }
-            return Text(data.error.toString());
+            return Center(
+                child: Text(
+                    'Sorry something went wrong, please try againg later'));
           }
 
           return Consumer<DriverProvider>(builder: (ctx, dri, child) {

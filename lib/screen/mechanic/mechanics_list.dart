@@ -27,21 +27,7 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          FlatButton(
-            onPressed: () => filterMechanics(context),
-            child: Icon(Icons.search),
-          ),
-        ],
-        leading: Form(
-          key: _form,
-          child: TextFormField(
-            decoration: InputDecoration(hintText: 'Search'),
-            onSaved: (val) {
-              place = val;
-            },
-          ),
-        ),
+        title: Text('Mechanics'),
       ),
       body: FutureBuilder(
         future:
@@ -57,6 +43,7 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
           }
           return Consumer<DriverProvider>(builder: (ctx, mec, child) {
             List<Mechanic> mechanics = mec.nearMechanics;
+
             return mechanics.length == 0
                 ? Center(
                     child: Container(
@@ -70,7 +57,7 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
                         onTap: () {
                           Navigator.of(context).pushNamed(
                               MechanicProfileScreen.routeName,
-                              arguments: mechanics[index]);
+                              arguments: mechanics[index].userId);
                         },
                         child: Card(
                           elevation: 3,
@@ -87,7 +74,9 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   RatingBarIndicator(
-                                    rating: 2,
+                                    rating: mechanics[index].rating == 0.0
+                                        ? 0.0
+                                        : mechanics[index].rating / 5,
                                     itemBuilder: (context, index) => Icon(
                                       Icons.star,
                                       color: Colors.green,

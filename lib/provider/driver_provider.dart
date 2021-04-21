@@ -46,7 +46,7 @@ class DriverProvider with ChangeNotifier {
     return _cartItems;
   }
 
-  Future<void> createDriver(Driver driver) async {
+  Future<void> createDriver([Driver driver, id]) async {
     var data = {
       'userId': driver.userId,
       'nic': driver.nic,
@@ -55,15 +55,17 @@ class DriverProvider with ChangeNotifier {
       'vehicleColor': driver.vehicleColor,
       'longitude': driver.longitude,
       'latitude': driver.latitude,
-      'city': driver.city
+      'city': driver.city,
+      'mapImagePreview': driver.mapImagePreview,
     };
 
-    print(data);
-
     try {
-      await dio.post('$url/add-data', data: data);
+      if (id == null) {
+        await dio.post('$url/add-data', data: data);
+      } else {
+        await dio.patch('$url/update/$id', data: data);
+      }
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }
@@ -74,17 +76,17 @@ class DriverProvider with ChangeNotifier {
 
       var driver = fetchedDriver.data['driver'];
       _driver = Driver(
-        id: driver['_id'],
-        nic: driver['nic'],
-        userName: driver['userName'],
-        userId: driver['userId'],
-        mobile: driver['mobile'],
-        vehicleColor: driver['vehicleColor'],
-        vehicleNumber: driver['vehicleNumber'],
-        city: driver['city'],
-        latitude: driver['latitude'],
-        longitude: driver['longitude'],
-      );
+          id: driver['_id'],
+          nic: driver['nic'],
+          userName: driver['userName'],
+          userId: driver['userId'],
+          mobile: driver['mobile'],
+          vehicleColor: driver['vehicleColor'],
+          vehicleNumber: driver['vehicleNumber'],
+          city: driver['city'],
+          latitude: driver['latitude'],
+          longitude: driver['longitude'],
+          mapImagePreview: driver['mapImagePreview']);
       notifyListeners();
     } catch (e) {
       throw e;
@@ -110,17 +112,17 @@ class DriverProvider with ChangeNotifier {
     }
   }
 
-  Future<void> mechanicRating(int rating) async {
-    await dio.post('/mechanic-rating', data: {'rating': rating});
-  }
+  // Future<void> mechanicRating(int rating) async {
+  //   await dio.post('/mechanic-rating', data: {'rating': rating});
+  // }
 
-  Future<void> spareRating(int rating) async {
-    await dio.post('/spare-rating', data: {'rating': rating});
-  }
+  // Future<void> spareRating(int rating) async {
+  //   await dio.post('/spare-rating', data: {'rating': rating});
+  // }
 
-  Future<void> serviceRating(int rating) async {
-    await dio.post('/service-rating', data: {'rating': rating});
-  }
+  // Future<void> serviceRating(int rating) async {
+  //   await dio.post('/service-rating', data: {'rating': rating});
+  // }
 
   Future<void> nearMechanic() async {
     List<Mechanic> nearMechanics = [];
@@ -131,24 +133,23 @@ class DriverProvider with ChangeNotifier {
       var mechanics = fetchedMechanic.data;
 
       mechanics.forEach((mechanic) {
-        print(mechanic);
         nearMechanics.add(
           Mechanic(
-            id: mechanic['_id'],
-            nic: mechanic['nic'],
-            mobile: mechanic['mobile'],
-            city: mechanic['city'],
-            latitude: mechanic['latitude'],
-            longitude: mechanic['longitude'],
-            about: mechanic['about'],
-            address: mechanic['address'],
-          ),
+              id: mechanic['_id'],
+              userId: mechanic['userId'],
+              nic: mechanic['nic'],
+              mobile: mechanic['mobile'],
+              city: mechanic['city'],
+              latitude: mechanic['latitude'],
+              longitude: mechanic['longitude'],
+              about: mechanic['about'],
+              address: mechanic['address'],
+              name: mechanic['userName'],
+              rating: double.parse(mechanic['totalRating'].toString())),
         );
       });
 
       _nearMechanics = nearMechanics;
-
-      print(_nearMechanics);
 
       notifyListeners();
     } catch (e) {
@@ -196,14 +197,14 @@ class DriverProvider with ChangeNotifier {
       spares.forEach((spare) {
         _nearSpare.add(
           SparePartShop(
-            id: spares['_id'],
-            mobile: spares['mobile'],
-            city: spares['city'],
-            latitude: spares['latitude'],
-            longitude: spares['longitude'],
-            about: spares['about'],
-            address: spares['address'],
-          ),
+              id: spares['_id'],
+              mobile: spares['mobile'],
+              city: spares['city'],
+              latitude: spares['latitude'],
+              longitude: spares['longitude'],
+              about: spares['about'],
+              address: spares['address'],
+              userId: spares['userId']),
         );
       });
 
@@ -274,9 +275,9 @@ class DriverProvider with ChangeNotifier {
   Future findMyRatings(userType, id, driverId) async {
     var rating;
     try {
-      if (userType == 'serviceCenter') {
+      if (userType == 'service') {
         rating = await dio.get('$url/my-service-rating/$id/$driverId');
-      } else if (userType == 'spareshop') {
+      } else if (userType == 'spare') {
         rating = await dio.get('$url/my-spare-rating/$id/$driverId');
       } else if (userType == 'mechanic') {
         rating = await dio.get('$url/my-mechanic-rating/$id/$driverId');

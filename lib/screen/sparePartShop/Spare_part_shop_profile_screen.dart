@@ -1,5 +1,7 @@
+import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:driver_friend/model/userType.dart';
+import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/map/map_screen.dart';
@@ -33,6 +35,7 @@ class _SparePartShopProfileScreenState
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    var id = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
         appBar: AppBar(
@@ -40,8 +43,11 @@ class _SparePartShopProfileScreenState
         ),
         drawer: SparePartShopDrawer(),
         body: FutureBuilder(
-            future: Provider.of<SpareShopProvider>(context, listen: false)
-                .fetchSpareShop(me['_id']),
+            future: me['role'] != 'sparePartShop'
+                ? Provider.of<SpareShopProvider>(context, listen: false)
+                    .fetchSpareShop(id)
+                : Provider.of<SpareShopProvider>(context, listen: false)
+                    .fetchSpareShop(me['id']),
             builder: (ctx, data) {
               if (data.connectionState == ConnectionState.waiting) {
                 return Center(child: CircularProgressIndicator());
@@ -84,8 +90,10 @@ class _SparePartShopProfileScreenState
                 );
               }
               return Consumer<SpareShopProvider>(builder: (ctx, spare, child) {
-                spareShop = spare.spareShop;
-                spareShop.name = me['userName'];
+                if (me['role'] == 'sparePartShop') {
+                  spareShop = spare.spareShop;
+                  spareShop.name = me['userName'];
+                }
 
                 return SingleChildScrollView(
                   child: Column(
@@ -140,7 +148,7 @@ class _SparePartShopProfileScreenState
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           RatingBarIndicator(
-                            rating: 4,
+                            rating: spareShop.rating,
                             itemBuilder: (context, index) => Icon(
                               Icons.star,
                               color: Colors.green,
@@ -150,7 +158,7 @@ class _SparePartShopProfileScreenState
                             itemSize: 20.0,
                             direction: Axis.horizontal,
                           ),
-                          Text('4'),
+                          Text(spareShop.rating.toString()),
                         ],
                       ),
                       if (me['role'] == 'sparePartShop')
@@ -178,8 +186,7 @@ class _SparePartShopProfileScreenState
                                   IconButton(
                                     onPressed: () {
                                       Navigator.of(context).pushNamed(
-                                          SparePartShopFormScreen.routeName,
-                                          arguments: spareShop);
+                                          SparePartShopFormScreen.routeName);
                                     },
                                     icon: Icon(
                                       Icons.edit,
@@ -245,23 +252,29 @@ class _SparePartShopProfileScreenState
                                 ),
                               ),
                             ),
-                            Card(
-                              elevation: 3,
-                              child: FlatButton(
-                                onPressed: () {
-                                  Navigator.of(context).pushNamed(
-                                      CustomRatingWidget.routeName,
-                                      arguments: spareShop.rating);
-                                },
-                                child: const Text(
-                                  'Rate us',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.blue,
+                            if (me['role'] != 'sparePartShop')
+                              Card(
+                                elevation: 3,
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pushNamed(
+                                        CustomRatingWidget.routeName,
+                                        arguments: {
+                                          'driverId': me['id'],
+                                          'id': spareShop.id,
+                                          'ratings': spareShop.rating,
+                                          'type': 'spare'
+                                        });
+                                  },
+                                  child: const Text(
+                                    'Rate us',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
                           ],
                         ),
                       ),

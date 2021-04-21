@@ -1,8 +1,14 @@
+import 'dart:io';
+
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/part.dart';
 import 'package:driver_friend/provider/spare_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class CreateNewPartScreen extends StatefulWidget {
@@ -27,9 +33,10 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
     setState(() {
       isLoading = true;
     });
+    _part.shopId = me['id'];
     try {
       await Provider.of<SpareShopProvider>(context, listen: false)
-          .addParts(_part);
+          .addParts(_part, id);
       setState(() {
         isLoading = false;
       });
@@ -38,31 +45,40 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
       setState(() {
         isLoading = false;
       });
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Text(
-                e.toString(),
-              ),
-              actions: [
-                FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            );
-          });
+      ErrorDialog.errorDialog(context, 'Sorry something went wrong.');
     }
   }
 
+  final picker = ImagePicker();
+  var partImage;
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        partImage = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  var me;
+  var id;
   @override
   Widget build(BuildContext context) {
+    me = Provider.of<UserProvider>(context, listen: false).me;
+    id = ModalRoute.of(context).settings.arguments;
+    if (id != null) {
+      SparePart editable =
+          Provider.of<SpareShopProvider>(context, listen: false)
+              .selectSpareForEdit(id);
+      _part = editable;
+    }
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add new Item'),
+        title: Text('New Spare part'),
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -75,6 +91,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                   onSaved: (val) {
                     _part.name = val;
                   },
+                  initialValue: _part.name,
                   textInputAction: TextInputAction.next,
                   maxLines: null,
                   validator: (val) {
@@ -92,6 +109,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                   onSaved: (val) {
                     _part.description = val;
                   },
+                  initialValue: _part.description,
                   textInputAction: TextInputAction.next,
                   maxLines: null,
                   validator: (val) {
@@ -109,6 +127,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                   onSaved: (val) {
                     _part.price = val;
                   },
+                  initialValue: _part.price,
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
                   validator: (val) {
@@ -125,20 +144,26 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                FlatButton(
-                  child: Text('Attach image'),
-                  onPressed: () {},
+                FlatButton.icon(
+                  icon: Icon(Icons.integration_instructions_outlined),
+                  label: Text('Attach image'),
+                  onPressed: getImage,
                 ),
                 SizedBox(
                   height: 20,
                 ),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border.all(width: 1),
+                if (partImage != null)
+                  Container(
+                    child: Image.file(
+                      partImage,
+                      fit: BoxFit.cover,
+                    ),
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                    ),
                   ),
-                ),
                 Container(
                   margin: const EdgeInsets.only(top: 10),
                   width: double.infinity,
@@ -151,7 +176,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                             child: CircularProgressIndicator(),
                           )
                         : Text(
-                            'Create',
+                            id != null ? 'Update' : 'Create',
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,

@@ -26,6 +26,19 @@ class ServiceCenterProvider with ChangeNotifier {
     return [..._services];
   }
 
+  Future<void> serviceRating(rating, id, driverId, currentValue) async {
+    var data = {'rating': rating, 'id': id, 'driverId': driverId};
+    try {
+      await dio.post(
+          'https://driver-friend.herokuapp.com/api/drivers/service-rating',
+          data: data);
+
+      _serviceCenter.rating += rating - currentValue;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Future<void> fetchServiceCenter(id) async {
     try {
       var fetchedCenter = await dio.get('$url/service-center/$id');
@@ -37,6 +50,7 @@ class ServiceCenterProvider with ChangeNotifier {
         name: serviceCenter['userName'],
         userId: serviceCenter['userId'],
         mobile: serviceCenter['mobile'],
+        // mapImagePreview: serviceCenter[''],
         city: serviceCenter['city'],
         latitude: serviceCenter['latitude'],
         longitude: serviceCenter['longitude'],
@@ -65,6 +79,7 @@ class ServiceCenterProvider with ChangeNotifier {
       'userType': serviceCenter.userType,
       'openTime': serviceCenter.openingTime,
       'closeTime': serviceCenter.closingTime,
+      'mapImagePreview': serviceCenter.mapImagePreview
     };
     try {
       await dio.post(
@@ -148,17 +163,5 @@ class ServiceCenterProvider with ChangeNotifier {
     _serviceCenters =
         _serviceCenters.where((mechanic) => mechanic.city == city);
     notifyListeners();
-  }
-
-  Future<void> serviceRating(rating, id, driverId) async {
-    var data = {'rating': rating, 'id': id, 'driverId': driverId};
-    print(data);
-    try {
-      await dio.post(
-          'https://driver-friend.herokuapp.com/api/drivers/service-rating',
-          data: data);
-    } catch (e) {
-      throw e;
-    }
   }
 }
