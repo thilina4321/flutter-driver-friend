@@ -14,6 +14,7 @@ class ServiceCenter {
   String location;
   double rating;
   String name;
+  int count;
   String city;
 
   double latitude;
@@ -25,6 +26,7 @@ class ServiceCenter {
 
   ServiceCenter(
       {this.id,
+      this.count,
       this.userId,
       this.city,
       this.mapImagePreview,

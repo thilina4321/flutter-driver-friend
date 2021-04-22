@@ -11,6 +11,7 @@ class Mechanic {
   String name;
   String nic;
   String city;
+  int count;
 
   String mobile;
   String address;
@@ -27,6 +28,7 @@ class Mechanic {
       this.city,
       this.latitude,
       this.longitude,
+      this.count,
       this.userType,
       this.email,
       this.password,

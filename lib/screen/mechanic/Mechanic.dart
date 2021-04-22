@@ -174,29 +174,28 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                               ),
                             ),
                           ),
-                        if (mechanic.rating != null)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              RatingBarIndicator(
-                                rating: mechanic.rating,
-                                itemBuilder: (context, index) => Icon(
-                                  Icons.star,
-                                  color: Colors.green,
-                                ),
-                                unratedColor: Colors.white,
-                                itemCount: 5,
-                                itemSize: 20.0,
-                                direction: Axis.horizontal,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RatingBarIndicator(
+                              rating: mechanic.rating,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: Colors.green,
                               ),
-                              Text(
-                                mechanic.rating.toString(),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                              unratedColor: Colors.white,
+                              itemCount: 5,
+                              itemSize: 20.0,
+                              direction: Axis.horizontal,
+                            ),
+                            Text(
+                              mechanic.rating.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

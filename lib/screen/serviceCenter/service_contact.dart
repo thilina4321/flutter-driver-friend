@@ -86,6 +86,16 @@ class _ServiceCenterContactScreenState
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
+                    'Our company is a ${serviceCenter.rating} start rated service center in Driver Friend App',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
                     'You can contact me from this Number ${serviceCenter.mobile}',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,

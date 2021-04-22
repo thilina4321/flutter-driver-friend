@@ -1,3 +1,5 @@
+import 'package:driver_friend/helper/error-helper.dart';
+import 'package:driver_friend/helper/search-helper.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
@@ -15,6 +17,7 @@ class MechanicListScreen extends StatefulWidget {
 
 class _MechanicListScreenState extends State<MechanicListScreen> {
   final _form = GlobalKey<FormState>();
+  List<Mechanic> mechanics;
 
   String place;
 
@@ -23,11 +26,26 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
     Provider.of<MechanicProvider>(context, listen: false).nearMechanics(place);
   }
 
+  var select1;
+  var select2;
+
   @override
   Widget build(BuildContext context) {
+    print(place);
     return Scaffold(
       appBar: AppBar(
         title: Text('Mechanics'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple,
+        onPressed: () async {
+          try {
+            place = await SearchHelper.userSearch(context);
+          } catch (e) {
+            ErrorDialog.errorDialog(context, 'Something went wrong');
+          }
+        },
+        child: Icon(Icons.search),
       ),
       body: FutureBuilder(
         future:
@@ -42,12 +60,33 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
             return Center(child: Text("An error occured, try againg later"));
           }
           return Consumer<DriverProvider>(builder: (ctx, mec, child) {
-            List<Mechanic> mechanics = mec.nearMechanics;
+            if (place == null) {
+              mechanics = mec.nearMechanics;
+            } else {
+              select1 = mec.findMechanicsByPlace(place);
+              select2 = select1;
+              mechanics = select1;
+            }
 
             return mechanics.length == 0
                 ? Center(
                     child: Container(
-                      child: Text('No mechanics found'),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('No mechanics found'),
+                          FlatButton(
+                            onPressed: () {
+                              setState(() {
+                                place = null;
+                              });
+                            },
+                            child: Icon(
+                              Icons.refresh,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : ListView.builder(

@@ -30,7 +30,14 @@ class SpareShopProvider with ChangeNotifier {
           'https://driver-friend.herokuapp.com/api/drivers/spare-rating',
           data: data);
 
-      _spareShop.rating += rating - currentValue;
+      if (currentValue == 0.0) {
+        _spareShop.rating = (_spareShop.rating * _spareShop.count + rating) /
+            (_spareShop.count + 1);
+      } else {
+        _spareShop.rating =
+            _spareShop.rating + (rating - currentValue) / (_spareShop.count);
+      }
+      notifyListeners();
     } catch (e) {
       throw e;
     }
@@ -81,19 +88,22 @@ class SpareShopProvider with ChangeNotifier {
       var shops = fetchedShops.data['spareshop'];
 
       _spareShop = SparePartShop(
-        id: shops['_id'],
-        userId: shops['userId'],
-        mobile: shops['mobile'],
-        city: shops['city'],
-        mapImagePreview: shops['mapImagePreview'],
-        rating: double.parse(shops['totalRating'].toString()),
-        latitude: shops['latitude'],
-        longitude: shops['longitude'],
-        openingTime: shops['openTime'].toString(),
-        closingTime: shops['closeTime'].toString(),
-        about: shops['about'],
-        address: shops['address'],
-      );
+          name: shops['userName'],
+          id: shops['_id'],
+          userId: shops['userId'],
+          mobile: shops['mobile'],
+          city: shops['city'],
+          mapImagePreview: shops['mapImagePreview'],
+          rating: shops['count'] == 0
+              ? 0
+              : double.parse(shops['totalRating'].toString()) / shops['count'],
+          latitude: shops['latitude'],
+          longitude: shops['longitude'],
+          openingTime: shops['openTime'].toString(),
+          closingTime: shops['closeTime'].toString(),
+          about: shops['about'],
+          address: shops['address'],
+          count: shops['count']);
       notifyListeners();
     } catch (e) {
       throw e;

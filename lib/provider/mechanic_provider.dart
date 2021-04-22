@@ -24,7 +24,13 @@ class MechanicProvider with ChangeNotifier {
       await dio.post(
           'https://driver-friend.herokuapp.com/api/drivers/mechanic-rating',
           data: data);
-      _mechanic.rating += rating - currentValue;
+      if (currentValue == 0.0) {
+        _mechanic.rating = (_mechanic.rating * _mechanic.count + rating) /
+            (_mechanic.count + 1);
+      } else {
+        _mechanic.rating =
+            _mechanic.rating + (rating - currentValue) / (_mechanic.count);
+      }
       notifyListeners();
     } catch (e) {
       throw e;
@@ -49,7 +55,11 @@ class MechanicProvider with ChangeNotifier {
         latitude: mechanic['latitude'],
         longitude: mechanic['longitude'],
         about: mechanic['about'],
-        rating: double.parse(mechanic['totalRating'].toString()),
+        count: mechanic['count'],
+        rating: mechanic['count'] == 0
+            ? 0
+            : double.parse(mechanic['totalRating'].toString()) /
+                mechanic['count'],
         address: mechanic['address'],
       );
 

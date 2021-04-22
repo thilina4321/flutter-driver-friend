@@ -9,6 +9,7 @@ import 'package:driver_friend/screen/map/map_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_contact.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_part_shop_form_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/spare_shop_items.dart';
+import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:driver_friend/widget/rating.dart';
 import 'package:driver_friend/widget/spare_part_shop_drawer.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
@@ -36,12 +37,15 @@ class _SparePartShopProfileScreenState
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
     var id = ModalRoute.of(context).settings.arguments;
+    print(id);
 
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.purple,
         ),
-        drawer: SparePartShopDrawer(),
+        drawer: me['role'] != 'sparePartShop'
+            ? DriverDrawer()
+            : SparePartShopDrawer(),
         body: FutureBuilder(
             future: me['role'] != 'sparePartShop'
                 ? Provider.of<SpareShopProvider>(context, listen: false)
@@ -95,6 +99,8 @@ class _SparePartShopProfileScreenState
                   spareShop.name = me['userName'];
                 }
 
+                spareShop = spare.spareShop;
+
                 return SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,7 +142,7 @@ class _SparePartShopProfileScreenState
                       Padding(
                         padding: const EdgeInsets.all(2.0),
                         child: Text(
-                          spareShop.name,
+                          spareShop.name.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 25,

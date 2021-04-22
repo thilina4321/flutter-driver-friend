@@ -6,6 +6,7 @@ class SparePartShop {
   String address;
   String mobile;
   String about;
+  int count;
   String city;
   String openingTime;
   String closingTime;
@@ -22,6 +23,7 @@ class SparePartShop {
       this.name,
       this.userId,
       this.id,
+      this.count,
       this.city,
       this.latitude,
       this.longitude,

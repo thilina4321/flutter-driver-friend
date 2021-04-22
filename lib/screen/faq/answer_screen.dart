@@ -106,7 +106,7 @@ class _AnswerScreenState extends State<AnswerScreen> {
                         backgroundColor: Colors.purple,
                         radius: 25,
                       ),
-                      title: Text('Mechanic'),
+                      title: Text(data['driverId']['userName']),
                     ),
                     Text(data['question']),
                     SizedBox(
@@ -199,9 +199,10 @@ class _AnswerScreenState extends State<AnswerScreen> {
                                                 padding:
                                                     const EdgeInsets.all(0),
                                                 margin: const EdgeInsets.all(0),
-                                                height: 300,
                                                 width: double.infinity,
                                                 child: Column(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.center,
                                                   mainAxisAlignment:

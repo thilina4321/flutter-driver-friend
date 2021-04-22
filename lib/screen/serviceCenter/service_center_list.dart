@@ -1,3 +1,5 @@
+import 'package:driver_friend/helper/error-helper.dart';
+import 'package:driver_friend/helper/search-helper.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
@@ -5,14 +7,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 
-class ServiceCenterList extends StatelessWidget {
+class ServiceCenterList extends StatefulWidget {
   static String routeName = 'service-list';
+
+  @override
+  _ServiceCenterListState createState() => _ServiceCenterListState();
+}
+
+class _ServiceCenterListState extends State<ServiceCenterList> {
+  var place;
+
+  var select1;
+  List<ServiceCenter> serviceCenters;
+  var select2;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Service Centers'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.purple,
+        onPressed: () async {
+          try {
+            place = await SearchHelper.userSearch(context);
+          } catch (e) {
+            ErrorDialog.errorDialog(context, 'Something went wrong');
+          }
+        },
+        child: Icon(Icons.search),
       ),
       body: FutureBuilder(
         future:
@@ -27,13 +51,36 @@ class ServiceCenterList extends StatelessWidget {
             return Center(child: Text("An error occured, try againg later"));
           }
           return Consumer<DriverProvider>(builder: (ctx, ser, child) {
-            List<ServiceCenter> serviceCenters = ser.nearServices;
+            //
+            if (place == null) {
+              serviceCenters = ser.nearServices;
+            } else {
+              select1 = ser.findMechanicsByPlace(place);
+              select2 = select1;
+              serviceCenters = select1;
+            }
 
             return serviceCenters.length == 0
                 ? Center(
                     child: Container(
-                    child: Text('No Service centers found'),
-                  ))
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('No mechanics found'),
+                          FlatButton(
+                            onPressed: () {
+                              setState(() {
+                                place = null;
+                              });
+                            },
+                            child: Icon(
+                              Icons.refresh,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: serviceCenters.length,
                     itemBuilder: (ctx, index) {
@@ -53,12 +100,15 @@ class ServiceCenterList extends StatelessWidget {
                                 backgroundImage:
                                     AssetImage('assets/images/ser_cover.PNG'),
                               ),
-                              title: Text('Name'),
+                              title:
+                                  Text(serviceCenters[index].name.toString()),
                               trailing: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   RatingBarIndicator(
-                                    rating: 2,
+                                    rating: serviceCenters[index].rating == 0.0
+                                        ? 0.0
+                                        : serviceCenters[index].rating / 5,
                                     itemBuilder: (context, index) => Icon(
                                       Icons.star,
                                       color: Colors.green,

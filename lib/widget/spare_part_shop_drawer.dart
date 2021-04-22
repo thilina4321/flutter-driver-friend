@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 class SparePartShopDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var me = Provider.of(context, listen: false).me;
+
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -24,7 +26,7 @@ class SparePartShopDrawer extends StatelessWidget {
               height: 8,
             ),
             Text(
-              'Dmst Spare part Shop',
+              me['userName'],
               style: TextStyle(
                 fontSize: 25,
                 fontWeight: FontWeight.bold,

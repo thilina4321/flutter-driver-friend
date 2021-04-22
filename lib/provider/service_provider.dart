@@ -32,8 +32,16 @@ class ServiceCenterProvider with ChangeNotifier {
       await dio.post(
           'https://driver-friend.herokuapp.com/api/drivers/service-rating',
           data: data);
-
-      _serviceCenter.rating += rating - currentValue;
+      if (currentValue == 0.0) {
+        _serviceCenter.rating =
+            (_serviceCenter.rating * _serviceCenter.count + rating) /
+                (_serviceCenter.count + 1);
+      } else {
+        _serviceCenter.rating = _serviceCenter.rating +
+            (rating - currentValue) / (_serviceCenter.count);
+        print(_serviceCenter.rating);
+      }
+      notifyListeners();
     } catch (e) {
       throw e;
     }
@@ -57,7 +65,9 @@ class ServiceCenterProvider with ChangeNotifier {
         address: serviceCenter['address'],
         openingTime: serviceCenter['openTime'],
         closingTime: serviceCenter['closeTime'],
-        rating: double.parse(serviceCenter['totalRating'].toString()),
+        rating: double.parse(serviceCenter['totalRating'].toString()) /
+            serviceCenter['count'],
+        count: serviceCenter['count'],
       );
 
       // _serviceCenter = serviceCenter.data;

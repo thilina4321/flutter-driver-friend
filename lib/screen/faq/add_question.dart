@@ -1,3 +1,4 @@
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/provider/faq_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
@@ -37,7 +38,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
   @override
   Widget build(BuildContext context) {
     var me = Provider.of<UserProvider>(context, listen: false).me;
-    question.driverId = me['_id'];
+    question.driverId = me['id'];
 
     Future<void> _saveQuestion() async {
       _form.currentState.save();
@@ -45,8 +46,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
       if (!isValid) {
         return;
       }
-      print(question.driverId);
-      print(question.question);
+
       setState(() {
         isLoading = true;
       });
@@ -61,25 +61,7 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
         setState(() {
           isLoading = false;
         });
-        return showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                actions: [
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Ok'),
-                  )
-                ],
-                content: Container(
-                  child: Text(
-                    e.toString(),
-                  ),
-                ),
-              );
-            });
+        ErrorDialog.errorDialog(context, 'Something went wrong');
       }
     }
 

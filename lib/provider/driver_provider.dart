@@ -126,6 +126,7 @@ class DriverProvider with ChangeNotifier {
 
   Future<void> nearMechanic() async {
     List<Mechanic> nearMechanics = [];
+    print('hello');
     try {
       var fetchedMechanic = await dio
           .get('https://driver-friend.herokuapp.com/api/drivers/near-mechanic');
@@ -145,7 +146,11 @@ class DriverProvider with ChangeNotifier {
               about: mechanic['about'],
               address: mechanic['address'],
               name: mechanic['userName'],
-              rating: double.parse(mechanic['totalRating'].toString())),
+              count: mechanic['count'],
+              rating: mechanic['count'] == 0
+                  ? 0
+                  : double.parse(mechanic['totalRating'].toString()) /
+                      mechanic['count']),
         );
       });
 
@@ -172,10 +177,16 @@ class DriverProvider with ChangeNotifier {
               id: service['_id'],
               mobile: service['mobile'],
               city: service['city'],
+              name: service['userName'],
               latitude: service['latitude'],
+              count: service['count'],
               longitude: service['longitude'],
               about: service['about'],
               address: service['address'],
+              rating: service['count'] == 0
+                  ? 0
+                  : double.parse(service['totalRating'].toString()) /
+                      service['count'],
               userId: service['userId']),
         );
       });
@@ -188,6 +199,7 @@ class DriverProvider with ChangeNotifier {
   }
 
   Future<void> nearSpare() async {
+    List<SparePartShop> nearSpare = [];
     try {
       var fetchedSpare = await dio
           .get('https://driver-friend.herokuapp.com/api/drivers/near-spare');
@@ -195,20 +207,26 @@ class DriverProvider with ChangeNotifier {
       var spares = fetchedSpare.data;
 
       spares.forEach((spare) {
-        _nearSpare.add(
+        nearSpare.add(
           SparePartShop(
-              id: spares['_id'],
-              mobile: spares['mobile'],
-              city: spares['city'],
-              latitude: spares['latitude'],
-              longitude: spares['longitude'],
-              about: spares['about'],
-              address: spares['address'],
-              userId: spares['userId']),
+              name: spare['userName'],
+              id: spare['_id'],
+              mobile: spare['mobile'],
+              city: spare['city'],
+              latitude: spare['latitude'],
+              longitude: spare['longitude'],
+              about: spare['about'],
+              rating: spare['count'] == 0
+                  ? 0
+                  : (double.parse(spare['totalRating'].toString()) /
+                      spare['count']),
+              count: spare['count'],
+              address: spare['address'],
+              userId: spare['userId']),
         );
       });
 
-      print(_nearMechanics);
+      _nearSpare = nearSpare;
 
       notifyListeners();
     } catch (e) {
@@ -287,5 +305,35 @@ class DriverProvider with ChangeNotifier {
       print(e);
       throw e;
     }
+  }
+
+  findMechanicsByPlace(place) {
+    List<Mechanic> mecs = [];
+    _nearMechanics.forEach((element) {
+      if (element.city.toLowerCase().contains(place.toString().toLowerCase())) {
+        mecs.add(element);
+      }
+    });
+    return mecs;
+  }
+
+  findServiceCentersByPlace(place) {
+    List<ServiceCenter> serS = [];
+    _nearService.forEach((element) {
+      if (element.city.toLowerCase().contains(place.toString().toLowerCase())) {
+        serS.add(element);
+      }
+    });
+    return serS;
+  }
+
+  findSpareShopByPlace(place) {
+    List<SparePartShop> spare = [];
+    _nearSpare.forEach((element) {
+      if (element.city.toLowerCase().contains(place.toString().toLowerCase())) {
+        spare.add(element);
+      }
+    });
+    return spare;
   }
 }
