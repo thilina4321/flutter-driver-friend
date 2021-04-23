@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:driver_friend/model/appointment.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,14 @@ class ServiceCenterProvider with ChangeNotifier {
 
   List<Service> _services = [];
   ServiceCenter _serviceCenter;
+  List<Appointment> _appointments = [];
 
   List<ServiceCenter> get serviceCenters {
     return _serviceCenters;
+  }
+
+  List<Appointment> get appointments {
+    return _appointments;
   }
 
   ServiceCenter get serviceCenter {
@@ -173,5 +179,40 @@ class ServiceCenterProvider with ChangeNotifier {
     _serviceCenters =
         _serviceCenters.where((mechanic) => mechanic.city == city);
     notifyListeners();
+  }
+
+  Future getAppointments(id) async {
+    List<Appointment> appointments = [];
+    try {
+      var response = await dio.get('$url/get-appointments/$id');
+      var resData = response.data['appointment'];
+
+      resData.forEach((element) => appointments.add(Appointment(
+          centerId: element['centerId'],
+          driverId: element['driverId'],
+          status: element['status'],
+          id: element['_id'],
+          serviceName: element['serviceName'],
+          date: element['date'],
+          time: element['time'])));
+
+      _appointments = appointments;
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future changeAppointmentStatus(String id, String status) async {
+    var data = {id: id, status: status};
+
+    try {
+      var a = await dio.post(
+          'https://driver-friend.herokuapp.com/api/service-centers/change-status/607e8bcb67e4fa0015b5c8b0',
+          data: data);
+      print(a.data);
+    } catch (e) {
+      throw e;
+    }
   }
 }

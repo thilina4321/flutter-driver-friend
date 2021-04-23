@@ -7,9 +7,11 @@ class Appointment {
   String centerName;
   String serviceName;
   String centerMobile;
+  String id;
 
   Appointment(
       {this.centerId,
+      this.id,
       this.centerMobile,
       this.date,
       this.time,

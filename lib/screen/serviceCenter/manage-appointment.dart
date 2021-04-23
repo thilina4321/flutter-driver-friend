@@ -1,29 +1,57 @@
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/appointment.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
+import 'package:driver_friend/provider/service_provider.dart';
+import 'package:driver_friend/provider/user_provider.dart';
+import 'package:driver_friend/widget/appointment-status.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class ManageAppointment extends StatelessWidget {
+class ManageAppointment extends StatefulWidget {
   static String routeName = 'manage-appointment-service';
-  _makingPhoneCall(mobile) async {
-    final url = 'tel:$mobile';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Could not launch $url';
+
+  @override
+  _ManageAppointmentState createState() => _ManageAppointmentState();
+}
+
+class _ManageAppointmentState extends State<ManageAppointment> {
+  bool isLoading = false;
+  List<Appointment> appoinments;
+
+  _appointmentStatus(context, id) async {
+    try {
+      bool status = await AppointmentStatus.appointmentStatus(context);
+      print(status);
+
+      if (status != null) {
+        setState(() {
+          isLoading = true;
+        });
+        await Provider.of<ServiceCenterProvider>(context, listen: false)
+            .changeAppointmentStatus(id, status ? 'Approve' : 'Reject');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      ErrorDialog.errorDialog(context, 'Something went wrong');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var me = Provider.of<UserProvider>(context, listen: false).me;
     return Scaffold(
       appBar: AppBar(
         title: Text('Manage Appointments'),
       ),
       body: FutureBuilder(
-          future: Provider.of<DriverProvider>(context, listen: false)
-              .fetchAppointments('driver.id'),
+          future: Provider.of<ServiceCenterProvider>(context, listen: false)
+              .getAppointments(me['id']),
           builder: (context, data) {
             if (data.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
@@ -36,8 +64,9 @@ class ManageAppointment extends StatelessWidget {
               return Text('Something went wrong');
             }
 
-            return Consumer<DriverProvider>(builder: (context, data, child) {
-              List<Appointment> appoinments = data.appointments;
+            return Consumer<ServiceCenterProvider>(
+                builder: (context, data, child) {
+              appoinments = data.appointments;
               return ListView.builder(
                   itemCount: appoinments.length,
                   itemBuilder: (context, index) {
@@ -63,11 +92,6 @@ class ManageAppointment extends StatelessWidget {
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8.0),
-                                child: Text('Service Center : ' +
-                                    appoinments[index].centerName.toString()),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
                                 child: Text('Date : ' +
                                     appoinments[index].date.toString()),
                               ),
@@ -86,10 +110,10 @@ class ManageAppointment extends StatelessWidget {
                                 child: Card(
                                   elevation: 5,
                                   child: FlatButton(
-                                    onPressed: () => _makingPhoneCall(
-                                        appoinments[index].centerMobile),
+                                    onPressed: () => _appointmentStatus(
+                                        context, appoinments[index].id),
                                     child: Text(
-                                      'Call',
+                                      'Approve or Reject',
                                       textAlign: TextAlign.end,
                                       style: TextStyle(
                                         color: Colors.purple,
