@@ -19,7 +19,7 @@ class _ServiceCenterListState extends State<ServiceCenterList> {
 
   var select1;
   List<ServiceCenter> serviceCenters;
-  var select2;
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -51,80 +51,84 @@ class _ServiceCenterListState extends State<ServiceCenterList> {
             return Center(child: Text("An error occured, try againg later"));
           }
           return Consumer<DriverProvider>(builder: (ctx, ser, child) {
-            //
             if (place == null) {
               serviceCenters = ser.nearServices;
             } else {
-              select1 = ser.findMechanicsByPlace(place);
-              select2 = select1;
+              select1 = ser.findServiceCentersByPlace(place);
+
               serviceCenters = select1;
             }
 
-            return serviceCenters.length == 0
-                ? Center(
-                    child: Container(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text('No mechanics found'),
-                          FlatButton(
-                            onPressed: () {
-                              setState(() {
-                                place = null;
-                              });
-                            },
-                            child: Icon(
-                              Icons.refresh,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: serviceCenters.length,
-                    itemBuilder: (ctx, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).pushNamed(
-                              ServiceCenterProfileScreen.routeName,
-                              arguments: serviceCenters[index].userId);
-                        },
-                        child: Card(
-                          elevation: 3,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ListTile(
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    AssetImage('assets/images/ser_cover.PNG'),
+            return isLoading
+                ? Center(child: CircularProgressIndicator())
+                : serviceCenters.length == 0
+                    ? Center(
+                        child: Container(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('No mechanics found'),
+                              FlatButton(
+                                onPressed: () {
+                                  setState(() {
+                                    place = null;
+                                  });
+                                },
+                                child: Icon(
+                                  Icons.refresh,
+                                ),
                               ),
-                              title:
-                                  Text(serviceCenters[index].name.toString()),
-                              trailing: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  RatingBarIndicator(
-                                    rating: serviceCenters[index].rating == 0.0
-                                        ? 0.0
-                                        : serviceCenters[index].rating / 5,
-                                    itemBuilder: (context, index) => Icon(
-                                      Icons.star,
-                                      color: Colors.green,
-                                    ),
-                                    itemCount: 1,
-                                    itemSize: 20.0,
-                                    direction: Axis.horizontal,
-                                  ),
-                                  Text(serviceCenters[index].rating.toString())
-                                ],
-                              ),
-                            ),
+                            ],
                           ),
                         ),
-                      );
-                    });
+                      )
+                    : ListView.builder(
+                        itemCount: serviceCenters.length,
+                        itemBuilder: (ctx, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                  ServiceCenterProfileScreen.routeName,
+                                  arguments: serviceCenters[index].userId);
+                            },
+                            child: Card(
+                              elevation: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    radius: 30,
+                                    backgroundImage: AssetImage(
+                                        'assets/images/ser_cover.PNG'),
+                                  ),
+                                  title: Text(
+                                      serviceCenters[index].name.toString()),
+                                  trailing: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      RatingBarIndicator(
+                                        rating: serviceCenters[index].rating ==
+                                                0.0
+                                            ? 0.0
+                                            : serviceCenters[index].rating / 5,
+                                        itemBuilder: (context, index) => Icon(
+                                          Icons.star,
+                                          color: Colors.green,
+                                        ),
+                                        itemCount: 1,
+                                        itemSize: 20.0,
+                                        direction: Axis.horizontal,
+                                      ),
+                                      Text(serviceCenters[index]
+                                          .rating
+                                          .toString())
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        });
           });
         },
       ),

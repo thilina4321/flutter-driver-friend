@@ -122,7 +122,6 @@ class UserProvider with ChangeNotifier {
     var pref = await SharedPreferences.getInstance();
 
     if (pref.containsKey('userData')) {
-      print('ok');
       pref.clear();
     }
     _token = null;

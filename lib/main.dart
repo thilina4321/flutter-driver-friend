@@ -21,6 +21,7 @@ import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
 import 'package:driver_friend/screen/mechanic/mechanics_list.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
 import 'package:driver_friend/screen/serviceCenter/add-services.dart';
+import 'package:driver_friend/screen/serviceCenter/manage-appointment.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_list.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
@@ -129,6 +130,7 @@ class MyApp extends StatelessWidget {
                 ServiceCenterContactScreen(),
             ServiceCenterServices.routeName: (ctx) => ServiceCenterServices(),
             CreateNewServiceScreen.routeName: (ctx) => CreateNewServiceScreen(),
+            ManageAppointment.routeName: (ctx) => ManageAppointment(),
 
             //spare part section
             SparepartShopListScreen.routeName: (ctx) =>

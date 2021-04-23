@@ -31,7 +31,6 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(place);
     return Scaffold(
       appBar: AppBar(
         title: Text('Mechanics'),

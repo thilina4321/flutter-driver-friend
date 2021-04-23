@@ -1,5 +1,6 @@
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/add-services.dart';
+import 'package:driver_friend/screen/serviceCenter/manage-appointment.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_profile.dart';
 import 'package:driver_friend/screen/serviceCenter/service_settings.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,11 @@ class _ServiceCenterDrawerState extends State<ServiceCenterDrawer> {
               icon: Icons.perm_data_setting,
               label: 'New Services',
               routeName: CreateNewServiceScreen.routeName,
+            ),
+            DrawerIcons(
+              icon: Icons.supervised_user_circle,
+              label: 'Manage Appointments',
+              routeName: ManageAppointment.routeName,
             ),
             DrawerIcons(
               icon: Icons.logout,

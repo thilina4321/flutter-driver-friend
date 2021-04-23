@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 class SparePartShopDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    var me = Provider.of(context, listen: false).me;
+    var me = Provider.of<UserProvider>(context, listen: false).me;
 
     return Drawer(
       child: SafeArea(

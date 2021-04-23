@@ -90,6 +90,8 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
     }
   }
 
+  String id;
+
   @override
   Widget build(BuildContext context) {
     SparePartShop editablrSpareShop =
@@ -97,6 +99,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
 
     if (editablrSpareShop != null) {
       sparePartShop = editablrSpareShop;
+      id = editablrSpareShop.id;
     }
 
     me = Provider.of<UserProvider>(context, listen: false).me;
@@ -250,7 +253,7 @@ class _SparePartShopFormScreenState extends State<SparePartShopFormScreen> {
                       child: isLoading
                           ? CircularProgressIndicator()
                           : Text(
-                              'Save',
+                              id != null ? 'Update' : 'Save',
                               style: TextStyle(
                                 fontSize: 22,
                                 color: Colors.white,

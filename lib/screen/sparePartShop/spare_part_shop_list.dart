@@ -56,7 +56,7 @@ class _SparepartShopListScreenState extends State<SparepartShopListScreen> {
             if (place == null) {
               spareShops = spare.nearSpares;
             } else {
-              select1 = spare.findMechanicsByPlace(place);
+              select1 = spare.findSpareShopByPlace(place);
               spareShops = select1;
             }
             return spareShops.length == 0
