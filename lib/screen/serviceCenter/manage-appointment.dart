@@ -22,7 +22,6 @@ class _ManageAppointmentState extends State<ManageAppointment> {
   _appointmentStatus(context, id) async {
     try {
       bool status = await AppointmentStatus.appointmentStatus(context);
-      print(status);
 
       if (status != null) {
         setState(() {

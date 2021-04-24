@@ -117,79 +117,38 @@ class _DefaultQuestionScreenState extends State<DefaultQuestionScreen> {
       body: ListView.builder(
           itemCount: questions.length,
           itemBuilder: (ctx, index) {
-            return Card(
-              elevation: 3,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          width: double.infinity,
-                          margin: const EdgeInsets.all(8),
-                          child: Text(
-                            questions[index]['question'],
-                            // que.answeredQuestions[index].question,
-                            textAlign: TextAlign.start,
-                            style: TextStyle(fontSize: 16),
+            return GestureDetector(
+              onTap: () {
+                Navigator.of(context).pushNamed(AnswerScreen.routeName,
+                    arguments: questions[index]['_id']);
+              },
+              child: Card(
+                elevation: 3,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.all(8),
+                            child: Text(
+                              questions[index]['question'],
+                              // que.answeredQuestions[index].question,
+                              textAlign: TextAlign.start,
+
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed(
-                              AnswerScreen.routeName,
-                              arguments: questions[index]['_id']);
-                        },
-                        child: Text('Check'),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             );
           }),
     );
   }
 }
-
-// ListView.builder(
-//                       itemCount: que.answeredQuestions.length,
-//                       itemBuilder: (ctx, index) {
-//                         return Card(
-//                           elevation: 3,
-//                           child: Column(
-//                             children: [
-//                               Row(
-//                                 children: [
-//                                   Expanded(
-//                                     child: Container(
-//                                       width: double.infinity,
-//                                       margin: const EdgeInsets.all(8),
-//                                       child: Text(
-//                                         ques[index]['question'],
-//                                         // que.answeredQuestions[index].question,
-//                                         textAlign: TextAlign.start,
-//                                         style: TextStyle(fontSize: 16),
-//                                       ),
-//                                     ),
-//                                   ),
-//                                   FlatButton(
-//                                     onPressed: () {
-//                                       Navigator.of(context).pushNamed(
-//                                           AnswerScreen.routeName,
-//                                           arguments: {
-//                                             'id':
-//                                                 que.answeredQuestions[index].id,
-//                                             'que': que.answeredQuestions[index]
-//                                                 .question
-//                                           });
-//                                     },
-//                                     child: Text('Check'),
-//                                   ),
-//                                 ],
-//                               ),
-//                             ],
-//                           ),
-//                         );
-//                       });

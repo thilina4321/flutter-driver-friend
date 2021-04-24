@@ -38,7 +38,6 @@ class MechanicProvider with ChangeNotifier {
   }
 
   Future<void> fetchMechanic(id) async {
-    print(id);
     try {
       var fetchedMechanic = await dio.get(
           'https://driver-friend.herokuapp.com/api/mechanics/mechanic/$id');
@@ -91,7 +90,6 @@ class MechanicProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }
@@ -136,7 +134,6 @@ class MechanicProvider with ChangeNotifier {
   Future<void> deleteMechanic(String id, String userId) async {
     try {
       var mechanic = await dio.post('$url/delete-mechanic/$id/$userId');
-      print(mechanic.data);
       notifyListeners();
     } catch (e) {
       throw e;
@@ -147,9 +144,7 @@ class MechanicProvider with ChangeNotifier {
     try {
       final mechanic = _mechanics.firstWhere((mec) => mec.id == id);
       return mechanic;
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
   }
 
   nearMechanics(String city) {
@@ -159,9 +154,8 @@ class MechanicProvider with ChangeNotifier {
 
   Future<void> mechanicRating(String id, double rating) async {
     try {
-      var rating = await dio.post(
+      await dio.post(
           'https://dirver-friend.herokuapp.com/api/drivers/mechanic-rating');
-      print(rating);
     } catch (e) {
       print(e.toString());
       throw e;

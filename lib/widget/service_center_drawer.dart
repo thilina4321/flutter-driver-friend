@@ -15,12 +15,12 @@ class _ServiceCenterDrawerState extends State<ServiceCenterDrawer> {
   var me;
   @override
   void initState() {
-    me = Provider.of<UserProvider>(context, listen: false).me;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    me = Provider.of<UserProvider>(context, listen: false).me;
     return Drawer(
       child: SafeArea(
         child: ListView(

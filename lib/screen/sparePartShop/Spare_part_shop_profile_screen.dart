@@ -139,33 +139,41 @@ class _SparePartShopProfileScreenState
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(2.0),
-                        child: Text(
-                          spareShop.name.toString(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          RatingBarIndicator(
-                            rating: spareShop.rating,
-                            itemBuilder: (context, index) => Icon(
-                              Icons.star,
-                              color: Colors.green,
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        color: Colors.black45,
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Text(
+                                spareShop.name.toString(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                            unratedColor: Colors.black54,
-                            itemCount: 5,
-                            itemSize: 20.0,
-                            direction: Axis.horizontal,
-                          ),
-                          Text(spareShop.rating.toString()),
-                        ],
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                RatingBarIndicator(
+                                  rating: spareShop.rating,
+                                  itemBuilder: (context, index) => Icon(
+                                    Icons.star,
+                                    color: Colors.green,
+                                  ),
+                                  unratedColor: Colors.black54,
+                                  itemCount: 5,
+                                  itemSize: 20.0,
+                                  direction: Axis.horizontal,
+                                ),
+                                Text(spareShop.rating.toString()),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       if (me['role'] == 'sparePartShop')
                         Container(

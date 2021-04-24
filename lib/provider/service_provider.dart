@@ -45,7 +45,6 @@ class ServiceCenterProvider with ChangeNotifier {
       } else {
         _serviceCenter.rating = _serviceCenter.rating +
             (rating - currentValue) / (_serviceCenter.count);
-        print(_serviceCenter.rating);
       }
       notifyListeners();
     } catch (e) {
@@ -79,7 +78,6 @@ class ServiceCenterProvider with ChangeNotifier {
       // _serviceCenter = serviceCenter.data;
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -108,21 +106,13 @@ class ServiceCenterProvider with ChangeNotifier {
 
   Future<void> deleteServiceCenter(String id, String userId) async {
     try {
-      var center = await dio.delete('$url/delete-service-center/$id/$userId');
-      print(center);
+      await dio.delete('$url/delete-service-center/$id/$userId');
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
-  Future<void> addService(Service service) async {
-    // var formData = FormData.fromMap({
-    //   'name': service.name,
-    //   'description': service.description,
-    //   'price': service.price,
-    //   'shopId': service.shopId
-    // });
-
+  Future<void> addService([Service service, id]) async {
     var formData = {
       'name': service.name,
       'description': service.description,
@@ -130,11 +120,14 @@ class ServiceCenterProvider with ChangeNotifier {
       'shopId': service.shopId
     };
     try {
-      await dio.post('$url/create-service', data: formData);
+      if (id == null) {
+        await dio.post('$url/create-service', data: formData);
+      } else {
+        await dio.patch('$url/edit-service/$id', data: formData);
+      }
 
       notifyListeners();
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -170,7 +163,7 @@ class ServiceCenterProvider with ChangeNotifier {
     }
   }
 
-  selectServiceForEdit(String id) async {
+  selectServiceForEdit(String id) {
     Service service = _services.firstWhere((element) => element.id == id);
     return service;
   }
@@ -204,13 +197,12 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   Future changeAppointmentStatus(String id, String status) async {
-    var data = {id: id, status: status};
+    var data = {'id': id, 'status': status};
 
     try {
-      var a = await dio.post(
-          'https://driver-friend.herokuapp.com/api/service-centers/change-status/607e8bcb67e4fa0015b5c8b0',
+      var a = await dio.patch(
+          'https://driver-friend.herokuapp.com/api/service-centers/change-status',
           data: data);
-      print(a.data);
     } catch (e) {
       throw e;
     }

@@ -95,6 +95,12 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                                 child: Text('Status : ' +
                                     appoinments[index].status.toString()),
                               ),
+                              if (appoinments[index].status.toString() ==
+                                  'Approve')
+                                Text(
+                                  'Your Appointment is Approved',
+                                  style: TextStyle(color: Colors.green),
+                                ),
                               Container(
                                 alignment: Alignment.bottomRight,
                                 child: Card(

@@ -100,16 +100,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
       setState(() {
         isLoading = false;
       });
-      return showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              content: Container(
-                  child: Text(
-                e.toString(),
-              )),
-            );
-          });
+      ErrorDialog.errorDialog(context, 'Something went wrong');
     }
   }
 
@@ -120,7 +111,6 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
     ServiceCenter editableServiceCenter =
         Provider.of<ServiceCenterProvider>(context, listen: false)
             .serviceCenter;
-    print(editableServiceCenter.openingTime);
     if (editableServiceCenter != null) {
       serviceCenter = editableServiceCenter;
     }

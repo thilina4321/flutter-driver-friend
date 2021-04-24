@@ -14,6 +14,7 @@ import 'package:driver_friend/widget/service_center_drawer.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -44,10 +45,15 @@ class _ServiceCenterProfileScreenState
     });
   }
 
+  var idData;
+
   @override
   Widget build(BuildContext context) {
-    var idData = ModalRoute.of(context).settings.arguments;
     me = Provider.of<UserProvider>(context, listen: false).me;
+
+    if (me['role'] != 'serviceCenter') {
+      idData = ModalRoute.of(context).settings.arguments;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -138,36 +144,43 @@ class _ServiceCenterProfileScreenState
                         ),
                     ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(2.0),
-                    child: serviceCenter.name == null
-                        ? Text('')
-                        : Text(
-                            serviceCenter.name,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    color: Colors.black45,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(2.0),
+                          child: serviceCenter.name == null
+                              ? Text('')
+                              : Text(
+                                  serviceCenter.name,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RatingBarIndicator(
+                              rating: serviceCenter.rating,
+                              itemBuilder: (context, index) => Icon(
+                                Icons.star,
+                                color: Colors.green,
+                              ),
+                              unratedColor: Colors.black54,
+                              itemCount: 5,
+                              itemSize: 20.0,
+                              direction: Axis.horizontal,
                             ),
-                          ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      // RatingBarIndicator(
-                      //   rating: serviceCenter.rating,
-                      //   itemBuilder: (context, index) => Icon(
-                      //     Icons.star,
-                      //     color: Colors.green,
-                      //   ),
-                      //   unratedColor: Colors.black54,
-                      //   itemCount: 5,
-                      //   itemSize: 20.0,
-                      //   direction: Axis.horizontal,
-                      // ),
-                      if (serviceCenter.rating != null)
-                        Text(serviceCenter.rating.toString()),
-                    ],
+                            Text(serviceCenter.rating.toString()),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   if (me['role'] == 'serviceCenter')
                     Container(

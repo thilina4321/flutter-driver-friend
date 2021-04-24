@@ -27,7 +27,6 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
   }
 
   var select1;
-  var select2;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +62,6 @@ class _MechanicListScreenState extends State<MechanicListScreen> {
               mechanics = mec.nearMechanics;
             } else {
               select1 = mec.findMechanicsByPlace(place);
-              select2 = select1;
               mechanics = select1;
             }
 

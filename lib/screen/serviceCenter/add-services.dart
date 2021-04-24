@@ -47,7 +47,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
     _service.shopId = me['id'];
     try {
       await Provider.of<ServiceCenterProvider>(context, listen: false)
-          .addService(_service);
+          .addService(_service, service.id);
       setState(() {
         isLoading = false;
       });
@@ -84,15 +84,19 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
     super.initState();
   }
 
-  Service service;
+  Service service = Service();
 
   @override
   Widget build(BuildContext context) {
     String id = ModalRoute.of(context).settings.arguments;
-    Service editableService =
-        Provider.of<ServiceCenterProvider>(context).selectServiceForEdit(id);
-    if (editableService != null) {
-      service = editableService;
+    print(id);
+    if (id != null) {
+      Service editableService =
+          Provider.of<ServiceCenterProvider>(context).selectServiceForEdit(id);
+
+      if (editableService != null) {
+        service = editableService;
+      }
     }
 
     return Scaffold(
@@ -110,7 +114,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
                   onSaved: (val) {
                     _service.name = val;
                   },
-                  initialValue: service.name,
+                  initialValue: service != null ? service.name : null,
                   textInputAction: TextInputAction.next,
                   maxLines: null,
                   validator: (val) {
@@ -195,7 +199,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
                             child: CircularProgressIndicator(),
                           )
                         : Text(
-                            'Create',
+                            service.id == null ? 'Create' : 'Update',
                             style: TextStyle(
                                 fontSize: 20,
                                 color: Colors.white,
