@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
@@ -27,26 +28,34 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   var me;
 
   final picker = ImagePicker();
+  bool profileLoading = false;
+  bool coverLoading = false;
 
   Future saveImage(context, [String imageType = 'profile']) async {
     var pickedFile;
     try {
       pickedFile =
           await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
-      setState(() {
-        if (pickedFile != null) {
-          if (imageType == 'profile') {
-            user.profileImageUrl = File(pickedFile.path);
-            print(user.profileImageUrl);
-          } else {
-            user.vehicleImageUrl = File(pickedFile.path);
-          }
+      if (pickedFile != null) {
+        if (imageType == 'profile') {
+          profileLoading = true;
+          await Provider.of<DriverProvider>(context, listen: false)
+              .addProfilePicture(pickedFile, me['id']);
         } else {
-          print('No image selected.');
+          coverLoading = true;
+          await Provider.of<DriverProvider>(context, listen: false)
+              .addCoverPicture(pickedFile, me['id']);
         }
-      });
+      } else {
+        print('No image');
+      }
+      profileLoading = false;
+      coverLoading = false;
+      setState(() {});
     } catch (e) {
-      print(e);
+      profileLoading = false;
+      coverLoading = false;
+      ErrorDialog.errorDialog(context, e.toString());
     }
   }
 
@@ -130,7 +139,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                             ? Container(
                                 color: Colors.black,
                               )
-                            : Image.file(
+                            : Image.network(
                                 user.vehicleImageUrl,
                                 fit: BoxFit.cover,
                               ),
@@ -142,10 +151,12 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                           color: Colors.black54,
                           child: FlatButton.icon(
                             onPressed: () => saveImage(context, 'cover'),
-                            label: Text(
-                              'Edit cover photo',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            label: coverLoading
+                                ? CircularProgressIndicator()
+                                : Text(
+                                    'Edit cover photo',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                             icon: Icon(
                               Icons.camera_alt,
                               color: Colors.white,
@@ -160,10 +171,12 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                           color: Colors.black45,
                           child: FlatButton.icon(
                             onPressed: () => saveImage(context),
-                            label: Text(
-                              'Edit profile photo',
-                              style: TextStyle(color: Colors.white),
-                            ),
+                            label: profileLoading
+                                ? CircularProgressIndicator()
+                                : Text(
+                                    'Edit profile photo',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                             icon: Icon(
                               Icons.camera_alt,
                               color: Colors.white,
@@ -173,7 +186,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       ),
                       Positioned(
                         top: 100,
-                        left: MediaQuery.of(context).size.width / 3,
+                        left: MediaQuery.of(context).size.width / 4,
                         child: user.profileImageUrl == null
                             ? CircleAvatar(
                                 child: Text(
@@ -185,9 +198,13 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                               )
                             : CircleAvatar(
                                 radius: 70,
-                                backgroundColor: Colors.grey,
-                                backgroundImage:
-                                    FileImage(user.profileImageUrl),
+                                backgroundColor: Colors.teal,
+                                child: CircleAvatar(
+                                  radius: 68,
+                                  backgroundColor: Colors.grey,
+                                  backgroundImage:
+                                      NetworkImage(user.profileImageUrl),
+                                ),
                               ),
                       ),
                     ],

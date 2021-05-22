@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:flutter/cupertino.dart';

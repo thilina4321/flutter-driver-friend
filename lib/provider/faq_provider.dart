@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class Question {
   String id;
   String question;
-  File questionImage;
+  String questionImage;
   String driverId;
   List<Answer> answers;
 
@@ -41,6 +42,7 @@ class FaqProvider with ChangeNotifier {
   List _answers = [];
   List _questions = [];
   List _specificMechanicQuestions = [];
+  final cloudinary = CloudinaryPublic('ddo9tyz6e', 'gre6o5vv', cache: false);
 
   var url = 'https://driver-friend.herokuapp.com/api/faq';
   Dio dio = new Dio();
@@ -58,18 +60,24 @@ class FaqProvider with ChangeNotifier {
   }
 
   Future<void> addQuestion(Question question) async {
-    var formData = FormData.fromMap({
-      'driverId': question.driverId,
-      'question': question.question,
-      // 'file':
-      //     await MultipartFile.fromFile('./text.txt', filename: 'upload.txt')
-    });
+    print(question.questionImage);
 
-    try {
-      await dio.post('$url/create', data: formData);
-    } catch (e) {
-      print(e);
-    }
+    // try {
+    //   CloudinaryResponse response = await cloudinary.uploadFile(
+    //     CloudinaryFile.fromFile(question.questionImage,
+    //         resourceType: CloudinaryResourceType.Image),
+    //   );
+
+    //   var formData = {
+    //     'driverId': question.driverId,
+    //     'question': question.question,
+    //     'questionImage': response.secureUrl
+    //   };
+
+    //   await dio.post('$url/create', data: formData);
+    // } on CloudinaryException catch (e) {
+    //   throw e;
+    // }
   }
 
   Future<void> fetchQuestions() async {

@@ -13,8 +13,8 @@ class Driver {
   String mobile;
   String vehicleNumber;
   String vehicleColor;
-  File profileImageUrl;
-  File vehicleImageUrl;
+  String profileImageUrl;
+  String vehicleImageUrl;
   UserType userType;
   double latitude;
   double longitude;

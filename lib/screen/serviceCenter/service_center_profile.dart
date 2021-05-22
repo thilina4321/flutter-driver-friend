@@ -36,13 +36,14 @@ class _ServiceCenterProfileScreenState
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
-    setState(() {
-      if (pickedFile != null) {
-        serviceCenter.profileImageUrl = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+    if (pickedFile != null) {
+      await Provider.of<ServiceCenterProvider>(context, listen: false)
+          .addProfilePicture(pickedFile, me['id']);
+    } else {
+      print('No image selected.');
+    }
+
+    setState(() {});
   }
 
   var idData;

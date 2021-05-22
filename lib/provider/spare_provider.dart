@@ -1,3 +1,4 @@
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:dio/dio.dart';
 import 'package:driver_friend/model/part.dart';
 import 'package:driver_friend/model/spare_shop.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 class SpareShopProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://dirver-friend.herokuapp.com/api/sparepart-shops';
+  final cloudinary = CloudinaryPublic('ddo9tyz6e', 'gre6o5vv', cache: false);
 
   List<SparePartShop> _spareShops = [];
   SparePartShop _spareShop;
@@ -212,6 +214,21 @@ class SpareShopProvider with ChangeNotifier {
           'https://driver-friend.herokuapp.com/api/drivers/spare-rating',
           data: data);
     } catch (e) {
+      throw e;
+    }
+  }
+
+  Future addProfilePicture(image, id) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image),
+      );
+
+      print(response.secureUrl);
+      await dio.patch('$url/pro-pic/$id',
+          data: {'profileImage': response.secureUrl});
+    } on CloudinaryException catch (e) {
       throw e;
     }
   }

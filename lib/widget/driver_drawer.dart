@@ -30,10 +30,15 @@ class _DriverDrawerState extends State<DriverDrawer> {
           children: [
             Container(
               alignment: Alignment.topLeft,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/dri_pro.jpg'),
-              ),
+              child: driver.profileImageUrl == null
+                  ? CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.grey,
+                    )
+                  : CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(driver.profileImageUrl),
+                    ),
             ),
             SizedBox(
               height: 8,

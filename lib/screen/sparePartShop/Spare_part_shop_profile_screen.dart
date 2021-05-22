@@ -33,6 +33,19 @@ class _SparePartShopProfileScreenState
   final picker = ImagePicker();
   var me;
 
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    if (pickedFile != null) {
+      await Provider.of<SpareShopProvider>(context, listen: false)
+          .addProfilePicture(pickedFile, me['id']);
+    } else {
+      print('No image selected.');
+    }
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
@@ -125,7 +138,7 @@ class _SparePartShopProfileScreenState
                             child: Container(
                               color: Colors.black45,
                               child: FlatButton.icon(
-                                onPressed: () {},
+                                onPressed: getImage,
                                 icon: Icon(
                                   Icons.camera_alt,
                                   color: Colors.white,

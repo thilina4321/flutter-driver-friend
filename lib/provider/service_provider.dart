@@ -1,3 +1,4 @@
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:dio/dio.dart';
 import 'package:driver_friend/model/appointment.dart';
 import 'package:driver_friend/model/service-model.dart';
@@ -8,6 +9,7 @@ class ServiceCenterProvider with ChangeNotifier {
   Dio dio = new Dio();
   final url = 'https://driver-friend.herokuapp.com/api/service-centers';
   List<ServiceCenter> _serviceCenters = [];
+  final cloudinary = CloudinaryPublic('ddo9tyz6e', 'gre6o5vv', cache: false);
 
   List<Service> _services = [];
   ServiceCenter _serviceCenter;
@@ -204,6 +206,21 @@ class ServiceCenterProvider with ChangeNotifier {
           'https://driver-friend.herokuapp.com/api/service-centers/change-status',
           data: data);
     } catch (e) {
+      throw e;
+    }
+  }
+
+  Future addProfilePicture(image, id) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image),
+      );
+
+      print(response.secureUrl);
+      await dio.patch('$url/pro-pic/$id',
+          data: {'profileImage': response.secureUrl});
+    } on CloudinaryException catch (e) {
       throw e;
     }
   }

@@ -40,6 +40,9 @@ dependencies:
   geocoding: ^1.0.5
   dio: ^3.0.10
   shared_preferences: ^0.5.3+1
+  cloudinary_public: ^0.7.0
+
+
 
 
 

@@ -1,9 +1,12 @@
+import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 
 class MechanicProvider with ChangeNotifier {
+  final cloudinary = CloudinaryPublic('ddo9tyz6e', 'gre6o5vv', cache: false);
+
   Dio dio = new Dio();
   final url = 'https://dirver-friend.herokuapp.com/api/mechanics';
   List<Mechanic> _mechanics = [];
@@ -158,6 +161,21 @@ class MechanicProvider with ChangeNotifier {
           'https://dirver-friend.herokuapp.com/api/drivers/mechanic-rating');
     } catch (e) {
       print(e.toString());
+      throw e;
+    }
+  }
+
+  Future addProfilePicture(image, id) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image),
+      );
+
+      print(response.secureUrl);
+      await dio.patch('$url/pro-pic/$id',
+          data: {'profileImage': response.secureUrl});
+    } on CloudinaryException catch (e) {
       throw e;
     }
   }

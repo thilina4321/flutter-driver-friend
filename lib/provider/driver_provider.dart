@@ -5,8 +5,10 @@ import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/spare_shop.dart';
 import 'package:flutter/material.dart';
+import 'package:cloudinary_public/cloudinary_public.dart';
 
 class DriverProvider with ChangeNotifier {
+  final cloudinary = CloudinaryPublic('ddo9tyz6e', 'gre6o5vv', cache: false);
   final url = 'https://driver-friend.herokuapp.com/api/drivers';
   Dio dio = new Dio();
   Driver _driver;
@@ -83,6 +85,8 @@ class DriverProvider with ChangeNotifier {
           mobile: driver['mobile'],
           vehicleColor: driver['vehicleColor'],
           vehicleNumber: driver['vehicleNumber'],
+          profileImageUrl: driver['profileImage'],
+          vehicleImageUrl: driver['vehicleImage'],
           city: driver['city'],
           latitude: driver['latitude'],
           longitude: driver['longitude'],
@@ -335,5 +339,34 @@ class DriverProvider with ChangeNotifier {
       }
     });
     return spare;
+  }
+
+  Future addProfilePicture(image, id) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image),
+      );
+
+      print(response.secureUrl);
+      await dio
+          .patch('$url/pro-pic/$id', data: {'proImage': response.secureUrl});
+    } on CloudinaryException catch (e) {
+      throw e;
+    }
+  }
+
+  Future addCoverPicture(image, id) async {
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(image.path,
+            resourceType: CloudinaryResourceType.Image),
+      );
+
+      await dio.patch('$url/cover-pic/$id',
+          data: {'vehicleImage': response.secureUrl});
+    } on CloudinaryException catch (e) {
+      throw e;
+    }
   }
 }

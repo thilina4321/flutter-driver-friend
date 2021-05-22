@@ -23,16 +23,21 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
   final picker = ImagePicker();
   bool isLoading = false;
 
+  File qImage;
+
+  var me;
+
   Future getImage() async {
     final pickedFile = await picker.getImage(source: ImageSource.camera);
 
-    setState(() {
-      if (pickedFile != null) {
-        question.questionImage = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
+    if (pickedFile != null) {
+      question.questionImage = pickedFile.path;
+      setState(() {
+        qImage = File(pickedFile.path);
+      });
+    } else {
+      print('No image selected.');
+    }
   }
 
   @override
@@ -97,19 +102,20 @@ class _AddNewQuestionPageScreenState extends State<AddNewQuestionPageScreen> {
                     ),
                   ),
                 ),
-                question.questionImage == null
-                    ? FlatButton.icon(
-                        onPressed: getImage,
-                        icon: Icon(Icons.camera_alt_outlined),
-                        label: Text('Include Image'),
-                      )
+                FlatButton.icon(
+                  onPressed: getImage,
+                  icon: Icon(Icons.camera_alt_outlined),
+                  label: Text('Include Image'),
+                ),
+                qImage == null
+                    ? Text('')
                     : Container(
                         height: 200,
                         child: Center(
                           child: Container(
                             width: double.infinity,
                             child: Image.file(
-                              question.questionImage,
+                              qImage,
                               fit: BoxFit.cover,
                             ),
                           ),
