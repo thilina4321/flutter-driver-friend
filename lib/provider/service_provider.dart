@@ -65,6 +65,7 @@ class ServiceCenterProvider with ChangeNotifier {
         name: serviceCenter['userName'],
         userId: serviceCenter['userId'],
         mobile: serviceCenter['mobile'],
+        profileImageUrl: serviceCenter['image'],
         // mapImagePreview: serviceCenter[''],
         city: serviceCenter['city'],
         latitude: serviceCenter['latitude'],
@@ -114,22 +115,37 @@ class ServiceCenterProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addService([Service service, id]) async {
+  Future<void> addService(
+      [Service service, id, bool isImageEdit = false]) async {
     var formData = {
       'name': service.name,
       'description': service.description,
       'price': service.price,
-      'shopId': service.shopId
+      'shopId': service.shopId,
     };
     try {
       if (id == null) {
+        CloudinaryResponse response = await cloudinary.uploadFile(
+          CloudinaryFile.fromFile(service.image,
+              resourceType: CloudinaryResourceType.Image),
+        );
+        print(response.secureUrl);
+        formData['image'] = response.secureUrl;
+
         await dio.post('$url/create-service', data: formData);
       } else {
+        if (isImageEdit) {
+          CloudinaryResponse response = await cloudinary.uploadFile(
+            CloudinaryFile.fromFile(service.image,
+                resourceType: CloudinaryResourceType.Image),
+          );
+          formData['image'] = response.secureUrl;
+        }
         await dio.patch('$url/edit-service/$id', data: formData);
       }
 
       notifyListeners();
-    } catch (e) {
+    } on CloudinaryException catch (e) {
       throw e;
     }
   }
@@ -145,12 +161,14 @@ class ServiceCenterProvider with ChangeNotifier {
         services.add(
           Service(
               id: service['_id'],
+              image: service['image'],
               name: service['name'],
               price: service['price'].toString(),
               description: service['description']),
         );
       });
       _services = services;
+      print(getServices);
       notifyListeners();
     } catch (e) {
       throw e;
@@ -217,8 +235,8 @@ class ServiceCenterProvider with ChangeNotifier {
             resourceType: CloudinaryResourceType.Image),
       );
 
-      print(response.secureUrl);
-      await dio.patch('$url/pro-pic/$id',
+      await dio.patch(
+          'https://driver-friend.herokuapp.com/api/service-centers/pro-pic/$id',
           data: {'profileImage': response.secureUrl});
     } on CloudinaryException catch (e) {
       throw e;

@@ -62,22 +62,22 @@ class FaqProvider with ChangeNotifier {
   Future<void> addQuestion(Question question) async {
     print(question.questionImage);
 
-    // try {
-    //   CloudinaryResponse response = await cloudinary.uploadFile(
-    //     CloudinaryFile.fromFile(question.questionImage,
-    //         resourceType: CloudinaryResourceType.Image),
-    //   );
+    try {
+      CloudinaryResponse response = await cloudinary.uploadFile(
+        CloudinaryFile.fromFile(question.questionImage,
+            resourceType: CloudinaryResourceType.Image),
+      );
 
-    //   var formData = {
-    //     'driverId': question.driverId,
-    //     'question': question.question,
-    //     'questionImage': response.secureUrl
-    //   };
+      var formData = {
+        'driverId': question.driverId,
+        'question': question.question,
+        'questionImage': response.secureUrl
+      };
 
-    //   await dio.post('$url/create', data: formData);
-    // } on CloudinaryException catch (e) {
-    //   throw e;
-    // }
+      await dio.post('$url/create', data: formData);
+    } on CloudinaryException catch (e) {
+      throw e;
+    }
   }
 
   Future<void> fetchQuestions() async {
@@ -89,6 +89,8 @@ class FaqProvider with ChangeNotifier {
       questions['fetchquiz'].forEach((question) {
         _questions.add(question);
       });
+
+      print(_questions);
 
       notifyListeners();
     } catch (e) {

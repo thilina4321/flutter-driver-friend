@@ -63,11 +63,12 @@ class _SpareShopItemsState extends State<SpareShopItems> {
                               elevation: 3,
                               child: Column(
                                 children: [
-                                  if (parts[index].image == null)
+                                  if (parts[index].image != null)
                                     Container(
+                                      width: double.infinity,
                                       height: 200,
-                                      child: Image.asset(
-                                        'assets/images/ser_cover.PNG',
+                                      child: Image.network(
+                                        parts[index].image,
                                         fit: BoxFit.cover,
                                       ),
                                     ),

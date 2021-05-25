@@ -10,7 +10,7 @@ class ServiceCenter {
   String about;
   String openingTime;
   String closingTime;
-  File profileImageUrl;
+  String profileImageUrl;
   String location;
   double rating;
   String name;

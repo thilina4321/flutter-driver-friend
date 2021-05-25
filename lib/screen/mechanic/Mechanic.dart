@@ -1,8 +1,7 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
-import 'package:driver_friend/model/userType.dart';
-import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
@@ -11,6 +10,7 @@ import 'package:driver_friend/screen/mechanic/mechanic_contact_screen.dart';
 import 'package:driver_friend/screen/mechanic/mechnic_form_screen.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
 import 'package:driver_friend/widget/mechanic_drawer.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/rating.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
 
@@ -30,19 +30,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
   Mechanic mechanic = Mechanic();
 
   final picker = ImagePicker();
-
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    if (pickedFile != null) {
-      await Provider.of<MechanicProvider>(context, listen: false)
-          .addProfilePicture(pickedFile, me['id']);
-    } else {
-      print('No image selected.');
-    }
-
-    setState(() {});
-  }
+  bool profileLoad = false;
 
   var me;
   var id;
@@ -115,6 +103,32 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
               mechanic.name = me['userName'];
             }
 
+            Future getImage() async {
+              var pickedFile;
+
+              try {
+                pickedFile = await PickImageFromGalleryOrCamera.getProfileImage(
+                    context, picker);
+                if (pickedFile != null) {
+                  setState(() {
+                    profileLoad = true;
+                  });
+                  await Provider.of<MechanicProvider>(context, listen: false)
+                      .addProfilePicture(pickedFile, me['id']);
+                } else {
+                  print('No image selected.');
+                }
+                setState(() {
+                  profileLoad = false;
+                });
+              } catch (e) {
+                setState(() {
+                  profileLoad = false;
+                });
+                ErrorDialog.errorDialog(context, e.toString());
+              }
+            }
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -128,7 +142,7 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                             ? Container(
                                 color: Colors.black,
                               )
-                            : Image.file(
+                            : Image.network(
                                 mechanic.profileImageUrl,
                                 fit: BoxFit.cover,
                               ),
@@ -142,10 +156,14 @@ class _MechanicProfileScreenState extends State<MechanicProfileScreen> {
                             Icons.camera_alt,
                             color: Colors.white,
                           ),
-                          label: Text(
-                            'Edit photo',
-                            style: TextStyle(color: Colors.white),
-                          ),
+                          label: profileLoad
+                              ? CircularProgressIndicator(
+                                  backgroundColor: Colors.white,
+                                )
+                              : Text(
+                                  'Edit photo',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                         ),
                       ),
                     ],

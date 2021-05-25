@@ -1,3 +1,5 @@
+import 'package:driver_friend/model/service_center.dart';
+import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/add-services.dart';
 import 'package:driver_friend/screen/serviceCenter/manage-appointment.dart';
@@ -21,6 +23,10 @@ class _ServiceCenterDrawerState extends State<ServiceCenterDrawer> {
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    ServiceCenter ser =
+        Provider.of<ServiceCenterProvider>(context, listen: false)
+            .serviceCenter;
+
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -28,10 +34,14 @@ class _ServiceCenterDrawerState extends State<ServiceCenterDrawer> {
           children: [
             Container(
               alignment: Alignment.topLeft,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/ser_pro.jpg'),
-              ),
+              child: ser.profileImageUrl == null
+                  ? CircleAvatar(
+                      backgroundColor: Colors.grey,
+                    )
+                  : CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(ser.profileImageUrl),
+                    ),
             ),
             SizedBox(
               height: 8,

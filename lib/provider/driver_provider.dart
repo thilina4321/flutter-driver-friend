@@ -4,6 +4,7 @@ import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/model/mechanic_model.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/spare_shop.dart';
+import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:flutter/material.dart';
 import 'package:cloudinary_public/cloudinary_public.dart';
 
@@ -18,10 +19,15 @@ class DriverProvider with ChangeNotifier {
   List<ServiceCenter> _nearService = [];
   List<SparePartShop> _nearSpare = [];
   List<Appointment> _appointments = [];
+  List _myquiz = [];
   List _cartItems = [];
 
   Driver get driver {
     return _driver;
+  }
+
+  List get myquiz {
+    return _myquiz;
   }
 
   double get rating {
@@ -368,5 +374,41 @@ class DriverProvider with ChangeNotifier {
     } on CloudinaryException catch (e) {
       throw e;
     }
+  }
+
+  Future fetchMyQuestions(id) async {
+    List quiz = [];
+    try {
+      var questions = await dio.get('$url/get-my-questions/$id');
+      var myQ = questions.data['questions'];
+
+      myQ.forEach((q) => {
+            quiz.add({'id': q['_id'], 'question': q['question']})
+          });
+
+      _myquiz = quiz;
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future deleteMyQuestion(id) async {
+    //delete-my-questions
+    try {
+      await dio.delete('$url/delete-my-questions/$id');
+      _myquiz.removeWhere((element) => element['id'] == id);
+      notifyListeners();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  loadingTrue() {
+    return true;
+  }
+
+  loadingFalse() {
+    return false;
   }
 }

@@ -31,34 +31,6 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
   bool profileLoading = false;
   bool coverLoading = false;
 
-  Future saveImage(context, [String imageType = 'profile']) async {
-    var pickedFile;
-    try {
-      pickedFile =
-          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
-      if (pickedFile != null) {
-        if (imageType == 'profile') {
-          profileLoading = true;
-          await Provider.of<DriverProvider>(context, listen: false)
-              .addProfilePicture(pickedFile, me['id']);
-        } else {
-          coverLoading = true;
-          await Provider.of<DriverProvider>(context, listen: false)
-              .addCoverPicture(pickedFile, me['id']);
-        }
-      } else {
-        print('No image');
-      }
-      profileLoading = false;
-      coverLoading = false;
-      setState(() {});
-    } catch (e) {
-      profileLoading = false;
-      coverLoading = false;
-      ErrorDialog.errorDialog(context, e.toString());
-    }
-  }
-
   Driver user;
 
   @override
@@ -125,6 +97,42 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
 
             user.userId = me['id'];
             user.name = me['userName'];
+
+            Future saveImage(context, [String imageType = 'profile']) async {
+              var pickedFile;
+              try {
+                pickedFile = await PickImageFromGalleryOrCamera.getProfileImage(
+                    context, picker);
+                if (pickedFile != null) {
+                  if (imageType == 'profile') {
+                    setState(() {
+                      profileLoading = true;
+                    });
+                    await Provider.of<DriverProvider>(context, listen: false)
+                        .addProfilePicture(pickedFile, me['id']);
+                  } else {
+                    setState(() {
+                      coverLoading = true;
+                    });
+                    await Provider.of<DriverProvider>(context, listen: false)
+                        .addCoverPicture(pickedFile, me['id']);
+                  }
+                } else {
+                  print('No image');
+                }
+
+                setState(() {
+                  profileLoading = false;
+                  coverLoading = false;
+                });
+              } catch (e) {
+                setState(() {
+                  profileLoading = false;
+                  coverLoading = false;
+                });
+                ErrorDialog.errorDialog(context, e.toString());
+              }
+            }
 
             return SingleChildScrollView(
               child: Column(

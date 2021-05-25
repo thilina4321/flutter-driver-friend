@@ -105,6 +105,7 @@ class SpareShopProvider with ChangeNotifier {
           closingTime: shops['closeTime'].toString(),
           about: shops['about'],
           address: shops['address'],
+          profileImageUrl: shops['image'],
           count: shops['count']);
       notifyListeners();
     } catch (e) {
@@ -135,26 +136,37 @@ class SpareShopProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addParts([SparePart part, id]) async {
+  Future<void> addParts([SparePart part, id, bool isImageEdit]) async {
     var data = {
       'shopId': part.shopId,
       'name': part.name,
       'description': part.description,
-      'price': part.price
+      'price': part.price,
     };
-    print(data);
-    print(id);
+
     try {
       if (id == null) {
+        CloudinaryResponse response = await cloudinary.uploadFile(
+          CloudinaryFile.fromFile(part.image,
+              resourceType: CloudinaryResourceType.Image),
+        );
+        data['image'] = response.secureUrl;
         await dio.post(
             'https://driver-friend.herokuapp.com/api/sparepart-shops/create-spare',
             data: data);
       } else {
+        if (isImageEdit) {
+          CloudinaryResponse response = await cloudinary.uploadFile(
+            CloudinaryFile.fromFile(part.image,
+                resourceType: CloudinaryResourceType.Image),
+          );
+          data['image'] = response.secureUrl;
+        }
         await dio.patch(
             'https://driver-friend.herokuapp.com/api/sparepart-shops/edit-spares/$id',
             data: data);
       }
-    } catch (e) {
+    } on CloudinaryException catch (e) {
       throw e;
     }
   }
@@ -175,6 +187,7 @@ class SpareShopProvider with ChangeNotifier {
               name: part['name'],
               price: part['price'].toString(),
               shopId: part['shopId'],
+              image: part['image'],
               description: part['description']),
         );
       });
@@ -226,7 +239,8 @@ class SpareShopProvider with ChangeNotifier {
       );
 
       print(response.secureUrl);
-      await dio.patch('$url/pro-pic/$id',
+      await dio.patch(
+          'https://driver-friend.herokuapp.com/api/sparepart-shops/pro-pic/$id',
           data: {'profileImage': response.secureUrl});
     } on CloudinaryException catch (e) {
       throw e;

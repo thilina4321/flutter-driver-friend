@@ -2,6 +2,7 @@ import 'package:driver_friend/model/drivert.dart';
 import 'package:driver_friend/provider/driver_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/driver/appointments.dart';
+import 'package:driver_friend/screen/driver/my_questions.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/driver/driver_profile_screes.dart';
 import 'package:driver_friend/screen/driver/driver_setting_screen.dart';
@@ -78,6 +79,11 @@ class _DriverDrawerState extends State<DriverDrawer> {
                 icon: Icons.supervised_user_circle,
                 routeName: AppointmentScreen.routeName,
                 label: 'Appointments'),
+            DrawerIcons(
+              icon: Icons.hourglass_top_sharp,
+              label: 'My Questions',
+              routeName: MyQuestionsScrenn.routeName,
+            ),
             DrawerIcons(
               icon: Icons.question_answer_outlined,
               label: 'FAQ',

@@ -36,7 +36,7 @@ class _ServiceCenterFormScreenState extends State<ServiceCenterFormScreen> {
           await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
       setState(() {
         if (pickedFile != null) {
-          serviceCenter.profileImageUrl = File(pickedFile.path);
+          serviceCenter.profileImageUrl = (pickedFile.path);
         } else {
           print('No image selected.');
         }

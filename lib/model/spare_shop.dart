@@ -10,7 +10,7 @@ class SparePartShop {
   String city;
   String openingTime;
   String closingTime;
-  File profileImageUrl;
+  String profileImageUrl;
   double rating;
   double latitude;
   double longitude;

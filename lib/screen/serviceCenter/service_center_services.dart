@@ -78,11 +78,12 @@ class _ServiceCenterServicesState extends State<ServiceCenterServices> {
                                     elevation: 3,
                                     child: Column(
                                       children: [
-                                        if (services[index].image == null)
+                                        if (services[index].image != null)
                                           Container(
                                             height: 200,
-                                            child: Image.asset(
-                                              'assets/images/ser_cover.PNG',
+                                            width: double.infinity,
+                                            child: Image.network(
+                                              services[index].image,
                                               fit: BoxFit.cover,
                                             ),
                                           ),

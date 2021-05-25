@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/service_center.dart';
 import 'package:driver_friend/model/userType.dart';
 import 'package:driver_friend/provider/service_provider.dart';
@@ -9,6 +10,7 @@ import 'package:driver_friend/screen/serviceCenter/service_center_form.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
 import 'package:driver_friend/screen/serviceCenter/service_contact.dart';
 import 'package:driver_friend/widget/driver_drawer.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:driver_friend/widget/rating.dart';
 import 'package:driver_friend/widget/service_center_drawer.dart';
 import 'package:driver_friend/widget/static_map_image.dart';
@@ -47,6 +49,7 @@ class _ServiceCenterProfileScreenState
   }
 
   var idData;
+  bool profileLoad = false;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +111,33 @@ class _ServiceCenterProfileScreenState
               serviceCenter.name = me['userName'];
             }
 
+            Future getImage() async {
+              var pickedFile;
+
+              try {
+                pickedFile = await PickImageFromGalleryOrCamera.getProfileImage(
+                    context, picker);
+                if (pickedFile != null) {
+                  setState(() {
+                    profileLoad = true;
+                  });
+                  await Provider.of<ServiceCenterProvider>(context,
+                          listen: false)
+                      .addProfilePicture(pickedFile, me['id']);
+                } else {
+                  print('No image selected.');
+                }
+                setState(() {
+                  profileLoad = false;
+                });
+              } catch (e) {
+                setState(() {
+                  profileLoad = false;
+                });
+                ErrorDialog.errorDialog(context, e.toString());
+              }
+            }
+
             return SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -119,7 +149,7 @@ class _ServiceCenterProfileScreenState
                         width: double.infinity,
                         child: serviceCenter.profileImageUrl == null
                             ? Container(color: Colors.black)
-                            : Image.file(
+                            : Image.network(
                                 serviceCenter.profileImageUrl,
                                 fit: BoxFit.cover,
                               ),
@@ -131,15 +161,19 @@ class _ServiceCenterProfileScreenState
                           child: Container(
                             color: Colors.black45,
                             child: FlatButton.icon(
-                              onPressed: () {},
+                              onPressed: getImage,
                               icon: Icon(
                                 Icons.camera_alt,
                                 color: Colors.white,
                               ),
-                              label: Text(
-                                'Edit photo',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                              label: profileLoad
+                                  ? CircularProgressIndicator(
+                                      backgroundColor: Colors.white,
+                                    )
+                                  : Text(
+                                      'Edit photo',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
                             ),
                           ),
                         ),

@@ -23,6 +23,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
 
   bool isLoading = false;
   SparePart _part = SparePart();
+  var imagePrev;
 
   Future<void> _createPart(context) async {
     bool isValid = _form.currentState.validate();
@@ -36,7 +37,7 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
     _part.shopId = me['id'];
     try {
       await Provider.of<SpareShopProvider>(context, listen: false)
-          .addParts(_part, id);
+          .addParts(_part, id, isImageEdit);
       setState(() {
         isLoading = false;
       });
@@ -49,19 +50,28 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
     }
   }
 
+  bool isImageEdit = false;
   final picker = ImagePicker();
   var partImage;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    var pickedFile;
 
-    setState(() {
+    try {
+      pickedFile =
+          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
       if (pickedFile != null) {
-        partImage = File(pickedFile.path);
+        setState(() {
+          _part.image = pickedFile.path;
+          isImageEdit = true;
+          imagePrev = File(pickedFile.path);
+        });
       } else {
         print('No image selected.');
       }
-    });
+    } catch (e) {
+      ErrorDialog.errorDialog(context, e.toString());
+    }
   }
 
   var me;
@@ -152,10 +162,22 @@ class _CreateNewPartScreenState extends State<CreateNewPartScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                if (partImage != null)
+                if (id != null && isImageEdit == false)
+                  Container(
+                    child: Image.network(
+                      _part.image,
+                      fit: BoxFit.cover,
+                    ),
+                    height: 200,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                    ),
+                  ),
+                if (imagePrev != null)
                   Container(
                     child: Image.file(
-                      partImage,
+                      imagePrev,
                       fit: BoxFit.cover,
                     ),
                     height: 200,

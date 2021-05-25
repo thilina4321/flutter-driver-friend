@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:driver_friend/helper/error-helper.dart';
 import 'package:driver_friend/model/service-model.dart';
 import 'package:driver_friend/provider/service_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/serviceCenter/service_center_services.dart';
+import 'package:driver_friend/widget/pick_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -22,18 +24,29 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
   bool isLoading = false;
   final picker = ImagePicker();
   var img;
+  var imagePrev;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
+    var pickedFile;
 
-    setState(() {
+    try {
+      pickedFile =
+          await PickImageFromGalleryOrCamera.getProfileImage(context, picker);
       if (pickedFile != null) {
-        img = File(pickedFile.path);
+        setState(() {
+          _service.image = pickedFile.path;
+          imagePrev = File(pickedFile.path);
+          isImageEdit = true;
+        });
       } else {
         print('No image selected.');
       }
-    });
+    } catch (e) {
+      ErrorDialog.errorDialog(context, e.toString());
+    }
   }
+
+  bool isImageEdit = false;
 
   Future<void> _createService(context) async {
     bool isValid = _form.currentState.validate();
@@ -47,7 +60,7 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
     _service.shopId = me['id'];
     try {
       await Provider.of<ServiceCenterProvider>(context, listen: false)
-          .addService(_service, service.id);
+          .addService(_service, service.id, isImageEdit);
       setState(() {
         isLoading = false;
       });
@@ -89,7 +102,6 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
   @override
   Widget build(BuildContext context) {
     String id = ModalRoute.of(context).settings.arguments;
-    print(id);
     if (id != null) {
       Service editableService =
           Provider.of<ServiceCenterProvider>(context).selectServiceForEdit(id);
@@ -175,11 +187,23 @@ class _CreateNewServiceScreenState extends State<CreateNewServiceScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                if (img != null)
+                if (id != null && isImageEdit == false)
+                  Container(
+                    height: 200,
+                    child: Image.network(
+                      service.image,
+                      fit: BoxFit.cover,
+                    ),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      border: Border.all(width: 1),
+                    ),
+                  ),
+                if (imagePrev != null)
                   Container(
                     height: 200,
                     child: Image.file(
-                      img,
+                      imagePrev,
                       fit: BoxFit.cover,
                     ),
                     width: double.infinity,

@@ -88,6 +88,8 @@ class _AnswerScreenState extends State<AnswerScreen> {
       _authorId = me['id'];
     }
 
+    print(data);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Answer'),
@@ -100,26 +102,34 @@ class _AnswerScreenState extends State<AnswerScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ListTile(
                       leading: CircleAvatar(
+                        child: Text(data['driverId']['userName']
+                            .toString()[0]
+                            .toLowerCase()),
                         backgroundColor: Colors.purple,
                         radius: 25,
                       ),
                       title: Text(data['driverId']['userName']),
                     ),
-                    Text(data['question']),
+                    Text(
+                      data['question'],
+                      textAlign: TextAlign.start,
+                    ),
                     SizedBox(
                       height: 30,
                     ),
-                    Container(
-                      height: 200,
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/faq.jpg',
-                        fit: BoxFit.fitHeight,
+                    if (data['questionImage'] != null)
+                      Container(
+                        height: 200,
+                        width: double.infinity,
+                        child: Image.network(
+                          data['questionImage'],
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                    ),
                     Divider(
                       thickness: 3,
                     ),

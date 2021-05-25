@@ -1,3 +1,5 @@
+import 'package:driver_friend/model/spare_shop.dart';
+import 'package:driver_friend/provider/spare_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/sparePartShop/Spare_part_shop_profile_screen.dart';
 import 'package:driver_friend/screen/sparePartShop/add-part.dart';
@@ -9,6 +11,8 @@ class SparePartShopDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var me = Provider.of<UserProvider>(context, listen: false).me;
+    SparePartShop spare =
+        Provider.of<SpareShopProvider>(context, listen: false).spareShop;
 
     return Drawer(
       child: SafeArea(
@@ -17,10 +21,14 @@ class SparePartShopDrawer extends StatelessWidget {
           children: [
             Container(
               alignment: Alignment.topLeft,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/spa_pro.jpg'),
-              ),
+              child: spare.profileImageUrl == null
+                  ? CircleAvatar(
+                      backgroundColor: Colors.grey,
+                    )
+                  : CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(spare.profileImageUrl),
+                    ),
             ),
             SizedBox(
               height: 8,

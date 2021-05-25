@@ -1,8 +1,9 @@
+import 'package:driver_friend/model/mechanic_model.dart';
+import 'package:driver_friend/provider/mechanic_provider.dart';
 import 'package:driver_friend/provider/user_provider.dart';
 import 'package:driver_friend/screen/faq/FAQ.dart';
 import 'package:driver_friend/screen/mechanic/Mechanic.dart';
 import 'package:driver_friend/screen/mechanic/mechanic_setting.dart';
-import 'package:driver_friend/screen/sparePartShop/spare_part_shop_list.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +11,8 @@ class MechanicDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var me = Provider.of<UserProvider>(context, listen: false).me;
+    Mechanic mec =
+        Provider.of<MechanicProvider>(context, listen: false).mechanic;
     return Drawer(
       child: SafeArea(
         child: ListView(
@@ -17,10 +20,14 @@ class MechanicDrawer extends StatelessWidget {
           children: [
             Container(
               alignment: Alignment.topLeft,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage: AssetImage('assets/images/mec_pro.jpg'),
-              ),
+              child: mec.profileImageUrl == null
+                  ? CircleAvatar(
+                      backgroundColor: Colors.grey,
+                    )
+                  : CircleAvatar(
+                      radius: 40,
+                      backgroundImage: NetworkImage(mec.profileImageUrl),
+                    ),
             ),
             SizedBox(
               height: 8,

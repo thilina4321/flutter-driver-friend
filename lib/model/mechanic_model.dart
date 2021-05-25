@@ -16,7 +16,7 @@ class Mechanic {
   String mobile;
   String address;
   String about;
-  File profileImageUrl;
+  String profileImageUrl;
   double rating;
   UserType userType;
   double latitude;

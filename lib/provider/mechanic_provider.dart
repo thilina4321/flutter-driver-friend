@@ -48,6 +48,7 @@ class MechanicProvider with ChangeNotifier {
       var mechanic = fetchedMechanic.data['mechanic'];
       _mechanic = Mechanic(
         id: mechanic['_id'],
+        profileImageUrl: mechanic['image'],
         name: mechanic['userName'],
         mapImagePreview: mechanic['mapImagePreview'],
         userId: mechanic['userId'],
@@ -173,7 +174,8 @@ class MechanicProvider with ChangeNotifier {
       );
 
       print(response.secureUrl);
-      await dio.patch('$url/pro-pic/$id',
+      await dio.patch(
+          'https://driver-friend.herokuapp.com/api/mechanics/pro-pic/$id',
           data: {'profileImage': response.secureUrl});
     } on CloudinaryException catch (e) {
       throw e;
