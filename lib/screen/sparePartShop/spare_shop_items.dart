@@ -19,18 +19,23 @@ class _SpareShopItemsState extends State<SpareShopItems> {
   bool isLoading = false;
 
   var me;
+  var shopId;
 
   @override
   Widget build(BuildContext context) {
     me = Provider.of<UserProvider>(context, listen: false).me;
+    shopId = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
         appBar: AppBar(
           title: Text('Items'),
         ),
         body: FutureBuilder(
-          future: Provider.of<SpareShopProvider>(context, listen: false)
-              .fetchParts(me['id']),
+          future: me['role'] == 'sparePartShop'
+              ? Provider.of<SpareShopProvider>(context, listen: false)
+                  .fetchParts(me['id'])
+              : Provider.of<SpareShopProvider>(context, listen: false)
+                  .fetchParts(shopId),
           builder: (context, items) {
             if (items.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());

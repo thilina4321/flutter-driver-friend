@@ -20,7 +20,11 @@ class ServiceCenterProvider with ChangeNotifier {
   }
 
   List<Appointment> get appointments {
-    return _appointments;
+    List<Appointment> _app = [];
+    for (var i = _appointments.length - 1; i >= 0; i--) {
+      _app.add(_appointments[i]);
+    }
+    return _app;
   }
 
   ServiceCenter get serviceCenter {

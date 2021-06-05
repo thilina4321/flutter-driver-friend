@@ -88,8 +88,6 @@ class _AnswerScreenState extends State<AnswerScreen> {
       _authorId = me['id'];
     }
 
-    print(data);
-
     return Scaffold(
       appBar: AppBar(
         title: Text('Answer'),

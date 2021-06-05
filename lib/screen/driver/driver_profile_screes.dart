@@ -194,7 +194,7 @@ class _DriverProfileScreenState extends State<DriverProfileScreen> {
                       ),
                       Positioned(
                         top: 100,
-                        left: MediaQuery.of(context).size.width / 4,
+                        left: (MediaQuery.of(context).size.width / 2.5) - 35,
                         child: user.profileImageUrl == null
                             ? CircleAvatar(
                                 child: Text(

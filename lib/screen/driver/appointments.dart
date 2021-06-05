@@ -98,8 +98,14 @@ class _AppointmentScreenState extends State<AppointmentScreen> {
                               if (appoinments[index].status.toString() ==
                                   'Approve')
                                 Text(
-                                  'Your Appointment is Approved',
+                                  'Your Appointment was Approved',
                                   style: TextStyle(color: Colors.green),
+                                ),
+                              if (appoinments[index].status.toString() ==
+                                  'Reject')
+                                Text(
+                                  'Your Appointment was Rejected',
+                                  style: TextStyle(color: Colors.red),
                                 ),
                               Container(
                                 alignment: Alignment.bottomRight,

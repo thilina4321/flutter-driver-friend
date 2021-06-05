@@ -60,8 +60,6 @@ class FaqProvider with ChangeNotifier {
   }
 
   Future<void> addQuestion(Question question) async {
-    print(question.questionImage);
-
     try {
       CloudinaryResponse response = await cloudinary.uploadFile(
         CloudinaryFile.fromFile(question.questionImage,
@@ -90,11 +88,9 @@ class FaqProvider with ChangeNotifier {
         _questions.add(question);
       });
 
-      print(_questions);
-
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
@@ -105,12 +101,11 @@ class FaqProvider with ChangeNotifier {
 
   Future<void> deleteQuestion(String id) async {
     try {
-      var fetchedQuestions = await dio.delete('$url/delete/$id');
-      print(fetchedQuestions.data);
+      await dio.delete('$url/delete/$id');
       notifyListeners();
       _answeredQuestions.removeWhere((question) => question.id == id);
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
@@ -149,7 +144,7 @@ class FaqProvider with ChangeNotifier {
       await dio.delete('$url/delete-answer/$questionId/$answerId');
       await fetchQuestions();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 

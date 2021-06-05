@@ -109,14 +109,13 @@ class DriverProvider with ChangeNotifier {
       _driver = newDriver.data;
       notifyListeners();
     } catch (e) {
-      print(e);
+      throw e;
     }
   }
 
   Future<void> deleteDriver(String id, String userId) async {
     try {
-      var driver = await dio.delete('$url/delete-driver/$id/$userId');
-      print(driver.data);
+      await dio.delete('$url/delete-driver/$id/$userId');
     } catch (e) {
       throw e;
     }
@@ -136,7 +135,6 @@ class DriverProvider with ChangeNotifier {
 
   Future<void> nearMechanic() async {
     List<Mechanic> nearMechanics = [];
-    print('hello');
     try {
       var fetchedMechanic = await dio
           .get('https://driver-friend.herokuapp.com/api/drivers/near-mechanic');
@@ -168,7 +166,6 @@ class DriverProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }
@@ -240,7 +237,6 @@ class DriverProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print(e.toString());
       throw e;
     }
   }
@@ -256,11 +252,9 @@ class DriverProvider with ChangeNotifier {
       'centerName': appointment.centerName,
       'serviceName': appointment.serviceName,
     };
-    print(data);
     try {
       await dio.post('$url/make-appointment', data: data);
     } catch (e) {
-      print(e.error);
       throw e;
     }
   }
@@ -278,7 +272,6 @@ class DriverProvider with ChangeNotifier {
       var response = await dio.get('$url/find-appointments/$id');
 
       var responseData = response.data['appointment'] as List;
-      print(responseData);
 
       responseData.forEach((app) {
         appoins.add(Appointment(
@@ -312,7 +305,6 @@ class DriverProvider with ChangeNotifier {
       }
       _rating = double.parse(rating.data['rating'].toString());
     } catch (e) {
-      print(e);
       throw e;
     }
   }
@@ -354,7 +346,6 @@ class DriverProvider with ChangeNotifier {
             resourceType: CloudinaryResourceType.Image),
       );
 
-      print(response.secureUrl);
       await dio
           .patch('$url/pro-pic/$id', data: {'proImage': response.secureUrl});
     } on CloudinaryException catch (e) {

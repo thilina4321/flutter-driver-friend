@@ -18,17 +18,18 @@ class MechanicDrawer extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.only(top: 20, left: 20),
           children: [
-            Container(
-              alignment: Alignment.topLeft,
-              child: mec.profileImageUrl == null
-                  ? CircleAvatar(
-                      backgroundColor: Colors.grey,
-                    )
-                  : CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage(mec.profileImageUrl),
-                    ),
-            ),
+            if (mec != null)
+              Container(
+                alignment: Alignment.topLeft,
+                child: mec.profileImageUrl == null
+                    ? CircleAvatar(
+                        backgroundColor: Colors.grey,
+                      )
+                    : CircleAvatar(
+                        radius: 40,
+                        backgroundImage: NetworkImage(mec.profileImageUrl),
+                      ),
+              ),
             SizedBox(
               height: 8,
             ),

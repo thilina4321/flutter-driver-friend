@@ -31,7 +31,7 @@ class _DriverDrawerState extends State<DriverDrawer> {
           children: [
             Container(
               alignment: Alignment.topLeft,
-              child: driver.profileImageUrl == null
+              child: driver != null && driver.profileImageUrl == null
                   ? CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.grey,

@@ -166,27 +166,28 @@ class _SparePartShopProfileScreenState
                                     fit: BoxFit.cover,
                                   ),
                           ),
-                          Positioned(
-                            top: 20,
-                            left: 20,
-                            child: Container(
-                              color: Colors.black45,
-                              child: FlatButton.icon(
-                                onPressed: getImage,
-                                icon: Icon(
-                                  Icons.camera_alt,
-                                  color: Colors.white,
+                          if (me['role'] == 'sparePartShop')
+                            Positioned(
+                              top: 20,
+                              left: 20,
+                              child: Container(
+                                color: Colors.black45,
+                                child: FlatButton.icon(
+                                  onPressed: getImage,
+                                  icon: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                  ),
+                                  label: profileLoad
+                                      ? CircularProgressIndicator(
+                                          backgroundColor: Colors.white)
+                                      : Text(
+                                          'Edit photo',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                 ),
-                                label: profileLoad
-                                    ? CircularProgressIndicator(
-                                        backgroundColor: Colors.white)
-                                    : Text(
-                                        'Edit photo',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
                               ),
                             ),
-                          ),
                         ],
                       ),
                       Container(
@@ -288,8 +289,9 @@ class _SparePartShopProfileScreenState
                               elevation: 3,
                               child: FlatButton(
                                 onPressed: () {
-                                  Navigator.of(context)
-                                      .pushNamed(SpareShopItems.routeName);
+                                  Navigator.of(context).pushNamed(
+                                      SpareShopItems.routeName,
+                                      arguments: spareShop.userId);
                                 },
                                 child: const Text(
                                   'Items',
